@@ -1,4 +1,4 @@
-# GroovyCloud
+# Oceanus
 
 - It is a Micro Service!
 - It is serverless, deploy code on servers! Normally one megabytes per service!
