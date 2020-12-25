@@ -3,20 +3,19 @@ package proxycontainer.proxycontainer.bean;
 import chat.utils.IPHolder;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.dobybros.chat.handlers.ProxyContainerDuplexSender;
-import com.dobybros.chat.props.GlobalLansProperties;
+import com.dobybros.chat.handlers.imextention.IMExtensionCache;
 import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import com.docker.file.adapters.GridFSFileHandler;
 import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.impl.RMIServerHandler;
-import com.docker.script.ScriptManager;
 import com.docker.storage.mongodb.MongoHelper;
 import com.docker.storage.mongodb.daos.*;
-import com.docker.utils.AutoReloadProperties;
-import com.docker.utils.GroovyCloudBean;
+import com.proxy.runtime.ScriptManager;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptorEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import com.docker.utils.BeanFactory;
 
 /**
  * Created by lick on 2019/5/27.
@@ -26,8 +25,6 @@ import org.springframework.stereotype.Component;
 public class InitContainer implements CommandLineRunner{
     @Autowired
     MongoHelper dockerStatusHelper;
-    @Autowired
-    GlobalLansProperties globalLansProperties;
     @Autowired
     MongoHelper configHelper;
     @Autowired
@@ -63,8 +60,6 @@ public class InitContainer implements CommandLineRunner{
     @Autowired
     IPHolder ipHolder;
     @Autowired
-    AutoReloadProperties oauth2ClientProperties;
-    @Autowired
     ScriptManager scriptManager;
     @Autowired
     RMIServerHandler dockerRpcServerAdapter;
@@ -76,13 +71,14 @@ public class InitContainer implements CommandLineRunner{
     OnlineUserManagerImpl onlineUserManager;
     @Autowired
     ProxyContainerDuplexSender proxyContainerDuplexSender;
+    @Autowired
+    IMExtensionCache imExtensionCache;
 
     @Override
     public void run(String... args) throws Exception {
-        GroovyCloudBean.map();
+        BeanFactory.map();
         TypeUtils.compatibleWithJavaBean = true;
         System.setProperty("es.set.netty.runtime.available.processors", "false");
-        globalLansProperties.init();
         dockerStatusHelper.init();
         configHelper.init();
         scheduledTaskHelper.init();
@@ -101,12 +97,12 @@ public class InitContainer implements CommandLineRunner{
         tcpIoAcceptor.bind();
         wsIoAcceptor.bind();
         ipHolder.init();
-        oauth2ClientProperties.init();
         onlineServer.start();
         onlineUserManager.init();
         scriptManager.init();
         dockerRpcServerAdapter.serverStart();
         dockerRpcServerAdapterSsl.serverStart();
         proxyContainerDuplexSender.init();
+        imExtensionCache.init();
     }
 }

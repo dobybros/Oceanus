@@ -18,9 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-import script.groovy.runtime.ClassAnnotationHandler;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -72,15 +70,13 @@ public class MongoDBHandler extends ClassAnnotationHandler{
 	}
 	
 	@Override
-	public void handleAnnotatedClasses(Map<String, Class<?>> arg0,
-			MyGroovyClassLoader arg1) {
-		GroovyRuntime groovyRuntime = getGroovyRuntime();
+	public void handleAnnotatedClasses(Map<String, Class<?>> arg0) {
 		MongoDatabaseAnnotationHolder databaseHolder = null;
 		MongoCollectionAnnotationHolder collectionHolder = null;
 		MongoDocumentAnnotationHolder documentHolder = null;
-		databaseHolder = (MongoDatabaseAnnotationHolder) groovyRuntime.getClassAnnotationHandler(MongoDatabaseAnnotationHolder.class);
-		collectionHolder = (MongoCollectionAnnotationHolder) groovyRuntime.getClassAnnotationHandler(MongoCollectionAnnotationHolder.class);
-		documentHolder = (MongoDocumentAnnotationHolder) groovyRuntime.getClassAnnotationHandler(MongoDocumentAnnotationHolder.class);
+		databaseHolder = (MongoDatabaseAnnotationHolder) runtimeContext.getClassAnnotationHandler(MongoDatabaseAnnotationHolder.class);
+		collectionHolder = (MongoCollectionAnnotationHolder) runtimeContext.getClassAnnotationHandler(MongoCollectionAnnotationHolder.class);
+		documentHolder = (MongoDocumentAnnotationHolder) runtimeContext.getClassAnnotationHandler(MongoDocumentAnnotationHolder.class);
 		if(databaseHolder == null || collectionHolder == null || documentHolder == null) {
 			LoggerEx.info(TAG, "Information is insufficient, databaseHolder = " + databaseHolder + ", collectionHolder = " + collectionHolder + ", documentHolder = " + documentHolder);
 			return;
@@ -102,7 +98,7 @@ public class MongoDBHandler extends ClassAnnotationHandler{
 		for(Class<?> databaseClass : databaseClasses) {
 			Database mongoDatabase = databaseMap.get(databaseClass);
 			if(mongoDatabase != null) {
-				String dbName = getGroovyRuntime().processAnnotationString(mongoDatabase.name());
+				String dbName = processAnnotationString(runtimeContext, mongoDatabase.name());
 				if(dbName != null) {
 					com.mongodb.client.MongoDatabase database = mongoClientHelper.getMongoDatabase(dbName);
 					newDatabaseMap.put(databaseClass, database);
@@ -113,11 +109,12 @@ public class MongoDBHandler extends ClassAnnotationHandler{
 		for(Class<?> collectionClass : collectionClasses) {
 			DBCollection mongoCollection = collectionMap.get(collectionClass);
 			if(mongoCollection != null) {
-				String collectionName = getGroovyRuntime().processAnnotationString(mongoCollection.name());
+				String collectionName = processAnnotationString(runtimeContext, mongoCollection.name());
 				Class<?> databaseClass = mongoCollection.database();
 				if(databaseClass == null || databaseClass.equals(Object.class)) {
-					String dClass = getGroovyRuntime().processAnnotationString(mongoCollection.databaseClass());
-					databaseClass = groovyRuntime.getClass(dClass);
+					String dClass = processAnnotationString(runtimeContext, mongoCollection.databaseClass());
+					//TODO classloader
+					databaseClass = runtimeContext.getClass(dClass);
 				}
 				if(databaseClass == null)
 					continue;
@@ -143,7 +140,8 @@ public class MongoDBHandler extends ClassAnnotationHandler{
 				String[] filters = mongoDocument.filters();
 				Class<?> collectionClass = mongoDocument.collection();
 				if(collectionClass == null || collectionClass.equals(Object.class)) {
-					collectionClass = groovyRuntime.getClass(getGroovyRuntime().processAnnotationString(mongoDocument.collectionClass()));
+					//TODO classloader
+					collectionClass = runtimeContext.getClass(processAnnotationString(runtimeContext, mongoDocument.collectionClass()));
 				}
 				CollectionHolder holder = null;
 				if(collectionClass != null) {
@@ -162,10 +160,10 @@ public class MongoDBHandler extends ClassAnnotationHandler{
 						HashTree<String, String> children = null;
 						if(i >= filters.length - 1) {
 							//This is the last one in filter array.
-							value = getGroovyRuntime().processAnnotationString(filters[i]);
+							value = processAnnotationString(runtimeContext, filters[i]);
 							children = tree.getChildren(value.toString(), true);
 						} else {
-							children = tree.getChildren(getGroovyRuntime().processAnnotationString(filters[i]), true);
+							children = tree.getChildren(processAnnotationString(runtimeContext, filters[i]), true);
 						}
 						tree = children;
 					}
@@ -192,7 +190,7 @@ public class MongoDBHandler extends ClassAnnotationHandler{
 		public String getFieldKey(Field field) {
 			DocumentField documentField = field.getAnnotation(DocumentField.class);
 			if(documentField != null) {
-				String key = getGroovyRuntime().processAnnotationString(documentField.key());
+				String key = processAnnotationString(runtimeContext, documentField.key());
 				if(StringUtils.isBlank(key)) {
 					return field.getName();
 				} else {
@@ -207,7 +205,7 @@ public class MongoDBHandler extends ClassAnnotationHandler{
 			DocumentField documentField = field.getAnnotation(DocumentField.class);
 			if(documentField != null) {
 //				String key = documentField.key();
-				String mapKey = getGroovyRuntime().processAnnotationString(documentField.mapKey());
+				String mapKey = processAnnotationString(runtimeContext, documentField.mapKey());
 				FieldEx fieldEx = new FieldEx(field);
 				if(!StringUtils.isBlank(mapKey))
 					fieldEx.put(MAPKEY, mapKey);
@@ -218,7 +216,7 @@ public class MongoDBHandler extends ClassAnnotationHandler{
 	}
 	
 	@Override
-	public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+	public Class<? extends Annotation> handleAnnotationClass() {
 		return null;
 	}
 

@@ -11,9 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.stub.RpcCacheManager;
 import com.docker.rpc.remote.stub.ServiceStubManager;
-import com.docker.script.MyBaseRuntime;
-import com.docker.script.ScriptManager;
-import com.docker.utils.SpringContextUtil;
+import com.docker.script.BaseRuntimeContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -73,11 +71,10 @@ public class MethodResponse extends RPCResponse {
                                 serviceStubManager = methodRequest.getServiceStubManager();
                             }
                             if (serviceStubManager == null) {
-                                ScriptManager scriptManager = (ScriptManager) SpringContextUtil.getBean("scriptManager");
-                                MyBaseRuntime baseRuntime = (MyBaseRuntime) scriptManager.getBaseRuntime(methodRequest.getFromService());
-                                if (baseRuntime == null)
+                                BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(methodRequest.getFromService());
+                                if (runtimeContext == null)
                                     throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + methodRequest.getFromService() + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                                serviceStubManager = baseRuntime.getServiceStubManager();
+                                serviceStubManager = runtimeContext.getServiceStubManagerFactory().get(null);
                             }
 
                             MethodMapping methodMapping = serviceStubManager.getMethodMapping(crc);

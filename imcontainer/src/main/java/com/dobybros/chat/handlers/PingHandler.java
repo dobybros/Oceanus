@@ -1,20 +1,19 @@
 package com.dobybros.chat.handlers;
 
+import chat.config.BaseConfiguration;
 import chat.logs.LoggerEx;
 import chat.utils.TimerEx;
 import chat.utils.TimerTaskEx;
 import com.dobybros.chat.channels.Channel;
 import com.dobybros.chat.open.data.IMConfig;
-import com.dobybros.chat.script.annotations.gateway.GatewayGroovyRuntime;
+import com.dobybros.chat.script.IMRuntimeContext;
 import com.dobybros.gateway.channels.tcp.TcpChannel;
 import com.dobybros.gateway.onlineusers.OnlineServiceUser;
 import com.dobybros.gateway.onlineusers.OnlineUser;
 import com.dobybros.gateway.onlineusers.OnlineUserManager;
 import com.dobybros.gateway.onlineusers.OnlineUsersHolder;
-import com.docker.script.BaseRuntime;
-import com.docker.script.ScriptManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,10 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * Description：
  */
 public class PingHandler {
-    @Resource
+    @Autowired
+    BaseConfiguration baseConfiguration;
+    @Autowired
     OnlineUserManager onlineUserManager;
-    @Resource
-    ScriptManager scriptManager;
     private final String TAG = PingHandler.class.getSimpleName();
     private Boolean useProxy = true;
     public void init(){
@@ -48,14 +47,14 @@ public class PingHandler {
                                         Channel channel = channelMap.get(terminal);
                                         if (channel instanceof TcpChannel) {
                                             TcpChannel tcpChannel = (TcpChannel) channel;
-                                            BaseRuntime runtime = scriptManager.getBaseRuntime(serviceUser.getServiceAndVersion());
-                                            if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-                                                IMConfig imConfig = ((GatewayGroovyRuntime) runtime).getIMConfig(user.getUserId(), serviceUser.getService());
+                                            IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(serviceUser.getService());
+                                            if(runtimeContext != null){
+                                                IMConfig imConfig = runtimeContext.getIMConfig(user.getUserId(), serviceUser.getService());
                                                 if(imConfig == null){
                                                     imConfig = new IMConfig();
                                                 }
                                                 if ((System.currentTimeMillis() - tcpChannel.getPingTime()) > (imConfig.getPingInterval() * 2 + 2000)) {
-                                                    ((GatewayGroovyRuntime) runtime).pingTimeoutReceived(user.getUserId(), serviceUser.getService(), terminal);
+                                                    runtimeContext.pingTimeoutReceived(user.getUserId(), serviceUser.getService(), terminal);
                                                 }
                                             }
                                         }

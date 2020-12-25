@@ -1,6 +1,6 @@
 package com.docker.script;
 
-import script.groovy.runtime.ClassAnnotationHandler;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 /**
  * Created by wenqi on 2018/12/4

@@ -1,5 +1,6 @@
 package com.dobybros.gateway.onlineusers;
 
+import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.main.ServerStart;
@@ -12,7 +13,7 @@ import com.dobybros.chat.data.userinfo.ServerInfo;
 import com.dobybros.chat.data.userinfo.UserInfo;
 import com.dobybros.chat.errors.IMCoreErrorCodes;
 import com.dobybros.chat.open.data.*;
-import com.dobybros.chat.script.annotations.gateway.GatewayGroovyRuntime;
+import com.dobybros.chat.script.IMRuntimeContext;
 import com.dobybros.chat.storage.adapters.StorageManager;
 import com.dobybros.chat.storage.adapters.UserInPresenceAdapter;
 import com.dobybros.chat.storage.adapters.UserInfoAdapter;
@@ -26,12 +27,9 @@ import com.dobybros.gateway.onlineusers.PushInfo.SpecialHandler;
 import com.dobybros.gateway.pack.Pack;
 import com.dobybros.gateway.utils.FreezableQueue;
 import com.dobybros.gateway.utils.RecentTopicMap;
-import com.docker.script.BaseRuntime;
-import com.docker.script.ScriptManager;
-import com.docker.server.OnlineServer;
-import com.docker.utils.SpringContextUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import com.docker.utils.BeanFactory;
 import script.memodb.ObjectId;
 
 import java.util.*;
@@ -81,6 +79,7 @@ public class OnlineServiceUser implements ChannelListener {
 
     protected SingleThreadQueue<PushInfo> acuEventQueue;
     private IMServerConfig serverConfig;
+    protected BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
 
     public Integer getUnreadCount() {
         return userInfo.getOfflineUnreadCount();
@@ -98,9 +97,9 @@ public class OnlineServiceUser implements ChannelListener {
     }
 
     public IMConfig getIMConfig(){
-        BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
-        if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-            return ((GatewayGroovyRuntime) runtime).getIMConfig(userInfo.getUserId(), service);
+        IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+        if(runtimeContext != null){
+            return runtimeContext.getIMConfig(userInfo.getUserId(), service);
         }
         return null;
     }
@@ -128,7 +127,7 @@ public class OnlineServiceUser implements ChannelListener {
 //	public abstract void init();
 //	public abstract void initUserFollowAndBlock();
 //	public abstract boolean keepOnline(); 
-    public void initOnlineUser() {
+    public void initOnlineUser() throws CoreException {
         if (status < STATUS_INITED) {
             if(serverConfig == null)
                 serverConfig = IMServerConfig.forRoom();
@@ -239,10 +238,11 @@ public class OnlineServiceUser implements ChannelListener {
 
     protected void pushToChannelsSync(Data event, Integer excludeTerminal, Integer toTerminal) {
         if (channelMap != null && event != null) {
-            BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
-            if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-                ((GatewayGroovyRuntime) runtime).messageSent(event, excludeTerminal, toTerminal, userInfo.getUserId(), service);
+            IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+            if(runtimeContext != null){
+                runtimeContext.messageSent(event, excludeTerminal, toTerminal, userInfo.getUserId(), service);
             }
+
             if (toTerminal != null) {
                 Channel channel = getChannel(toTerminal);
                 if (channel != null)
@@ -282,9 +282,9 @@ public class OnlineServiceUser implements ChannelListener {
 //		AcuLogger.info(TAG, logWho() + " receive event, " + event.getEventType() + " targetId " + event.getFilterMatch(Event.FILTERMATCH_TARGETID));
 //		eventQueue.offer(event);
 //		handleEvent();
-        BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
-        if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-            ((GatewayGroovyRuntime) runtime).messageReceivedFromUsers(event, onlineUser.getUserId(), service);
+        IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+        if(runtimeContext != null){
+            runtimeContext.messageReceivedFromUsers(event, onlineUser.getUserId(), service);
         }
         return eventReceivedHandler(event);
 //		acuEventQueue.offer(event);
@@ -312,7 +312,7 @@ public class OnlineServiceUser implements ChannelListener {
         return oldChannel;
     }
 
-    public void removeChannel(Channel channel, int close) {
+    public void removeChannel(Channel channel, int close) throws CoreException {
         if (channel == null)
             return;
         Result resultEvent = new Result();
@@ -367,7 +367,7 @@ public class OnlineServiceUser implements ChannelListener {
         }
     }
 
-    public void deleteDevice(List<Integer> terminals) {
+    public void deleteDevice(List<Integer> terminals) throws CoreException {
 //		DeviceDeleteRequest deleteRequest = new DeviceDeleteRequest();
 //		deleteRequest.setService(userInfo.getService());
 //		deleteRequest.setTerminals(terminals);
@@ -423,7 +423,7 @@ public class OnlineServiceUser implements ChannelListener {
         return channelMap.values();
     }
 
-    public void destroySelf(int close) {
+    public void destroySelf(int close) throws CoreException {
         if (status < STATUS_DESTROYED) {
             if (channelMap != null) {
                 for (Channel channel : channelMap.values()) {
@@ -500,9 +500,9 @@ public class OnlineServiceUser implements ChannelListener {
             sessionId = ObjectId.get().toString();
         activeTime = System.currentTimeMillis();
         onlineUser.getOnlineUseManager().getOnlineUsersHolder().initServiceUserCount(service);
-        BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
-        if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-            Properties configProps = runtime.getConfig();
+        IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+        if(runtimeContext != null){
+            Properties configProps = runtimeContext.getConfiguration().getConfig();
             if(configProps != null) {
                 String value = configProps.getProperty("service.session.type");
                 if(!StringUtils.isBlank(value) && value.equals("im")) {//another value will be "room"
@@ -512,7 +512,7 @@ public class OnlineServiceUser implements ChannelListener {
                 }
                 LoggerEx.info(TAG, "IMServerConfig " + JSON.toJSONString(serverConfig));
             }
-            ((GatewayGroovyRuntime) runtime).sessionCreated(userInfo.getUserId(), service);
+            runtimeContext.sessionCreated(userInfo.getUserId(), service);
         }
     }
 
@@ -577,7 +577,7 @@ public class OnlineServiceUser implements ChannelListener {
         LoggerEx.debug(TAG, "User " + userInfo.getUserId() + " initialized!");
     }
 
-    public synchronized void userDestroyed(int close) {
+    public synchronized void userDestroyed(int close) throws CoreException {
         //优化， 如果userInfo没有变化不用在写到数据库中
         if (userInfo == null) {
             LoggerEx.info(TAG, "userDestroyed userInfo is null, sessionId" + sessionId + " service " + service + " close " + close);
@@ -589,7 +589,7 @@ public class OnlineServiceUser implements ChannelListener {
         try {
             UserInfoAdapter userInfoAdapter = StorageManager.getInstance().getStorageAdapter(UserInfoAdapter.class);
             ServerInfo serverInfo = userInfoAdapter.getServerInfo(userInfo.getUserId(), userInfo.getService());
-            if (serverInfo != null && serverInfo.getServer().equals(OnlineServer.getInstance().getServer())) {
+            if (serverInfo != null && serverInfo.getServer().equals(baseConfiguration.getServer())) {
                 userInfoAdapter.deleteServerInfo(userInfo.getUserId(), userInfo.getService());
             } else {
                 LoggerEx.warn(TAG, "Online Service User " + JSON.toJSONString(userInfo) + " is destroyed but server is not expected, serverInfo " + (serverInfo != null ? JSON.toJSONString(serverInfo) : "null"));
@@ -604,10 +604,9 @@ public class OnlineServiceUser implements ChannelListener {
 
         if (recentTopicMap != null)
             recentTopicMap.destroy();
-
-        BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
-        if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-            ((GatewayGroovyRuntime) runtime).sessionClosed(userInfo.getUserId(), service, close);
+        IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+        if(runtimeContext != null){
+            runtimeContext.sessionClosed(userInfo.getUserId(), service, close);
         }
 
         switch (close) {
@@ -676,8 +675,6 @@ public class OnlineServiceUser implements ChannelListener {
         LoggerEx.info(TAG, "userDestroyed finished userInfo is " + userInfo + ", sessionId" + sessionId + " service " + service + " close " + close);
     }
 
-    private ScriptManager scriptManager = (ScriptManager) SpringContextUtil.getBean("scriptManager");
-
     protected final int eventReceivedHandler(Message event) {
         long time = System.currentTimeMillis();
         try {
@@ -690,8 +687,8 @@ public class OnlineServiceUser implements ChannelListener {
 //					String service = event.getService();
                     String service = userInfo.getService();
                     if (service != null) {
-                        BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
-                        if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
+                        IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+                        if(runtimeContext != null){
                             //TODO Use latest device to handle message not received case.
                             //But should use all not online device to handle the not received case.
                             //Business layer decide how to handle with those offline devices. not here.
@@ -705,21 +702,21 @@ public class OnlineServiceUser implements ChannelListener {
                             userStatus.setOfflineUnreadCount(userInfo.getOfflineUnreadCount());
                             userStatus.setService(userInfo.getService());
                             userStatus.setUserId(userInfo.getUserId());
-                            userStatus.setLanId(OnlineServer.getInstance().getLanId());
+                            userStatus.setLanId(baseConfiguration.getLanId());
                             userStatus.setDeviceInfoMap(userInfo.getDevices() != null ? new HashMap<>(userInfo.getDevices()) : new HashMap<>());
                             Map<String, UserStatus> map = new HashMap<>();
                             map.put(userStatus.getUserId(), userStatus);
-                            ((GatewayGroovyRuntime) runtime).messageNotReceived(event, map);
+                            runtimeContext.messageNotReceived(event, map);
                         }
                     }
                 }
                 boolean intercepted = false;
-                BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
+                IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
                 if (event.getType().startsWith(Constants.MESSAGE_INTERNAL_PREFIX)) {
                     intercepted = true;
                 } else {
-                    if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-                        intercepted = ((GatewayGroovyRuntime) runtime).shouldInterceptMessageReceivedFromUsers(event, onlineUser.getUserId(), service);
+                    if (runtimeContext != null) {
+                        intercepted = runtimeContext.shouldInterceptMessageReceivedFromUsers(event, onlineUser.getUserId(), service);
                     }
                 }
                 if (!intercepted) {
@@ -800,9 +797,9 @@ public class OnlineServiceUser implements ChannelListener {
                 }
                 break;
         }
-        BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
-        if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-            ((GatewayGroovyRuntime) runtime).channelClosed(userInfo.getUserId(), service, channel.getTerminal(), close);
+        IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+        if(runtimeContext != null){
+            runtimeContext.channelClosed(userInfo.getUserId(), service, channel.getTerminal(), close);
         }
         if (channelMap.isEmpty()) {
             synchronized (noChannelTimeLock) {
@@ -841,9 +838,9 @@ public class OnlineServiceUser implements ChannelListener {
                 }
             }
         }
-        BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
-        if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-            ((GatewayGroovyRuntime) runtime).channelCreated(userInfo.getUserId(), service, channel.getTerminal());
+        IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+        if(runtimeContext != null){
+            runtimeContext.channelCreated(userInfo.getUserId(), service, channel.getTerminal());
         }
         if (!channelMap.isEmpty()) {
             synchronized (noChannelTimeLock) {
@@ -1008,11 +1005,11 @@ public class OnlineServiceUser implements ChannelListener {
 
     public Long getMaxInactiveInterval() {
         if (maxInactiveIntervalCache == null && userInfo != null && service != null) {
-            BaseRuntime runtime = scriptManager.getBaseRuntime(getServiceAndVersion());
-            if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-                maxInactiveIntervalCache = ((GatewayGroovyRuntime) runtime).getMaxInactiveInterval(userInfo.getUserId(), service);
+            IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+            if(runtimeContext != null){
+                maxInactiveIntervalCache = runtimeContext.getMaxInactiveInterval(userInfo.getUserId(), service);
                 if (maxInactiveIntervalCache == null) {
-                    maxInactiveIntervalCache = ((GatewayGroovyRuntime) runtime).getIMConfig(userInfo.getUserId(), service).getMaxInactiveInterval();
+                    maxInactiveIntervalCache = runtimeContext.getIMConfig(userInfo.getUserId(), service).getMaxInactiveInterval();
                 }
             }
         }
@@ -1031,10 +1028,6 @@ public class OnlineServiceUser implements ChannelListener {
 
     public ConcurrentHashMap<Integer, Channel> getChannelMap() {
         return channelMap;
-    }
-
-    public ScriptManager getScriptManager() {
-        return scriptManager;
     }
 
     public long getNoChannelTime() {

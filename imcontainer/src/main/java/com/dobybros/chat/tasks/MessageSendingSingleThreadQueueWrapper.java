@@ -1,5 +1,6 @@
 package com.dobybros.chat.tasks;
 
+import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.main.ServerStart;
@@ -9,17 +10,15 @@ import com.dobybros.chat.open.data.Message;
 import com.dobybros.chat.open.data.UserStatus;
 import com.dobybros.chat.rpc.reqres.balancer.ServerMessageRequest;
 import com.dobybros.chat.rpc.reqres.balancer.ServerMessageResponse;
-import com.dobybros.chat.script.annotations.gateway.GatewayGroovyRuntime;
+import com.dobybros.chat.script.IMRuntimeContext;
 import com.dobybros.chat.storage.adapters.StorageManager;
 import com.dobybros.chat.storage.adapters.UserInfoAdapter;
 import com.dobybros.chat.tasks.MessageSendingSingleThreadQueueWrapper.SpreadMessage;
 import com.dobybros.chat.utils.SingleThreadQueue;
 import com.docker.rpc.RPCClientAdapter;
 import com.docker.rpc.RPCClientAdapterMap;
-import com.docker.script.BaseRuntime;
-import com.docker.script.ScriptManager;
-import com.docker.utils.SpringContextUtil;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import com.docker.utils.BeanFactory;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -31,8 +30,7 @@ class MessageSendingSingleThreadQueueWrapper extends SingleThreadQueue<SpreadMes
 		private RPCClientAdapter clientAdapter;
 		private String server;
 		private OfflineMessageSavingTask offlineMessageSavingTask;
-		private ScriptManager scriptManager = (ScriptManager) SpringContextUtil.getBean("scriptManager");
-		
+		private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
 		public MessageSendingSingleThreadQueueWrapper(final String server, String ip,
 													  Integer port, RPCClientAdapterMap rpcClientAdapterMap, final ConcurrentHashMap<String, MessageSendingSingleThreadQueueWrapper> serverQueueMap, OfflineMessageSavingTask offlineMessageSavingTask) {
 			super("Message sending queue on Server " + server, new ConcurrentLinkedQueue<SpreadMessage>(), ServerStart.getInstance().getGatewayThreadPoolExecutor());
@@ -174,9 +172,9 @@ class MessageSendingSingleThreadQueueWrapper extends SingleThreadQueue<SpreadMes
 							service = message.getService();
 						}
 						if(service != null) {
-							BaseRuntime runtime = scriptManager.getBaseRuntime(service);
-							if(runtime != null && runtime instanceof GatewayGroovyRuntime) {
-								((GatewayGroovyRuntime)runtime).messageNotReceived(message, targetIds);
+							IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+							if(runtimeContext != null){
+								runtimeContext.messageNotReceived(message, targetIds);
 							}
 						}
 					}

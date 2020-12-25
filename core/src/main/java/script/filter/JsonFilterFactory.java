@@ -7,15 +7,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import chat.errors.CoreException;
 import org.apache.commons.lang.StringUtils;
 
 import script.filter.annotations.JsonFilterClass;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 import chat.logs.LoggerEx;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
 
 public class JsonFilterFactory extends ClassAnnotationHandler{
 	private static final String TAG = JsonFilterFactory.class.getSimpleName();
@@ -93,14 +91,12 @@ public class JsonFilterFactory extends ClassAnnotationHandler{
 	}
 
 	@Override
-	public Class<? extends Annotation> handleAnnotationClass(
-			GroovyRuntime groovyRuntime) {
+	public Class<? extends Annotation> handleAnnotationClass() {
 		return JsonFilterClass.class;
 	}
 
 	@Override
-	public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap,
-			MyGroovyClassLoader classLoader) {
+	public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
 		if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
 			StringBuilder uriLogs = new StringBuilder(
 					"\r\n---------------------------------------\r\n");
@@ -137,7 +133,7 @@ public class JsonFilterFactory extends ClassAnnotationHandler{
 							LoggerEx.error(TAG, "JsonFilterClass " + filterKey + "#" + groovyClass + " is ignored, if targetClass is ParameterizedType, then key has to be specified. \r\n");
 							continue;
 						}
-						GroovyObjectEx<JsonFilter> serverAdapter = ((GroovyBeanFactory)getGroovyRuntime().getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+						GroovyObjectEx<JsonFilter> serverAdapter = (GroovyObjectEx<JsonFilter>) getObject(null, groovyClass, runtimeContext);
 						if (serverAdapter != null) {
 							if (StringUtils.isBlank(filterKey)) {
 								filterKey = targetClass.getName();

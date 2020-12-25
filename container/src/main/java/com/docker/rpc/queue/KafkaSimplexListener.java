@@ -1,12 +1,12 @@
 package com.docker.rpc.queue;
 
+import chat.config.BaseConfiguration;
 import chat.logs.LoggerEx;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.docker.rpc.QueueSimplexListener;
 import com.docker.rpc.impl.RMIServerImplWrapper;
 import com.docker.rpc.remote.RpcRequestCall;
-import com.docker.server.OnlineServer;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -15,6 +15,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.core.appender.mom.kafka.DefaultKafkaProducerFactory;
 import org.apache.logging.log4j.core.appender.mom.kafka.KafkaProducerFactory;
+import com.docker.utils.BeanFactory;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
@@ -30,6 +31,7 @@ import java.util.Properties;
 public class KafkaSimplexListener implements QueueSimplexListener {
     @Resource
     RMIServerImplWrapper dockerRpcServer;
+    private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     private KafkaProducer producer;
     private KafkaConsumer consumer;
     private Properties producerProperties;
@@ -75,7 +77,7 @@ public class KafkaSimplexListener implements QueueSimplexListener {
         started = true;
         KafkaProducerFactory factory = new DefaultKafkaProducerFactory();
         producer = (KafkaProducer) factory.newKafkaProducer(producerProperties);
-        topic = OnlineServer.getInstance().getServer();
+        topic = baseConfiguration.getServer();
         consumerProperties.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, topic);
         consumer = new KafkaConsumer(consumerProperties);
         consumer.subscribe(Arrays.asList(topic));

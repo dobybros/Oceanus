@@ -1,5 +1,6 @@
 package com.dobybros.chat.tasks;
 
+import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.dobybros.chat.data.OfflineMessage;
@@ -9,18 +10,16 @@ import com.dobybros.chat.data.userinpresence.UserInPresence;
 import com.dobybros.chat.errors.IMCoreErrorCodes;
 import com.dobybros.chat.open.data.Message;
 import com.dobybros.chat.open.data.UserStatus;
-import com.dobybros.chat.script.annotations.gateway.GatewayGroovyRuntime;
+import com.dobybros.chat.script.IMRuntimeContext;
 import com.dobybros.chat.storage.adapters.StorageManager;
 import com.dobybros.chat.storage.adapters.UserInPresenceAdapter;
 import com.dobybros.chat.storage.adapters.UserInfoAdapter;
 import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.RPCClientAdapterMap;
 import com.docker.rpc.RPCClientAdapterMapFactory;
-import com.docker.script.BaseRuntime;
-import com.docker.script.ScriptManager;
-import com.docker.server.OnlineServer;
 import com.docker.tasks.Task;
 import org.apache.commons.lang.StringUtils;
+import com.docker.utils.BeanFactory;
 
 import javax.annotation.Resource;
 import java.util.Collection;
@@ -43,9 +42,7 @@ public class RPCMessageSendingTask extends Task {
 
 	@Resource
 	private OnlineServerWithStatus onlineServer;
-	
-	@Resource
-	private ScriptManager scriptManager;
+	private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
 	
 	private boolean isStarted = true;
 	
@@ -62,7 +59,7 @@ public class RPCMessageSendingTask extends Task {
 				serverQueue = serverQueueMap.get(server);
 				if(serverQueue == null) {
 					RPCClientAdapterMap clientAdapterMap = null;
-					if(lanId != null && !lanId.equals(OnlineServer.getInstance().getLanId())) {
+					if(lanId != null && !lanId.equals(baseConfiguration.getLanId())) {
 						clientAdapterMap = RPCClientAdapterMapFactory.getInstance().getRpcClientAdapterMapSsl();
 					} else {
 						clientAdapterMap = RPCClientAdapterMapFactory.getInstance().getRpcClientAdapterMap();
@@ -122,7 +119,7 @@ public class RPCMessageSendingTask extends Task {
 										ServerInfo serverInfo = userInfo.getServerInfo();
 										if (serverInfo != null) {
 											server = serverInfo.getServer();
-											if (lanId.equals(onlineServer.getLanId())) {
+											if (lanId.equals(baseConfiguration.getLanId())) {
 												ip = serverInfo.getIp();
 												port = serverInfo.getRpcPort();
 											} else {
@@ -138,12 +135,12 @@ public class RPCMessageSendingTask extends Task {
 										userStatus.setDeviceInfoMap(userInfo.getDevices());
 										if(server != null && ip != null && port != null) {
 											// 用户在线，发送消息
-											if(onlineServer.getServer().equals(server))
+											if(baseConfiguration.getServer().equals(server))
 												throw new CoreException(IMCoreErrorCodes.ERROR_SEND_MESSAGE_TO_OWN, "Send message error, the message is sending to users own chat.");
 											MessageSendingSingleThreadQueueWrapper serverTransporter = getServerQueue(server, ip, port, lanId);
 											if(serverTransporter != null) {
 //											message.setSequence(System.currentTimeMillis());
-												message.setServer(onlineServer.getServer());
+												message.setServer(baseConfiguration.getServer());
 //											serverTransporter.offerAndStart(message);
 												serverTransporter.add(targetId, message.cloneWithEmptyReceiveIds(), userStatus);
 												if(!wrappers.contains(serverTransporter)) {
@@ -205,7 +202,7 @@ public class RPCMessageSendingTask extends Task {
 									if(StringUtils.isBlank(receiverService))
 										receiverService = message.getService();
 									request.setService(receiverService);
-									request.setFromLanId(OnlineServer.getInstance().getLanId());
+									request.setFromLanId(baseConfiguration.getLanId());
 //									request.setTargetIds(Arrays.asList(targetId));
 									UserPresenceResponse response;
 									try {
@@ -316,9 +313,9 @@ public class RPCMessageSendingTask extends Task {
 								service = message.getService();
 							}
 							if(service != null) {
-								BaseRuntime runtime = scriptManager.getBaseRuntime(service);
-								if(runtime != null && runtime instanceof GatewayGroovyRuntime) {
-									((GatewayGroovyRuntime)runtime).messageNotReceived(message, userStatusMap);
+								IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(service);
+								if(runtimeContext != null){
+									runtimeContext.messageNotReceived(message, userStatusMap);
 								}
 							}
 						}

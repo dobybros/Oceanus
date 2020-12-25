@@ -12,18 +12,16 @@ import com.dobybros.chat.handlers.imextention.IMExtensionCache;
 import com.dobybros.chat.open.data.Constants;
 import com.dobybros.chat.open.data.Message;
 import com.dobybros.chat.rpc.reqres.balancer.IMProxyRequest;
-import com.dobybros.chat.script.annotations.gateway.GatewayGroovyRuntime;
+import com.dobybros.chat.script.IMRuntimeContext;
 import com.dobybros.gateway.channels.data.OutgoingData;
 import com.dobybros.gateway.channels.data.OutgoingMessage;
 import com.dobybros.gateway.channels.tcp.SimulateTcpChannel;
 import com.dobybros.gateway.pack.Pack;
 import com.docker.rpc.BinaryCodec;
 import com.docker.rpc.remote.stub.RemoteServers;
-import com.docker.script.BaseRuntime;
-import com.docker.utils.GroovyCloudBean;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import com.docker.utils.BeanFactory;
 
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,19 +30,19 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ProxyOnlineServiceUser extends OnlineServiceUser {
     private final String TAG = ProxyOnlineServiceUser.class.getSimpleName();
-    private ProxyContainerDuplexSender proxyContainerDuplexSender = (ProxyContainerDuplexSender) GroovyCloudBean.getBean(GroovyCloudBean.PROXYCONTAINERDUPLEXENDER);
-    private IMExtensionCache imExtensionCache = (IMExtensionCache) GroovyCloudBean.getBean(GroovyCloudBean.IMEXTENSIONCACHE);
-    private OnlineUserManager onlineUserManager = (OnlineUserManager) GroovyCloudBean.getBean(GroovyCloudBean.ONLINEUSERMANAGER);
+    private ProxyContainerDuplexSender proxyContainerDuplexSender = (ProxyContainerDuplexSender) BeanFactory.getBean(ProxyContainerDuplexSender.class.getName());
+    private IMExtensionCache imExtensionCache = (IMExtensionCache) BeanFactory.getBean(IMExtensionCache.class.getName());
+    private OnlineUserManager onlineUserManager = (OnlineUserManager) BeanFactory.getBean(OnlineUserManager.class.getName());
 
     private Map<String, RemoteServers.Server> serversMap = new ConcurrentHashMap<>();
     private Map<String, Set<Integer>> serverTerminaMap = new ConcurrentHashMap<>();
 
     @Override
     protected void pushToChannelsSync(Data event, Integer excludeTerminal, Integer toTerminal) {
-        BaseRuntime runtime = getScriptManager().getBaseRuntime(getServiceAndVersion());
-        if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
+        IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(getService());
+        if(runtimeContext != null){
             if (getUserInfo() != null)
-                ((GatewayGroovyRuntime) runtime).messageSent(event, excludeTerminal, toTerminal, getUserInfo().getUserId(), getService());
+                runtimeContext.messageSent(event, excludeTerminal, toTerminal, getUserInfo().getUserId(), getService());
         }
         if (toTerminal != null) {
             SimulateTcpChannel channel = (SimulateTcpChannel) getChannel(toTerminal);
@@ -140,9 +138,10 @@ public class ProxyOnlineServiceUser extends OnlineServiceUser {
                 break;
             default:
                 if (!event.getType().startsWith(Constants.MESSAGE_INTERNAL_PREFIX)) {
-                    BaseRuntime runtime = getScriptManager().getBaseRuntime(getServiceAndVersion());
-                    if (runtime != null && runtime instanceof GatewayGroovyRuntime) {
-                        ((GatewayGroovyRuntime) runtime).messageReceivedFromUsers(event, getOnlineUser().getUserId(), getService());
+                    IMRuntimeContext runtimeContext = (IMRuntimeContext) baseConfiguration.getRuntimeContext(getService());
+                    if(runtimeContext != null){
+                        runtimeContext.messageReceivedFromUsers(event, getOnlineUser().getUserId(), getService());
+
                     }
                 }
                 break;
@@ -151,7 +150,7 @@ public class ProxyOnlineServiceUser extends OnlineServiceUser {
     }
 
     @Override
-    public synchronized void userDestroyed(int close) {
+    public synchronized void userDestroyed(int close) throws CoreException {
         UserInfo userInfo = getUserInfo();
         LoggerEx.info(TAG, "UserDestroyed UserInfo is " + ((userInfo == null) ? "null" : userInfo.toString()) + ",service: " + getService());
         if (userInfo != null) {

@@ -1,21 +1,24 @@
 package proxycontainer.proxycontainer.bean;
 
+import chat.config.BaseConfiguration;
 import chat.utils.IPHolder;
 import com.dobybros.chat.handlers.ConsumeOfflineMessageHandler;
+import com.dobybros.chat.handlers.PingHandler;
 import com.dobybros.chat.handlers.imextention.IMExtensionCache;
 import com.dobybros.chat.tasks.OfflineMessageSavingTask;
 import com.dobybros.chat.tasks.RPCMessageSendingTask;
 import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.QueueSimplexListener;
-import com.docker.script.ScriptManager;
 import com.docker.tasks.RepairTaskHandler;
-import com.docker.utils.AutoReloadProperties;
-import com.docker.utils.SpringContextUtil;
+import com.docker.utils.BeanFactory;
+import com.proxy.runtime.ScriptManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import script.core.runtime.RuntimeFactory;
+import script.core.runtime.classloader.ClassLoaderFactory;
+import script.core.servlets.RequestPermissionHandler;
 import script.filter.JsonFilterFactory;
-import script.groovy.servlets.RequestPermissionHandler;
 
 //import com.dobybros.chat.log.LogIndexQueue;
 
@@ -30,29 +33,12 @@ public class CommonBean {
         instance = ProxyBeanApp.getInstance();
     }
     @Bean
-    public SpringContextUtil springContextUtil() {
+    public BeanFactory.SpringContextUtil springContextUtil() {
         return instance.getSpringContextUtil();
     }
-    //    @Bean
-//    public ConsumeQueueService bulkLogQueueService(){
-//        ConsumeQueueService bulkLogQueueService = getBulkLogQueueService();
-//        bulkLogQueueService.setDao(getBulkLogDAO());
-//        return bulkLogQueueService;
-//    }
-//    @Bean(initMethod = "init")
-//    public LogIndexQueue logIndexQueue(){
-//        return getLogIndexQueue();
-//    }
-//    @Bean(initMethod = "init")
     @Bean
     public IPHolder ipHolder() {
         return instance.getIpHolder();
-    }
-
-//    @Bean(initMethod = "init")
-    @Bean
-    public AutoReloadProperties oauth2ClientProperties() {
-        return instance.getOauth2ClientProperties();
     }
 
     @Bean
@@ -94,7 +80,11 @@ public class CommonBean {
     public OnlineServerWithStatus onlineServer() {
         return instance.getOnlineServer();
     }
-    @Bean(initMethod = "init")
+    @Bean
+    public PingHandler pingHandler(){
+        return instance.getPingHandler();
+    }
+    @Bean
     public IMExtensionCache imExtensionCache(){
         return instance.getIMExtensionCache();
     }
@@ -103,5 +93,20 @@ public class CommonBean {
     @Bean(destroyMethod = "shutdown")
     public QueueSimplexListener queueSimplexListener(){
         return instance.getQueueSimplexListener();
+    }
+
+    @Bean
+    public RuntimeFactory runtimeFactory(){
+        return instance.getRuntimeFactory();
+    }
+
+    @Bean
+    public ClassLoaderFactory classLoaderFactory(){
+        return instance.getClassLoaderFactory();
+    }
+
+    @Bean
+    public BaseConfiguration baseConfiguration(){
+        return instance.getBaseConfiguration();
     }
 }

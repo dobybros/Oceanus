@@ -1,11 +1,11 @@
 package com.docker.rpc;
 
+import chat.config.BaseConfiguration;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import com.docker.rpc.remote.skeleton.ServiceSkeletonAnnotationHandler;
-import com.docker.script.BaseRuntime;
-import com.docker.script.ScriptManager;
-import com.docker.utils.SpringContextUtil;
+import com.docker.script.BaseRuntimeContext;
+import com.docker.utils.BeanFactory;
 
 /**
  * Created by aplomb on 17-5-16.
@@ -13,6 +13,7 @@ import com.docker.utils.SpringContextUtil;
 public class RPCServerMethodInvocation extends RPCServerAdapter<MethodRequest, MethodResponse> {
 
     private static final String TAG = RPCServerMethodInvocation.class.getSimpleName();
+    protected BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
 
     @Override
     public MethodResponse onCall(MethodRequest request) throws CoreException {
@@ -35,11 +36,10 @@ public class RPCServerMethodInvocation extends RPCServerAdapter<MethodRequest, M
 //        if(service == null)
 //            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NULL, "Service is null for service_class_method " + ServerCacheManager.getInstance().getCrcMethodMap().get(crc));
 
-        ScriptManager scriptManager = (ScriptManager) SpringContextUtil.getBean("scriptManager");
-        BaseRuntime baseRuntime = scriptManager.getBaseRuntime(service);
-        if(baseRuntime == null)
+        BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(service);
+        if(runtimeContext == null)
             throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + service + " not found for service_class_method ");
-        ServiceSkeletonAnnotationHandler serviceSkeletonAnnotationHandler = (ServiceSkeletonAnnotationHandler) baseRuntime.getClassAnnotationHandler(ServiceSkeletonAnnotationHandler.class);
+        ServiceSkeletonAnnotationHandler serviceSkeletonAnnotationHandler = (ServiceSkeletonAnnotationHandler) runtimeContext.getClassAnnotationHandler(ServiceSkeletonAnnotationHandler.class);
         if(serviceSkeletonAnnotationHandler == null)
             throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SKELETON_NULL, "Skeleton handler is not for service " + service + " on service_class_method ");
         ServiceSkeletonAnnotationHandler.SkelectonMethodMapping methodMapping = serviceSkeletonAnnotationHandler.getMethodMapping(crc);

@@ -7,7 +7,6 @@ import com.docker.storage.mongodb.daos.*;
 import com.docker.storage.redis.RedisListenerHandler;
 import com.docker.storage.redis.RedisSubscribeHandler;
 import com.docker.storage.zookeeper.ZookeeperFactory;
-import imcontainer.imcontainer.bean.IMBeanApp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

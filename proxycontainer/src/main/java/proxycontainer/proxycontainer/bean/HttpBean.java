@@ -1,7 +1,5 @@
 package proxycontainer.proxycontainer.bean;
 
-import com.dobybros.chat.props.GlobalLansProperties;
-import imcontainer.imcontainer.bean.IMBeanApp;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -23,10 +21,6 @@ public class HttpBean{
         instance = IMBeanApp.getInstance();
     }
 //    @Bean(initMethod = "init")
-    @Bean
-    public GlobalLansProperties globalLansProperties(){
-        return instance.getGlobalLansProperties();
-    }
     @Bean
     public PlainSocketFactory plainSocketFactory(){
         return instance.getPlainSocketFactory();

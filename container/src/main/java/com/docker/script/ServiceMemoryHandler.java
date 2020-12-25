@@ -1,13 +1,11 @@
 package com.docker.script;
 
+import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.docker.script.annotations.ServiceMemory;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -22,16 +20,16 @@ public class ServiceMemoryHandler extends ClassAnnotationHandler {
     private final String TAG = ServiceMemory.class.getSimpleName();
     private List<GroovyObjectEx<?>> serviceMemoryList = new ArrayList();
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return ServiceMemory.class;
     }
 
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, MyGroovyClassLoader classLoader) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
         if(annotatedClassMap != null){
             Collection<Class<?>> values = annotatedClassMap.values();
             for (Class<?> groovyClass : values){
-                GroovyObjectEx<?> groovyObj = ((GroovyBeanFactory)getGroovyRuntime().getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+                GroovyObjectEx<?> groovyObj = (GroovyObjectEx<?>) getObject(null, groovyClass, runtimeContext);
                 serviceMemoryList.add(groovyObj);
             }
         }

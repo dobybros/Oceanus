@@ -9,7 +9,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
-import script.groovy.object.GroovyObjectEx;
+import script.core.runtime.groovy.object.GroovyObjectEx;
 
 import javax.annotation.Resource;
 import java.util.List;

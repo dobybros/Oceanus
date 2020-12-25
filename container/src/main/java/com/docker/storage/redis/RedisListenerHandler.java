@@ -2,13 +2,10 @@ package com.docker.storage.redis;
 
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
-import com.docker.script.BaseRuntime;
 import com.docker.storage.redis.annotation.RedisListener;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationGlobalHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
+import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationGlobalHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -29,10 +26,10 @@ public class RedisListenerHandler extends ClassAnnotationGlobalHandler {
     }
 
     @Override
-    public void handleAnnotatedClassesInjectBean(GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClassesInjectBean(AbstractRuntimeContext runtimeContext) {
         for (GroovyObjectEx<com.docker.storage.redis.MyRedisListener> groovyObjectEx : groovyObjectExes) {
             try {
-                groovyObjectEx = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyObjectEx.getGroovyClass());
+                groovyObjectEx = (GroovyObjectEx<com.docker.storage.redis.MyRedisListener>) getObject(null, groovyObjectEx.getGroovyClass(), runtimeContext);
             }catch (CoreException e){
                 LoggerEx.error(TAG, e.getMessage());
             }
@@ -40,12 +37,12 @@ public class RedisListenerHandler extends ClassAnnotationGlobalHandler {
     }
 
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return RedisListener.class;
     }
 
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, AbstractRuntimeContext runtimeContext) throws CoreException {
         if (annotatedClassMap != null) {
             Set<String> keys = annotatedClassMap.keySet();
             for (String key : keys) {
@@ -53,14 +50,15 @@ public class RedisListenerHandler extends ClassAnnotationGlobalHandler {
                 if (groovyClass != null) {
                     RedisListener redisListenerAnnotation = groovyClass.getAnnotation(RedisListener.class);
                     if (redisListenerAnnotation != null) {
-                        GroovyObjectEx<com.docker.storage.redis.MyRedisListener> redisListenerObj = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+                        GroovyObjectEx<com.docker.storage.redis.MyRedisListener> redisListenerObj = (GroovyObjectEx<com.docker.storage.redis.MyRedisListener>) getObject(null, groovyClass, runtimeContext);
                         if (redisListenerObj != null) {
                             groovyObjectExes.add(redisListenerObj);
-                            try {
-                                redisListenerObj.getObject().redisHandler = ((BaseRuntime) groovyRuntime).getRedisHandler();
-                            } catch (CoreException e) {
-                                LoggerEx.error(TAG, ExceptionUtils.getFullStackTrace(e));
-                            }
+                            //TODO RedisHandler
+//                            try {
+//                                redisListenerObj.getObject().redisHandler = ((BaseRuntime) groovyRuntime).getRedisHandler();
+//                            } catch (CoreException e) {
+//                                LoggerEx.error(TAG, ExceptionUtils.getFullStackTrace(e));
+//                            }
                         }
                     }
                 }
@@ -69,13 +67,13 @@ public class RedisListenerHandler extends ClassAnnotationGlobalHandler {
     }
 
 
-    public void setRedisHandler() {
-        for (GroovyObjectEx<com.docker.storage.redis.MyRedisListener> groovyObjectEx : groovyObjectExes) {
-            try {
-                groovyObjectEx.getObject().redisHandler = ((BaseRuntime)groovyObjectEx.getGroovyRuntime()).getRedisHandler();
-            } catch (CoreException e) {
-                LoggerEx.error(TAG, ExceptionUtils.getFullStackTrace(e));
-            }
-        }
-    }
+//    public void setRedisHandler() {
+//        for (GroovyObjectEx<com.docker.storage.redis.MyRedisListener> groovyObjectEx : groovyObjectExes) {
+//            try {
+//                groovyObjectEx.getObject().redisHandler = ((BaseRuntime)groovyObjectEx.getGroovyRuntime()).getRedisHandler();
+//            } catch (CoreException e) {
+//                LoggerEx.error(TAG, ExceptionUtils.getFullStackTrace(e));
+//            }
+//        }
+//    }
 }

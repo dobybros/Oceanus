@@ -20,12 +20,15 @@ public interface CoreErrorCodes {
 	public static final int ERROR_RPC_TYPE_NOMAPPING = CODE_CORE + 7;
 	public static final int ERROR_LOADPROPERTIES_FAILED = CODE_CORE + 8;
 	public static final int ERROR_GROOVYCLOUDCONFIG_ILLEGAL = CODE_CORE + 9;
+	public static final int ERROR_LAN_FAILED = CODE_CORE + 10;
+	public static final int ERROR_CANT_FIND_CLASS = CODE_CORE + 11;
 
 	public static final int ERROR_LOCK = -35000;
 	public static final int ERROR_LOCK_CAN_NOT_FOUND = ERROR_LOCK + 1;
 	public static final int ERROR_LOCK_VERIFY_FIELD = ERROR_LOCK + 2;
 	public static final int ERROR_ZOOKEEPER_CLIENT_NULL = ERROR_LOCK + 3;
 	public static final int ERROR_ZOOKEEPER_EXECUTE_FAILED = ERROR_LOCK + 4;
+
 
 
 

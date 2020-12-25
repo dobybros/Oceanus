@@ -1,9 +1,10 @@
 package com.docker.utils;
 
 import chat.logs.LoggerEx;
-import com.docker.script.MyBaseRuntime;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import script.Runtime;
+import script.core.runtime.AbstractRuntimeContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +14,11 @@ import java.io.IOException;
  * Description：
  */
 public class ScriptUtils {
-    public static void serviceStubProxy(MyBaseRuntime myBaseRuntime, String TAG) {
-        String path = myBaseRuntime.getPath();
+    public static void serviceStubProxy(AbstractRuntimeContext runtimeContext, String TAG) {
+        String path = runtimeContext.getConfiguration().getLocalPath();
         String code =
-                "package script.groovy.runtime\n" +
-                        "@script.groovy.annotation.RedeployMain\n" +
+                "package script.core.runtime\n" +
+                        "@script.core.annotation.RedeployMain\n" +
                         "class ServiceStubProxy extends com.docker.rpc.remote.stub.Proxy implements GroovyInterceptable{\n" +
                         "    private Class<?> remoteServiceStub;\n" +
                         "    ServiceStubProxy() {\n" +
@@ -39,23 +40,21 @@ public class ScriptUtils {
                         "        return theProxy\n" +
                         "    }\n" +
                         "    public void main() {\n" +
-                        "        com.docker.script.MyBaseRuntime baseRuntime = (com.docker.script.MyBaseRuntime) GroovyRuntime.getCurrentGroovyRuntime(this.getClass().getClassLoader());\n" +
-                        "        baseRuntime.prepareServiceStubProxy();" +
                         "    }\n" +
                         "    public void shutdown(){}\n" +
                         "}";
         try {
-            FileUtils.writeStringToFile(new File(path + "/script/groovy/runtime/ServiceStubProxy.groovy"), code, "utf8");
+            FileUtils.writeStringToFile(new File(path + "/script/core/runtime/ServiceStubProxy.groovy"), code, "utf8");
         } catch (IOException e) {
             e.printStackTrace();
-            LoggerEx.error(TAG, "write ServiceStubProxy.groovy file on " + (path + "/script/groovy/runtime/ServiceStubProxy.groovy") + " failed, " + ExceptionUtils.getFullStackTrace(e));
+            LoggerEx.error(TAG, "write ServiceStubProxy.groovy file on " + (path + "/script/core/runtime/ServiceStubProxy.groovy") + " failed, " + ExceptionUtils.getFullStackTrace(e));
         }
         String loggerCode = "package chat.logs;\n" +
                 "\n" +
                 "import chat.utils.ChatUtils;\n" +
                 "import org.slf4j.Logger;\n" +
                 "import org.slf4j.LoggerFactory;\n" +
-                "import script.groovy.runtime.GroovyRuntime;\n" +
+                "import script.core.runtime.groovy.GroovyRuntime;\n" +
                 "\n" +
                 "public class LoggerEx {\n" +
                 "    private static Logger logger = LoggerFactory.getLogger(\"\");\n" +
@@ -128,10 +127,10 @@ public class ScriptUtils {
                 "    }\n" +
                 "    private static String getLogMsg(String tag, String msg) {\n" +
                 "        StringBuilder builder = new StringBuilder();\n" +
-                "        com.docker.script.MyBaseRuntime baseRuntime = (com.docker.script.MyBaseRuntime) GroovyRuntime.getCurrentGroovyRuntime(chat.logs.LoggerEx.class.getClassLoader());\n" +
+                "        script.core.runtime.AbstractRuntimeContext runtimeContext = (script.core.runtime.AbstractRuntimeContext) ((script.core.runtime.classloader.MyGroovyClassLoader)chat.logs.LoggerEx.class.getClassLoader()).getRuntimeContext();\n" +
                 "        String serviceName = null;\n" +
-                "        if(baseRuntime != null){\n" +
-                "            serviceName = baseRuntime.getServiceName();\n" +
+                "        if (runtimeContext != null) {\n" +
+                "            serviceName = runtimeContext.getConfiguration().getService();\n" +
                 "        }\n" +
                 "        builder.append(\"\\$\\$time:: \" + ChatUtils.dateString()).\n" +
                 "                append(\" \\$\\$tag:: \" + tag).\n" +
@@ -145,10 +144,10 @@ public class ScriptUtils {
                 "    }\n" +
                 "   private static String getLogMsgFatal(String tag, String msg) {\n" +
                 "        StringBuilder builder = new StringBuilder();\n" +
-                "        com.docker.script.MyBaseRuntime baseRuntime = (com.docker.script.MyBaseRuntime) GroovyRuntime.getCurrentGroovyRuntime(chat.logs.LoggerEx.class.getClassLoader());\n" +
+                "        script.core.runtime.AbstractRuntimeContext runtimeContext = (script.core.runtime.AbstractRuntimeContext) ((script.core.runtime.classloader.MyGroovyClassLoader)chat.logs.LoggerEx.class.getClassLoader()).getRuntimeContext();\n" +
                 "        String serviceName = null;\n" +
-                "        if (baseRuntime != null) {\n" +
-                "            serviceName = baseRuntime.getServiceName();\n" +
+                "        if (runtimeContext != null) {\n" +
+                "            serviceName = runtimeContext.getConfiguration().getService();\n" +
                 "        }\n" +
                 "        builder.append(LEVEL_FATAL).\n" +
                 "                append(\" \\$\\$time:: \" + ChatUtils.dateString()).\n" +
@@ -163,10 +162,10 @@ public class ScriptUtils {
                 "       }\n" +
                 "    private static String getLogMsg(String tag, String msg, Long spendTime) {\n" +
                 "        StringBuilder builder = new StringBuilder();\n" +
-                "        com.docker.script.MyBaseRuntime baseRuntime = (com.docker.script.MyBaseRuntime) GroovyRuntime.getCurrentGroovyRuntime(chat.logs.LoggerEx.class.getClassLoader());\n" +
+                "        script.core.runtime.AbstractRuntimeContext runtimeContext = (script.core.runtime.AbstractRuntimeContext) ((script.core.runtime.classloader.MyGroovyClassLoader)chat.logs.LoggerEx.class.getClassLoader()).getRuntimeContext();\n" +
                 "        String serviceName = null;\n" +
-                "        if(baseRuntime != null){\n" +
-                "            serviceName = baseRuntime.getServiceName();\n" +
+                "        if (runtimeContext != null) {\n" +
+                "            serviceName = runtimeContext.getConfiguration().getService();\n" +
                 "        }\n" +
                 "        builder.append(\"\\$\\$time:: \" + ChatUtils.dateString()).\n" +
                 "                append(\" \\$\\$tag:: \" + tag).\n" +
@@ -200,7 +199,7 @@ public class ScriptUtils {
             FileUtils.writeStringToFile(new File(path + "/chat/logs/LoggerEx.groovy"), loggerCode, "utf8");
         } catch (IOException e) {
             e.printStackTrace();
-            LoggerEx.error(TAG, "write ServiceStubProxy.groovy file on " + (path + "/script/groovy/runtime/ServiceStubProxy.groovy") + " failed, " + ExceptionUtils.getFullStackTrace(e));
+            LoggerEx.error(TAG, "write ServiceStubProxy.groovy file on " + (path + "/script/core/runtime/ServiceStubProxy.groovy") + " failed, " + ExceptionUtils.getFullStackTrace(e));
         }
     }
 }

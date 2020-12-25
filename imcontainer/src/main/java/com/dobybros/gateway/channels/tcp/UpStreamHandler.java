@@ -17,7 +17,7 @@ import com.dobybros.gateway.pack.Pack;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
-import script.groovy.object.GroovyObjectEx;
+import script.core.runtime.groovy.object.GroovyObjectEx;
 
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;

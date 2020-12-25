@@ -1,6 +1,6 @@
 package com.docker.rpc.remote.stub;
 
-import script.groovy.runtime.MethodInterceptor;
+import script.core.runtime.MethodInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;

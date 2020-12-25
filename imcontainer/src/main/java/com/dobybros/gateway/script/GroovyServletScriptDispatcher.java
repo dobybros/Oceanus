@@ -1,13 +1,13 @@
 package com.dobybros.gateway.script;
 
+import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.json.Result;
 import chat.logs.LoggerEx;
 import com.dobybros.gateway.onlineusers.OnlineUserManager;
 import com.docker.data.DockerStatus;
 import com.docker.script.servlet.GroovyServletManagerEx;
-import com.docker.server.OnlineServer;
-import com.docker.utils.GroovyCloudBean;
+import com.docker.utils.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.servlet.annotation.WebServlet;
@@ -24,7 +24,7 @@ import java.util.Map;
 @WebServlet(urlPatterns = "/base", asyncSupported = true)
 public class GroovyServletScriptDispatcher extends com.docker.script.GroovyServletScriptDispatcher {
     private final String TAG = GroovyServletScriptDispatcher.class.getSimpleName();
-
+    private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response) {
         super.handle(request, response);
@@ -40,14 +40,14 @@ public class GroovyServletScriptDispatcher extends com.docker.script.GroovyServl
                     Result theResult = new Result();
                     theResult.setCode(1);
                     if (uriStrs[2].equals(GroovyServletManagerEx.BASE_PARAMS)) {
-                        if (OnlineServer.getInstance().getType() == DockerStatus.TYPE_GATEWAY) {
-                            OnlineUserManager onlineUserManager = (OnlineUserManager) GroovyCloudBean.getBean(GroovyCloudBean.ONLINEUSERMANAGER);
+                        if (baseConfiguration.getType() == DockerStatus.TYPE_GATEWAY) {
+                            OnlineUserManager onlineUserManager = (OnlineUserManager) BeanFactory.getBean(OnlineUserManager.class.getName());
                             Map onlineUserMap = onlineUserManager.getOnlineUsersHolder().getOnlineUserMap();
                             if (!onlineUserMap.isEmpty()) {
                                 theResult.setData(onlineUserMap.keySet());
                             }
                             respond(response, theResult);
-                        } else if (OnlineServer.getInstance().getType() == DockerStatus.TYPE_PROXY) {
+                        } else if (baseConfiguration.getType() == DockerStatus.TYPE_PROXY) {
                             String serviceVersion = getServiceVersion("improxy");
                             if (serviceVersion != null) {
                                 List<Map> list = handlerService(serviceVersion);

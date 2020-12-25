@@ -12,9 +12,7 @@ import com.docker.rpc.RPCRequest;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.stub.RpcCacheManager;
 import com.docker.rpc.remote.stub.ServiceStubManager;
-import com.docker.script.MyBaseRuntime;
-import com.docker.script.ScriptManager;
-import com.docker.utils.SpringContextUtil;
+import com.docker.script.BaseRuntimeContext;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -57,18 +55,13 @@ public class AsyncCallbackRequest extends RPCRequest {
                             crc = dis.readLong();
                             fromService = dis.readUTF();
                             fromServerName = dis.readUTF();
-                            ScriptManager scriptManager = (ScriptManager) SpringContextUtil.getBean("scriptManager");
-                            MyBaseRuntime baseRuntime = (MyBaseRuntime) scriptManager.getBaseRuntime(fromService);
-                            MethodMapping methodMapping = null;
-                            if (baseRuntime != null) {
-                                ServiceStubManager serviceStubManager = baseRuntime.getServiceStubManager();
-                                methodMapping = serviceStubManager.getMethodMapping(crc);
+                            MethodMapping methodMapping;
+                            BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(fromService);
+                            if(runtimeContext == null){
+                                throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + fromService + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
                             }
-//                                throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + fromService + " not found for crc " + ServerCacheManager.getInstance().getCrcMethodMap().get(crc));
-
-//						if(methodMapping == null)
-//							throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_METHODNOTFOUND, "Method doesn't be found, crc: " + crc);
-
+                            ServiceStubManager serviceStubManager = runtimeContext.getServiceStubManagerFactory().get(null);
+                            methodMapping = serviceStubManager.getMethodMapping(crc);
                             int returnLength = dis.readInt();
                             if (returnLength > 0) {
                                 byte[] returnBytes = new byte[returnLength];

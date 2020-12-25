@@ -3,13 +3,11 @@ package com.docker.storage.redis;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ConcurrentHashSet;
-import com.docker.script.BaseRuntime;
 import com.docker.storage.redis.annotation.RedisSubscribe;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationGlobalHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
+import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationGlobalHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -26,7 +24,7 @@ public class RedisSubscribeHandler extends ClassAnnotationGlobalHandler {
     private Map<String, Set<GroovyObjectEx>> redisSubscribeMap = new ConcurrentHashMap<>();
 
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return RedisSubscribe.class;
     }
     public void shutdown(){
@@ -35,11 +33,11 @@ public class RedisSubscribeHandler extends ClassAnnotationGlobalHandler {
     }
 
     @Override
-    public void handleAnnotatedClassesInjectBean(GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClassesInjectBean(AbstractRuntimeContext runtimeContext) {
         for (Set<GroovyObjectEx> groovyObjectExes : redisSubscribeMap.values()){
             for (GroovyObjectEx groovyObjectEx : groovyObjectExes){
                 try {
-                    groovyObjectEx = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyObjectEx.getGroovyClass());
+                    groovyObjectEx = (GroovyObjectEx) getObject(null, groovyObjectEx.getGroovyClass(), runtimeContext);
                 }catch (CoreException e){
                     LoggerEx.error(TAG, e.getMessage());
                 }
@@ -48,7 +46,7 @@ public class RedisSubscribeHandler extends ClassAnnotationGlobalHandler {
     }
 
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, AbstractRuntimeContext runtimeContext) throws CoreException {
         if (annotatedClassMap != null) {
             Collection<Class<?>> values = annotatedClassMap.values();
             for (Class<?> groovyClass : values) {
@@ -64,15 +62,15 @@ public class RedisSubscribeHandler extends ClassAnnotationGlobalHandler {
                                 groovyObjectExes = groovyObjectExesOld;
                             }
                         }
-                        GroovyObjectEx<?> groovyObj = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+                        GroovyObjectEx<?> groovyObj = (GroovyObjectEx) getObject(null, groovyClass, runtimeContext);
                         if (!groovyObjectExes.contains(groovyObj)) {
                             for (GroovyObjectEx groovyObjectEx : groovyObjectExes){
-                                if(groovyObjectEx.getGroovyPath().equals(groovyObj.getGroovyPath())){
+                                if(groovyObjectEx.getClassPath().equals(groovyObj.getClassPath())){
                                     groovyObjectExes.remove(groovyObjectEx);
                                 }
                             }
                             groovyObjectExes.add(groovyObj);
-                            ((BaseRuntime)groovyRuntime).getRedisHandler().subscribe();
+//                            ((BaseRuntime)groovyRuntime).getRedisHandler().subscribe();
                         }
                     }
                 }
@@ -90,7 +88,7 @@ public class RedisSubscribeHandler extends ClassAnnotationGlobalHandler {
                     try {
                         groovyObjectEx.invokeRootMethod("redisCallback", reallyKeys[1]);
                     } catch (CoreException e) {
-                        LoggerEx.error(TAG, "Invoke method redisCallback err, groovyPath: " + groovyObjectEx.getGroovyPath() + ",errMsg: " + ExceptionUtils.getFullStackTrace(e));
+                        LoggerEx.error(TAG, "Invoke method redisCallback err, groovyPath: " + groovyObjectEx.getClassPath() + ",errMsg: " + ExceptionUtils.getFullStackTrace(e));
                     }
                 }
             }

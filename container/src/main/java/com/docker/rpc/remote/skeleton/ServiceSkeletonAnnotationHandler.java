@@ -16,11 +16,8 @@ import com.docker.script.ClassAnnotationHandlerEx;
 import com.docker.server.OnlineServer;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
-import script.groovy.servlets.Tracker;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.servlets.Tracker;
 import script.memodb.ObjectId;
 
 import java.lang.annotation.Annotation;
@@ -57,12 +54,12 @@ public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandlerEx {
     }
 
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return com.docker.rpc.remote.annotations.RemoteService.class;
     }
 
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, MyGroovyClassLoader classLoader) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
         if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
             StringBuilder uriLogs = new StringBuilder(
                     "\r\n---------------------------------------\r\n");
@@ -80,7 +77,7 @@ public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandlerEx {
                     if (requestIntercepting != null) {
 //                        GroovyObjectEx<RemoteService> serverAdapter = getGroovyRuntime()
 //                                .create(groovyClass);
-                        GroovyObjectEx<RemoteService> serverAdapter = ((GroovyBeanFactory) getGroovyRuntime().getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+                        GroovyObjectEx<RemoteService> serverAdapter = (GroovyObjectEx<RemoteService>) getObject(null, groovyClass, runtimeContext);
                         scanClass(groovyClass, serverAdapter, newMethodMap);
                     }
                 }
@@ -334,7 +331,7 @@ public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandlerEx {
                     try {
                         String[] strs = (String[]) annotationValue;
                         for (int i = 0; i < strs.length; i++) {
-                            String markParam = getGroovyRuntime().processAnnotationString(strs[i]);
+                            String markParam = processAnnotationString(runtimeContext, strs[i]);
                             if (markParam != null) {
                                 list.add(markParam);
                             }
@@ -346,7 +343,7 @@ public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandlerEx {
                         LoggerEx.error(TAG, ExceptionUtils.getFullStackTrace(t));
                     }
                 } else if (annotationValue instanceof String) {
-                    annotationParams.put(annotationKey, getGroovyRuntime().processAnnotationString((String) annotationValue));
+                    annotationParams.put(annotationKey, processAnnotationString(runtimeContext, (String) annotationValue));
                 } else {
                     annotationParams.put(annotationKey, annotationValue);
                 }

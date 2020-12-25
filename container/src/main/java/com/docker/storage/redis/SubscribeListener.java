@@ -1,7 +1,7 @@
 package com.docker.storage.redis;
 
 import chat.main.ServerStart;
-import com.docker.utils.GroovyCloudBean;
+import com.docker.utils.BeanFactory;
 import redis.clients.jedis.JedisPubSub;
 
 /**
@@ -11,7 +11,7 @@ import redis.clients.jedis.JedisPubSub;
 public class SubscribeListener extends JedisPubSub {
     private final String TAG = SubscribeListener.class.getSimpleName();
     private static volatile SubscribeListener instance;
-    private RedisSubscribeHandler redisSubscribeHandler = (RedisSubscribeHandler) GroovyCloudBean.getBean(GroovyCloudBean.REDISSUBSCRIBEHANDLER);
+    private RedisSubscribeHandler redisSubscribeHandler = (RedisSubscribeHandler) BeanFactory.getBean(RedisSubscribeHandler.class.getName());
     @Override
     public void onMessage(String channel, String message) {
     }

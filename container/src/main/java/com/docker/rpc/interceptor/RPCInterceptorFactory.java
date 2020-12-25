@@ -1,6 +1,6 @@
 package com.docker.rpc.interceptor;
 
-import script.groovy.runtime.MethodInterceptor;
+import script.core.runtime.MethodInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;

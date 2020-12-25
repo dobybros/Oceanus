@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface ServersService {
 
-	Document getServerConfig(String serverType) throws CoreException;
+	Document getServerConfig(String service) throws CoreException;
 
 	void deleteServerConfig(Bson bson) throws CoreException;
 

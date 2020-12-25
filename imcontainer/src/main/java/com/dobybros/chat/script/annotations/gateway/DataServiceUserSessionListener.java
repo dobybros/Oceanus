@@ -1,5 +1,6 @@
 package com.dobybros.chat.script.annotations.gateway;
 
+import chat.config.BaseConfiguration;
 import chat.json.Result;
 import chat.logs.LoggerEx;
 import chat.utils.PropertiesContainer;
@@ -10,8 +11,9 @@ import com.docker.server.OnlineServer;
 import com.docker.storage.kafka.BaseKafkaConfCenter;
 import com.docker.storage.kafka.KafkaProducerHandler;
 import com.docker.utils.ScriptHttpUtils;
+import com.docker.utils.BeanFactory;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ import java.util.Map;
  * Description：
  */
 public class DataServiceUserSessionListener {
+    private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     private TimerTaskEx storeDataTimer = null;
     private KafkaProducerHandler kafkaProducerHandler = null;
     private String parentUserId;
@@ -39,11 +42,11 @@ public class DataServiceUserSessionListener {
                 Object data = getRoomData();
                 Map<String, Object> dataMap = new HashMap<>();
                 dataMap.put("roomIdService", getRoomIdService(userId, service));
-                dataMap.put("server", OnlineServer.getInstance().getServer());
-                dataMap.put("address", "http://" + OnlineServer.getInstance().getIp() + ":" + OnlineServer.getInstance().getHttpPort());
-                dataMap.put("idc", OnlineServer.getInstance().getLanId());
+                dataMap.put("server", baseConfiguration.getServer());
+                dataMap.put("address", "http://" + OnlineServer.getInstance().getIp() + ":" + baseConfiguration.getServerPort());
+                dataMap.put("idc", baseConfiguration.getLanId());
                 dataMap.put("data", data);
-                kafkaProducerHandler.send("GatewayMemoryBackUp", JSON.toJSONString(dataMap).getBytes("utf-8"));
+                kafkaProducerHandler.send("GatewayMemoryBackUp", JSON.toJSONString(dataMap).getBytes(StandardCharsets.UTF_8));
             }
         };
         TimerEx.schedule(storeDataTimer, 20000L, 5000L);
@@ -96,7 +99,7 @@ public class DataServiceUserSessionListener {
     private Map getMonitorParams(){
         Map<String, String> params = new HashMap<>();
         params.put("roomIdService", getRoomIdService(userId, service));
-        params.put("server", OnlineServer.getInstance().getServer());
+        params.put("server", baseConfiguration.getServer());
         return params;
     }
     private Map getMonitorHeaders(){

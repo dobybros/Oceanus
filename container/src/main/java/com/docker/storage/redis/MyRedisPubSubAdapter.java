@@ -1,7 +1,7 @@
 package com.docker.storage.redis;
 
 import chat.main.ServerStart;
-import com.docker.utils.GroovyCloudBean;
+import com.docker.utils.BeanFactory;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.models.partitions.RedisClusterNode;
@@ -91,7 +91,7 @@ public class MyRedisPubSubAdapter extends RedisPubSubAdapter {
 
     private class ClusterGrooveAdapter extends RedisClusterPubSubAdapter {
         private final String TAG = ClusterGrooveAdapter.class.getSimpleName();
-        private RedisSubscribeHandler redisSubscribeHandler = (RedisSubscribeHandler) GroovyCloudBean.getBean(GroovyCloudBean.REDISSUBSCRIBEHANDLER);
+        private RedisSubscribeHandler redisSubscribeHandler = (RedisSubscribeHandler) BeanFactory.getBean(RedisListenerHandler.class.getName());
 
         @Override
         public void message(RedisClusterNode node, Object channel, Object message) {

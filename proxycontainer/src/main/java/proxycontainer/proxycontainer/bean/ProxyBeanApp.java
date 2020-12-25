@@ -1,13 +1,10 @@
 package proxycontainer.proxycontainer.bean;
 
-import com.docker.script.ScriptManager;
+import com.proxy.runtime.executor.DefaultRuntimeExecutor;
+import com.proxy.runtime.ScriptManager;
 import com.proxy.im.ProxyAnnotationHandler;
 import com.proxy.im.ProxyUpStreamHandler;
-import com.proxy.runtime.ProxyGroovyRuntime;
-import imcontainer.imcontainer.bean.IMBeanApp;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptorEx;
-import script.file.FileAdapter;
-import script.file.LocalFileHandler;
 
 import java.net.InetSocketAddress;
 
@@ -30,7 +27,7 @@ public class ProxyBeanApp extends IMBeanApp {
             instance.tcpIoAcceptor.setHandler(instance.getProxyUpStreamHandler());
             instance.tcpIoAcceptor.setFilterChainBuilder(instance.getTcpFilterChainBuilder());
             instance.tcpIoAcceptor.setReuseAddress(true);
-            instance.tcpIoAcceptor.setDefaultLocalAddress(new InetSocketAddress(Integer.valueOf(instance.getUpstreamPort())));
+            instance.tcpIoAcceptor.setDefaultLocalAddress(new InetSocketAddress(baseConfiguration.getUpstreamPort()));
         }
         return instance.tcpIoAcceptor;
     }
@@ -40,30 +37,15 @@ public class ProxyBeanApp extends IMBeanApp {
             instance.sslTcpIoAcceptor.setHandler(instance.getProxyUpStreamHandler());
             instance.sslTcpIoAcceptor.setFilterChainBuilder(instance.getSslTcpFilterChainBuilder());
             instance.sslTcpIoAcceptor.setReuseAddress(true);
-            instance.sslTcpIoAcceptor.setDefaultLocalAddress(new InetSocketAddress(Integer.valueOf(instance.getUpstreamSslPort())));
+            instance.sslTcpIoAcceptor.setDefaultLocalAddress(new InetSocketAddress(baseConfiguration.getUpstreamSslPort()));
         }
         return instance.sslTcpIoAcceptor;
     }
     public synchronized ScriptManager getScriptManager() {
         if (instance.scriptManager == null) {
             instance.scriptManager = new ScriptManager();
-            instance.scriptManager.setLocalPath(instance.getLocalPath());
-            FileAdapter fileAdapter = null;
-            if(instance.getRemotePath().startsWith("local:")){
-                fileAdapter = new LocalFileHandler();
-                ((LocalFileHandler)fileAdapter).setRootPath("");
-                instance.scriptManager.setRemotePath(instance.getRemotePath().split("local:")[1]);
-            }else {
-                fileAdapter = getFileAdapter();
-                instance.scriptManager.setRemotePath(instance.getRemotePath());
-            }
-            instance.scriptManager.setFileAdapter(fileAdapter);
-            instance.scriptManager.setBaseRuntimeClass(ProxyGroovyRuntime.class);
-            instance.scriptManager.setRuntimeBootClass(instance.getRuntimeBootClass());
-            instance.scriptManager.setHotDeployment(Boolean.valueOf(instance.getHotDeployment()));
-            instance.scriptManager.setKillProcess(Boolean.valueOf(instance.getKillProcess()));
-            instance.scriptManager.setUseHulkAdmin(Boolean.valueOf(instance.getUseHulkAdmin()));
-            instance.scriptManager.setServerType(instance.getServerType());
+            instance.scriptManager.setBaseConfiguration(baseConfiguration);
+            instance.scriptManager.setRuntimeExecutor(new DefaultRuntimeExecutor());
         }
         return instance.scriptManager;
     }
@@ -73,7 +55,7 @@ public class ProxyBeanApp extends IMBeanApp {
             instance.wsIoAcceptor.setHandler(instance.getProxyUpStreamHandler());
             instance.wsIoAcceptor.setFilterChainBuilder(instance.getWsFilterChainBuilder());
             instance.wsIoAcceptor.setReuseAddress(true);
-            instance.wsIoAcceptor.setDefaultLocalAddress(new InetSocketAddress(Integer.valueOf(instance.getUpstreamWsPort())));
+            instance.wsIoAcceptor.setDefaultLocalAddress(new InetSocketAddress(baseConfiguration.getUpstreamWsPort()));
         }
         return instance.wsIoAcceptor;
     }

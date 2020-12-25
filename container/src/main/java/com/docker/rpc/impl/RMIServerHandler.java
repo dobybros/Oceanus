@@ -1,5 +1,6 @@
 package com.docker.rpc.impl;
 
+import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.IPHolder;
@@ -10,6 +11,7 @@ import com.docker.rpc.RPCServerAdapter;
 import com.docker.server.OnlineServer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import com.docker.utils.BeanFactory;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
@@ -61,7 +63,8 @@ public class RMIServerHandler {
     }
 
     public synchronized void serverStart(String ip) {
-        rmiId = OnlineServer.getInstance().getServer();
+        BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
+        rmiId = baseConfiguration.getServer();
         try {
             if(enableSsl && !rmiId.endsWith(RMIID_SSL_SUFFIX))
                 rmiId = rmiId + RMIID_SSL_SUFFIX;

@@ -9,10 +9,11 @@ import com.docker.rpc.async.AsyncRpcFuture;
 import com.docker.rpc.method.RPCMethodInvocation;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.stub.RpcCacheManager;
-import com.docker.script.BaseRuntime;
 import com.docker.storage.cache.handlers.CacheStorageAdapter;
-import script.groovy.object.MethodInvocation;
-import script.groovy.runtime.MethodInterceptor;
+import org.apache.commons.lang.StringUtils;
+import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.MethodInterceptor;
+import script.core.runtime.groovy.object.MethodInvocation;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -39,11 +40,11 @@ public class CachePutMethodInterceptor implements MethodInterceptor {
 
         String methodKey = rpcMethodInvocation.methodKey;
         //获取当前的baseRuntime
-        BaseRuntime baseRuntime = (BaseRuntime) cacheAnnotationHandler.getGroovyRuntime();
+        AbstractRuntimeContext runtimeContext = cacheAnnotationHandler.getRuntimeContext();
         if (cacheMethodMap != null && !cacheMethodMap.isEmpty()) {
             CacheObj cacheObj = cacheMethodMap.get(methodKey);
             if (cacheObj != null) {
-                String cacheHost = baseRuntime.getCacheHost(cacheObj.getCacheMethod());
+                String cacheHost = getCacheHost(cacheObj.getCacheMethod());
                 CacheStorageAdapter cacheStorageAdapter = CacheStorageFactory.getInstance().getCacheStorageAdapter(cacheObj.getCacheMethod(), cacheHost);
                 if (cacheStorageAdapter == null || cacheObj.isEmpty()) {
                     return rpcMethodInvocation.proceed();
@@ -138,7 +139,19 @@ public class CachePutMethodInterceptor implements MethodInterceptor {
         this.cacheMethodMap = cacheAnnotationHandler.getCacheMethodMap();
 
     }
-
+    public String getCacheHost(String cacheMethod) {
+        if (StringUtils.isBlank(cacheMethod)) {
+            cacheMethod = CacheStorageMethod.METHOD_REDIS;
+        }
+        if (CacheStorageMethod.METHOD_REDIS.equals(cacheMethod)) {
+            Object cacheRedisUri = cacheAnnotationHandler.getRuntimeContext().getConfiguration().getConfig().getProperty("cache.redis.uri");
+            if (cacheRedisUri == null) {
+                return null;
+            }
+            return (String) cacheRedisUri;
+        }
+        return null;
+    }
     public Map<String, CacheObj> getCacheMethodMap() {
         return cacheMethodMap;
     }

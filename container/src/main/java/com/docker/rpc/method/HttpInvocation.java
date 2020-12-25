@@ -6,8 +6,8 @@ import com.docker.rpc.MethodResponse;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.stub.Proxy;
 import com.docker.rpc.remote.stub.RemoteServerHandler;
-import script.groovy.object.MethodInvocation;
-import script.groovy.runtime.MethodInterceptor;
+import script.core.runtime.groovy.object.MethodInvocation;
+import script.core.runtime.MethodInterceptor;
 
 import java.util.List;
 

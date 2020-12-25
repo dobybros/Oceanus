@@ -8,8 +8,8 @@ import com.docker.rpc.async.AsyncRpcFuture;
 import com.docker.rpc.method.HttpInvocation;
 import com.docker.rpc.method.RPCMethodInvocation;
 import com.docker.rpc.remote.MethodMapping;
-import script.groovy.object.MethodInvocation;
-import script.groovy.runtime.MethodInterceptor;
+import script.core.runtime.groovy.object.MethodInvocation;
+import script.core.runtime.MethodInterceptor;
 
 import java.util.List;
 import java.util.Map;

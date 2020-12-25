@@ -1,5 +1,6 @@
 package com.dobybros.gateway.channels.tcp;
 
+import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.dobybros.chat.binary.data.Data;
 import com.dobybros.chat.handlers.ProxyContainerDuplexSender;
@@ -11,16 +12,15 @@ import com.dobybros.gateway.onlineusers.OnlineServiceUser;
 import com.dobybros.gateway.pack.Pack;
 import com.docker.rpc.BinaryCodec;
 import com.docker.rpc.remote.stub.RemoteServers;
-import com.docker.utils.GroovyCloudBean;
-import com.docker.utils.SpringContextUtil;
+import com.docker.utils.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**
  * @author lick* @date 2019/11/18
  */
 public class SimulateTcpChannel extends TcpChannel {
-    private ProxyContainerDuplexSender proxyContainerDuplexSender = (ProxyContainerDuplexSender) SpringContextUtil.getBean("proxyContainerDuplexSender");
-    private IMExtensionCache imExtensionCache = (IMExtensionCache) GroovyCloudBean.getBean(GroovyCloudBean.IMEXTENSIONCACHE);
+    private ProxyContainerDuplexSender proxyContainerDuplexSender = (ProxyContainerDuplexSender) BeanFactory.getBean(ProxyContainerDuplexSender.class.getName());
+    private IMExtensionCache imExtensionCache = (IMExtensionCache) BeanFactory.getBean(IMExtensionCache.class.getName());
 
     private RemoteServers.Server server;
     private String userId;
@@ -132,7 +132,7 @@ public class SimulateTcpChannel extends TcpChannel {
 //        this.imMessageSendInvoke = imMessageSendInvoke;
 //    }
 
-    private void sendProxy(IMProxyRequest request, String contentType) {
+    private void sendProxy(IMProxyRequest request, String contentType) throws CoreException {
         try {
             proxyContainerDuplexSender.sendProxy(request, contentType, server, null);
         } catch (Throwable throwable) {

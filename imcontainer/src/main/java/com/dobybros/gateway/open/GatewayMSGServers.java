@@ -7,20 +7,18 @@ import com.dobybros.chat.channels.Channel;
 import com.dobybros.chat.open.MSGServers;
 import com.dobybros.chat.open.data.Constants;
 import com.dobybros.chat.open.data.Message;
-import com.dobybros.chat.script.annotations.gateway.DataServiceUserSessionListener;
-import com.dobybros.chat.script.annotations.handler.ServiceUserSessionAnnotationHandler;
 import com.dobybros.gateway.channels.data.OutgoingData;
 import com.dobybros.gateway.channels.data.OutgoingMessage;
 import com.dobybros.gateway.errors.GatewayErrorCodes;
 import com.dobybros.gateway.onlineusers.OnlineServiceUser;
 import com.dobybros.gateway.onlineusers.OnlineUser;
 import com.dobybros.gateway.onlineusers.OnlineUserManager;
-import com.docker.utils.SpringContextUtil;
+import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import org.apache.commons.lang.StringUtils;
-import script.groovy.runtime.GroovyRuntime;
+import com.docker.utils.BeanFactory;
 import script.memodb.ObjectId;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -51,7 +49,7 @@ public final class GatewayMSGServers extends MSGServers {
     public static final int CHANNEL_CLOSE_FORBIDDEN = Channel.ChannelListener.CLOSE_FORBIDDEN;
 
 
-    private OnlineUserManager onlineUserManager = (OnlineUserManager) SpringContextUtil.getBean("onlineUserManager");
+    private OnlineUserManager onlineUserManager = (OnlineUserManager) BeanFactory.getBean(OnlineUserManagerImpl.class.getName());
 
     public static GatewayMSGServers getInstance() {
         if (instance == null) {
@@ -196,7 +194,7 @@ public final class GatewayMSGServers extends MSGServers {
         message.setReceiverIds(receiverIds);
         Map<String, Integer> contentMap = new HashMap<>();
         contentMap.put("close", close);
-        message.setData(JSON.toJSONString(contentMap).getBytes("utf-8"));
+        message.setData(JSON.toJSONString(contentMap).getBytes(StandardCharsets.UTF_8));
         serviceUser.pushToCrossServer(message, null);
     }
 
@@ -250,14 +248,5 @@ public final class GatewayMSGServers extends MSGServers {
         }
 
 //        onlineUserManager.sendEvent(message, onlineUser);
-    }
-
-    public DataServiceUserSessionListener getServiceUserSession(GroovyRuntime runtime, String userId, String service) {
-        ServiceUserSessionAnnotationHandler handler = (ServiceUserSessionAnnotationHandler) runtime.getClassAnnotationHandler(ServiceUserSessionAnnotationHandler.class);
-        if (handler != null) {
-            DataServiceUserSessionListener listener = handler.getAnnotatedListener(userId, service);
-            return listener;
-        }
-        return null;
     }
 }

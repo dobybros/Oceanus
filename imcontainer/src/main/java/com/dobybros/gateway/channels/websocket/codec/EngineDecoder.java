@@ -1,5 +1,6 @@
 package com.dobybros.gateway.channels.websocket.codec;
 
+import chat.config.BaseConfiguration;
 import chat.logs.LoggerEx;
 import com.dobybros.chat.binary.data.Data;
 import com.dobybros.chat.errors.IMCoreErrorCodes;
@@ -12,10 +13,13 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.AttributeKey;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import com.docker.utils.BeanFactory;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class EngineDecoder extends WebSocketDecoder {
+	private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
 	private final AttributeKey CONTEXT = new AttributeKey(getClass(), "context");
 	private static final AttributeKey VERSION = new AttributeKey(HailProtocalDecoder.class, "version");
 	private static final AttributeKey ENCODEVERSION = new AttributeKey(HailProtocalDecoder.class, "encodeVersion");
@@ -25,7 +29,7 @@ public class EngineDecoder extends WebSocketDecoder {
 	private int maxPackLength = 48 * 1024;
 
 	public EngineDecoder() {
-		this("utf-8");
+		this(StandardCharsets.UTF_8);
 		//Charset.forName("UTF-8")
 	}
 
@@ -56,8 +60,8 @@ public class EngineDecoder extends WebSocketDecoder {
 				buf.get(content1);//[50, 107, 110, 57, 56, 118]
 				String server = new String(content1);
 				OnlineServer onlineServer = OnlineServer.getInstance();
-				if(onlineServer == null || onlineServer.getServer() == null || !onlineServer.getServer().equals(server)) {
-					LoggerEx.error(TAG, "Session closed, consume server " + new String(content1) + " failed, current " + onlineServer.getServer());
+				if(onlineServer == null || baseConfiguration.getServer() == null || !baseConfiguration.getServer().equals(server)) {
+					LoggerEx.error(TAG, "Session closed, consume server " + new String(content1) + " failed, current " + baseConfiguration.getServer());
 //					synchronized (session) {
 						session.close(true);
 //					}

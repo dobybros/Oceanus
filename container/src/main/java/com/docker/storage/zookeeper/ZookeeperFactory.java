@@ -12,14 +12,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ZookeeperFactory {
     private final String TAG = ZookeeperFactory.class.getSimpleName();
-    private Map<String, ZookeeperHandler> zookeeperHandlerMap = new ConcurrentHashMap<>();
+    private Map<String, ZookeeperClient> zookeeperHandlerMap = new ConcurrentHashMap<>();
 
-    public ZookeeperClient client(String zkHost) {
+    public ZookeeperHandler get(String zkHost) {
         if (StringUtils.isNotBlank(zkHost)) {
-            ZookeeperHandler zookeeperHandler = zookeeperHandlerMap.get(zkHost);
+            ZookeeperClient zookeeperHandler = zookeeperHandlerMap.get(zkHost);
             if (zookeeperHandler == null) {
-                zookeeperHandler = new ZookeeperHandler();
-                ZookeeperHandler oldZookeeperHandler = zookeeperHandlerMap.putIfAbsent(zkHost, zookeeperHandler);
+                zookeeperHandler = new ZookeeperClient();
+                ZookeeperClient oldZookeeperHandler = zookeeperHandlerMap.putIfAbsent(zkHost, zookeeperHandler);
                 if (oldZookeeperHandler != null) {
                     zookeeperHandler = oldZookeeperHandler;
                 } else {
@@ -35,7 +35,7 @@ public class ZookeeperFactory {
     }
 
     void disconnect(){
-        for (ZookeeperHandler zookeeperHandler : zookeeperHandlerMap.values()){
+        for (ZookeeperClient zookeeperHandler : zookeeperHandlerMap.values()){
             try {
                 zookeeperHandler.disconnect();
             }catch (Throwable t){

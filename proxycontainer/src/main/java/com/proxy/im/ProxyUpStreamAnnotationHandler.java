@@ -3,10 +3,10 @@ package com.proxy.im;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.proxy.annotation.ProxyMessageReceived;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationGlobalHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
+import script.Runtime;
+import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationGlobalHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -27,10 +27,10 @@ public class ProxyUpStreamAnnotationHandler extends ClassAnnotationGlobalHandler
     }
 
     @Override
-    public void handleAnnotatedClassesInjectBean(GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClassesInjectBean(AbstractRuntimeContext runtimeContext) {
         for (GroovyObjectEx<ProxyMessageReceivedListener> groovyObjectEx : proxyMessageReceivedListeners) {
             try {
-                groovyObjectEx = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyObjectEx.getGroovyClass());
+                groovyObjectEx = (GroovyObjectEx<com.proxy.im.ProxyMessageReceivedListener>) getObject(null, groovyObjectEx.getGroovyClass(), runtimeContext);
             }catch (CoreException e){
                 LoggerEx.error(TAG, e.getMessage());
             }
@@ -38,14 +38,12 @@ public class ProxyUpStreamAnnotationHandler extends ClassAnnotationGlobalHandler
     }
 
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(
-            GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return ProxyMessageReceived.class;
     }
 
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap,
-                                       GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, AbstractRuntimeContext runtimeContext) throws CoreException {
         if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
             StringBuilder uriLogs = new StringBuilder(
                     "\r\n---------------------------------------\r\n");
@@ -57,7 +55,7 @@ public class ProxyUpStreamAnnotationHandler extends ClassAnnotationGlobalHandler
                 if (groovyClass != null) {
                     ProxyMessageReceived messageReceivedAnnotation = groovyClass.getAnnotation(ProxyMessageReceived.class);
                     if (messageReceivedAnnotation != null) {
-                        GroovyObjectEx<ProxyMessageReceivedListener> messageReceivedObj = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+                        GroovyObjectEx<ProxyMessageReceivedListener> messageReceivedObj = (GroovyObjectEx<com.proxy.im.ProxyMessageReceivedListener>) getObject(null, groovyClass, runtimeContext);
                         if (messageReceivedObj != null) {
                             uriLogs.append("MessageReceivedListener " + groovyClass + "\r\n");
                             newProxyMessageReceivedListeners.add(messageReceivedObj);

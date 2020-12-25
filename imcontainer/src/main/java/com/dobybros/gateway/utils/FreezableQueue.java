@@ -1,12 +1,11 @@
 package com.dobybros.gateway.utils;
 
+import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.dobybros.chat.binary.data.Data;
 import com.dobybros.chat.data.OfflineMessage;
 import com.dobybros.chat.open.data.Message;
-import com.dobybros.chat.props.GlobalLansProperties;
-import com.dobybros.chat.storage.adapters.MessageService;
 import com.dobybros.chat.storage.adapters.OfflineMessageAdapter;
 import com.dobybros.chat.storage.adapters.StorageManager;
 import com.dobybros.chat.tasks.OfflineMessageSavingTask;
@@ -17,9 +16,8 @@ import com.dobybros.gateway.channels.data.Result;
 import com.dobybros.gateway.onlineusers.OnlineServiceUser;
 import com.dobybros.gateway.onlineusers.PushInfo;
 import com.dobybros.gateway.onlineusers.PushInfo.SpecialHandler;
-import com.docker.server.OnlineServer;
-import com.docker.utils.SpringContextUtil;
 import org.apache.mina.util.ConcurrentHashSet;
+import com.docker.utils.BeanFactory;
 
 import java.util.*;
 
@@ -45,6 +43,8 @@ public class FreezableQueue {
 	private static final String TAG = FreezableQueue.class.getSimpleName();
 	
 	private OfflineMessageSavingTask offlineMessageSavingTask;
+	private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
+
 	/**
 	 * 在非多线程的情况下，应当尽量使用TreeMap。此外对于并发性相对较低的并行程序可以使用Collections.synchronizedSortedMap将TreeMap进行包装，也可以提供较好的效率。对于高并发程序，应当使用ConcurrentSkipListMap，能够提供更高的并发度。
 
@@ -64,11 +64,10 @@ public class FreezableQueue {
 	
 	private FreezableQueue instance;
 	public static int OFFLINE_MESSAGE_RECEIVED_CODE = 11;
-	public FreezableQueue() {
+	public FreezableQueue() throws CoreException {
 		readOfflineMessageHandler = getReadOfflineMessageHandler();
 		flushMessageHandler = getFlushMessageHandler();
 		instance = this;
-		
 		offlineMessageAdapter = StorageManager.getInstance().getStorageAdapter(OfflineMessageAdapter.class);
 	}
 	
@@ -184,18 +183,18 @@ public class FreezableQueue {
 
 
 						//Notify other lans to send him the offline messages.
-						GlobalLansProperties globalLansProperties = (GlobalLansProperties) SpringContextUtil.getBean("globalLansProperties");
-						if (globalLansProperties != null) {
-							Map<String, GlobalLansProperties.Lan> map = globalLansProperties.getLanMap();
-							for (String lanId : map.keySet()) {
-								if(lanId.equals(OnlineServer.getInstance().getLanId())) {
-									continue;
-								}
-								MessageService service = StorageManager.getInstance().getStorageAdapter(MessageService.class, lanId);
-								if (service != null)
-									service.consumeOfflineMessages(onlineUser.getUserInfo().getUserId(), onlineUser.getUserInfo().getService());
-							}
-						}
+//						GlobalLansProperties globalLansProperties = (GlobalLansProperties) BeanFactory.getBean(GlobalLansProperties.class.getName());
+//						if (globalLansProperties != null) {
+//							Map<String, GlobalLansProperties.Lan> map = globalLansProperties.getLanMap();
+//							for (String lanId : map.keySet()) {
+//								if(lanId.equals(baseConfiguration.getLanId())) {
+//									continue;
+//								}
+//								MessageService service = StorageManager.getInstance().getStorageAdapter(MessageService.class, lanId);
+//								if (service != null)
+//									service.consumeOfflineMessages(onlineUser.getUserInfo().getUserId(), onlineUser.getUserInfo().getService());
+//							}
+//						}
 
 					} else {
 						LoggerEx.debug(TAG, onlineUser.userInfo() + " is frozen, push " + pushInfoList.size());

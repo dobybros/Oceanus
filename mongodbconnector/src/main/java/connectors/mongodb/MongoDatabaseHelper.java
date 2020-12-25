@@ -4,8 +4,9 @@ import com.mongodb.ClientSessionOptions;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoDatabase;
 import connectors.mongodb.annotations.handlers.MongoDBHandler;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
+import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.groovy.GroovyRuntime;
+import script.core.runtime.classloader.MyGroovyClassLoader;
 
 import java.util.HashMap;
 
@@ -19,9 +20,9 @@ public class MongoDatabaseHelper {
 		ClassLoader classLoader = this.getClass().getClassLoader().getParent();
 		if(classLoader != null && classLoader instanceof MyGroovyClassLoader) {
 			MyGroovyClassLoader myGroovyClassLoader = (MyGroovyClassLoader) classLoader;
-			GroovyRuntime runtime = myGroovyClassLoader.getGroovyRuntime();
-			if (runtime != null) {
-				MongoDBHandler handler = (MongoDBHandler) runtime.getClassAnnotationHandler(MongoDBHandler.class);
+			AbstractRuntimeContext runtimeContext = myGroovyClassLoader.getRuntimeContext();
+			if (runtimeContext != null) {
+				MongoDBHandler handler = (MongoDBHandler) runtimeContext.getClassAnnotationHandler(MongoDBHandler.class);
 				MongoClientHelper helper = handler.getMongoClientHelper();
 				if(handler != null && helper != null) {
 					HashMap<Class<?>, MongoDatabase> map = handler.getDatabaseMap();
@@ -38,9 +39,9 @@ public class MongoDatabaseHelper {
 		ClassLoader classLoader = this.getClass().getClassLoader().getParent();
 		if(classLoader != null && classLoader instanceof MyGroovyClassLoader) {
 			MyGroovyClassLoader myGroovyClassLoader = (MyGroovyClassLoader) classLoader;
-			GroovyRuntime runtime = myGroovyClassLoader.getGroovyRuntime();
-			if (runtime != null) {
-				MongoDBHandler handler = (MongoDBHandler) runtime.getClassAnnotationHandler(MongoDBHandler.class);
+			AbstractRuntimeContext runtimeContext = myGroovyClassLoader.getRuntimeContext();
+			if (runtimeContext != null) {
+				MongoDBHandler handler = (MongoDBHandler) runtimeContext.getClassAnnotationHandler(MongoDBHandler.class);
 				if(handler != null) {
 					HashMap<Class<?>, MongoDatabase> map = handler.getDatabaseMap();
 					if(map != null) {

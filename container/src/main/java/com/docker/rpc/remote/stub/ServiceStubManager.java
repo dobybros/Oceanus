@@ -14,10 +14,10 @@ import com.docker.storage.adapters.impl.ServiceVersionServiceImpl;
 import com.docker.storage.mongodb.MongoHelper;
 import com.docker.storage.mongodb.daos.DockerStatusDAO;
 import com.docker.storage.mongodb.daos.ServiceVersionDAO;
-import com.docker.utils.GroovyCloudBean;
+import com.docker.utils.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.core.io.ClassPathResource;
-import script.groovy.servlets.Tracker;
+import script.core.servlets.Tracker;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -261,8 +261,8 @@ public class ServiceStubManager {
     }
     private void handle(){
         if(!RemoteServersManager.getInstance().isInit()){
-            ServiceVersionServiceImpl serviceVersionService = (ServiceVersionServiceImpl) GroovyCloudBean.getBean(GroovyCloudBean.SERVICEVERSIONSERVICE);
-            DockerStatusServiceImpl dockerStatusService = (DockerStatusServiceImpl)GroovyCloudBean.getBean(GroovyCloudBean.DOCKERSTATUSSERVICE);
+            ServiceVersionServiceImpl serviceVersionService = (ServiceVersionServiceImpl) BeanFactory.getBean(ServiceVersionServiceImpl.class.getName());
+            DockerStatusServiceImpl dockerStatusService = (DockerStatusServiceImpl) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
             if(serviceVersionService == null || dockerStatusService == null){
                 ClassPathResource configResource = new ClassPathResource("groovycloud.properties");
                 Properties properties = new Properties();

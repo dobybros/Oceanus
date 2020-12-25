@@ -5,7 +5,7 @@ import chat.errors.CoreException;
 import com.docker.rpc.MethodRequest;
 import com.docker.rpc.MethodResponse;
 import com.docker.rpc.remote.MethodMapping;
-import script.groovy.servlets.Tracker;
+import script.core.servlets.Tracker;
 
 public class Proxy {
     private ServiceStubManager serviceStubManager;

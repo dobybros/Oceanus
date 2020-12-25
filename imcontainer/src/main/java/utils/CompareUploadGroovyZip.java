@@ -7,7 +7,7 @@ import com.docker.storage.DBException;
 import com.docker.storage.mongodb.MongoHelper;
 import org.apache.commons.io.FileUtils;
 import script.file.FileAdapter;
-import script.groovy.annotation.Bean;
+import script.core.annotation.Bean;
 
 import java.io.File;
 import java.io.IOException;

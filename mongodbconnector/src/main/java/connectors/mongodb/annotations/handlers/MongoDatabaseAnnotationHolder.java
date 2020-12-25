@@ -1,9 +1,7 @@
 package connectors.mongodb.annotations.handlers;
 
 import connectors.mongodb.annotations.Database;
-import script.groovy.runtime.ClassAnnotationHandler;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -29,13 +27,12 @@ public class MongoDatabaseAnnotationHolder extends ClassAnnotationHandler {
 	}
 	
 	@Override
-	public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+	public Class<? extends Annotation> handleAnnotationClass() {
 		return Database.class;
 	}
 
 	@Override
-	public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap,
-			MyGroovyClassLoader classLoader) {
+	public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) {
 		if(annotatedClassMap != null) {
 			Map<Class<?>, Database> newDbClassMap = new LinkedHashMap<>();
 			Collection<Class<?>> values = annotatedClassMap.values();

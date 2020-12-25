@@ -86,12 +86,15 @@ public interface ChatErrorCodes {
 	public static final int ERROR_METHODREQUEST_SERVICE_NOTFOUND = CODE_CORE - 195;
 	public static final int ERROR_METHODREQUEST_SKELETON_NULL = CODE_CORE - 196;
 	public static final int ERROR_METHODREQUEST_SERVICE_NULL = CODE_CORE - 197;
+	public static final int ERROR_SERVICENAME_DUPLICATE = CODE_CORE - 198;
+	public static final int ERROR_DEPLOYSERVICEVERSION_NULL = CODE_CORE - 199;
+	public static final int ERROR_SERVICEVERSION_EMPTY = CODE_CORE - 200;
 
 	public static final int ERROR_SDOCKER_QUERY_FAILED = CODE_CORE - 201;
 	public static final int ERROR_GET_FAILED = CODE_CORE - 202;
 	public static final int ERROR_NO_REMOTESERVERS= CODE_CORE - 203;
 	public static final int ERROR_NO_BASERUNTIME= CODE_CORE - 204;
-	public static final int ERROR_NO_GROOVYFILE= CODE_CORE - 205;
+	public static final int ERROR_NO_SOURCEFILE= CODE_CORE - 205;
 	public static final int ERROR_DISCOVERY_NOTFOUND= CODE_CORE - 206;
 	public static final int ERROR_ASYNC_ERROR= CODE_CORE - 207;
 	public static final int ERROR_ASYNC_TIMEOUT= CODE_CORE - 208;
@@ -110,4 +113,7 @@ public interface ChatErrorCodes {
 	public static final int ERROR_REMOTE_RPC_FAILED= CODE_CORE - 218;
 	public static final int ERROR_CALLREMOTE_BY_HTTP_FAILED = CODE_CORE - 219;
 	public static final int ERROR_MAVEN_INSTALL_ERROR= CODE_CORE - 220;
+	public static final int ERROR_SOURCE_DWONLOAD_FAILED= CODE_CORE - 221;
+	public static final int ERROR_CLASSLOADER_CREATE_FAILED= CODE_CORE - 222;
+	public static final int ERROR_REFLECT = CODE_CORE - 223;
 }

@@ -3,9 +3,9 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.wonerchats</groupId>
-	<artifactId>Oceanus</artifactId>
-	<version>1.0</version>
+		<groupId>oceanus</groupId>
+		<artifactId>Oceanus</artifactId>
+		<version>1.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>proxycontainer</artifactId>
@@ -13,22 +13,22 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.wonerchats</groupId>
+			<groupId>oceanus</groupId>
 			<artifactId>MongodbConnector</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.wonerchats</groupId>
+			<groupId>oceanus</groupId>
 			<artifactId>container</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.wonerchats</groupId>
+			<groupId>oceanus</groupId>
 			<artifactId>imcontainer</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.wonerchats</groupId>
+			<groupId>oceanus</groupId>
 			<artifactId>core</artifactId>
 			<version>1.0</version>
 		</dependency>

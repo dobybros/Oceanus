@@ -1,8 +1,6 @@
 package proxycontainer.proxycontainer.bean;
 
-import com.docker.rpc.RPCClientAdapterMap;
 import com.docker.rpc.impl.RMIServerHandler;
-import imcontainer.imcontainer.bean.IMBeanApp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,16 +15,6 @@ public class RpcBean {
 
     RpcBean() {
         instance = IMBeanApp.getInstance();
-    }
-
-    @Bean
-    public RPCClientAdapterMap rpcClientAdapterMap() {
-        return instance.getRpcClientAdapterMap();
-    }
-
-    @Bean
-    public RPCClientAdapterMap rpcClientAdapterMapSsl() {
-        return instance.getRpcClientAdapterMapSsl();
     }
 
     @Bean

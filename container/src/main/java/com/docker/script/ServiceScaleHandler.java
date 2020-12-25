@@ -5,11 +5,8 @@ import chat.logs.LoggerEx;
 import com.alibaba.fastjson.JSONObject;
 import com.docker.script.annotations.ServiceScaleListener;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -23,16 +20,16 @@ public class ServiceScaleHandler extends ClassAnnotationHandler {
     private GroovyObjectEx<?> serviceScaleObj = null;
 
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return ServiceScaleListener.class;
     }
 
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, MyGroovyClassLoader classLoader) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
         if (annotatedClassMap != null) {
             Collection<Class<?>> values = annotatedClassMap.values();
             for (Class<?> groovyClass : values) {
-                serviceScaleObj = ((GroovyBeanFactory) getGroovyRuntime().getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+                serviceScaleObj = (GroovyObjectEx<?>) getObject(null, groovyClass, runtimeContext);
             }
         }
     }

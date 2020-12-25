@@ -1,13 +1,15 @@
 package com.docker.data;
 
-import com.docker.server.OnlineServer;
+import chat.config.BaseConfiguration;
 import com.docker.storage.mongodb.CleanDocument;
 import org.bson.Document;
+import com.docker.utils.BeanFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Service {
+    protected BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     public static final String FIELD_SERVICE_SERVICE = "service";
     public static final String FIELD_SERVICE_VERSION = "version";
     public static final String FIELD_SERVICE_MINVERSION = "minVersion";
@@ -118,7 +120,7 @@ public class Service {
         if (maxUserNumber != null) {
             dbObj.put(FIELD_MAXUSERNUMBER, maxUserNumber);
         }
-        if (OnlineServer.getInstance().getScaleInstanceId() != null) {
+        if (baseConfiguration.getScaleInstanceId() != null) {
             scaleEnable = false;
         } else {
             scaleEnable = true;

@@ -3,19 +3,20 @@ package com.dobybros.chat.script.annotations.gateway;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.dobybros.chat.open.data.Message;
+import com.dobybros.chat.script.IMRuntimeContext;
 import com.dobybros.chat.script.annotations.handler.ServiceUserSessionAnnotationHandler;
 import com.dobybros.chat.utils.SingleThreadQueue;
 import com.dobybros.gateway.onlineusers.OnlineUser;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import script.groovy.object.GroovyObjectEx;
+import script.core.runtime.groovy.object.GroovyObjectEx;
 
 public class GWUserHandler extends SingleThreadQueue.Handler<GWUserParams> {
     private static final String TAG = GWUserHandler.class.getSimpleName();
     private GroovyObjectEx<SessionListener> sessionListener;
-    private GatewayGroovyRuntime runtime;
-    public GWUserHandler(GroovyObjectEx<SessionListener> sessionListener, GatewayGroovyRuntime runtime) {
+    private IMRuntimeContext runtimeContext;
+    public GWUserHandler(GroovyObjectEx<SessionListener> sessionListener, IMRuntimeContext runtimeContext) {
         this.sessionListener = sessionListener;
-        this.runtime = runtime;
+        this.runtimeContext = runtimeContext;
     }
     @Override
     public boolean handle(GWUserParams gwUserParams) throws CoreException {
@@ -28,10 +29,10 @@ public class GWUserHandler extends SingleThreadQueue.Handler<GWUserParams> {
                         t.printStackTrace();
                         LoggerEx.error(TAG, "Handle channel " + gwUserParams.terminal + " closed by " + gwUserParams.userId + " failed, " + ExceptionUtils.getFullStackTrace(t));
                     }
-                    runtime.channelCreatedMessage.remove(gwUserParams.terminal);
+                    runtimeContext.channelCreatedMessage.remove(gwUserParams.terminal);
                 } else {
-                    if (runtime != null) {
-                        ServiceUserSessionAnnotationHandler handler = (ServiceUserSessionAnnotationHandler) runtime.getClassAnnotationHandler(ServiceUserSessionAnnotationHandler.class);
+                    if (runtimeContext != null) {
+                        ServiceUserSessionAnnotationHandler handler = (ServiceUserSessionAnnotationHandler) runtimeContext.getClassAnnotationHandler(ServiceUserSessionAnnotationHandler.class);
                         if (handler != null) {
                             ServiceUserSessionListener listener = handler.getAnnotatedListener(gwUserParams.userId, gwUserParams.service);
                             if (listener != null)
@@ -54,8 +55,8 @@ public class GWUserHandler extends SingleThreadQueue.Handler<GWUserParams> {
                         LoggerEx.error(TAG, "Handle channel " + gwUserParams.terminal + " created by " + gwUserParams.userId + " failed, " + ExceptionUtils.getFullStackTrace(t));
                     }
                 } else {
-                    if (runtime != null) {
-                        ServiceUserSessionAnnotationHandler handler = (ServiceUserSessionAnnotationHandler) runtime.getClassAnnotationHandler(ServiceUserSessionAnnotationHandler.class);
+                    if (runtimeContext != null) {
+                        ServiceUserSessionAnnotationHandler handler = (ServiceUserSessionAnnotationHandler) runtimeContext.getClassAnnotationHandler(ServiceUserSessionAnnotationHandler.class);
                         if (handler != null) {
                             ServiceUserSessionListener listener = handler.getAnnotatedListener(gwUserParams.userId, gwUserParams.service);
                             if (listener != null)
@@ -69,7 +70,7 @@ public class GWUserHandler extends SingleThreadQueue.Handler<GWUserParams> {
                     }
                 }
                 // 发送channel还没有创建时漏发的消息
-                PendingMessageContainer container = runtime.channelCreatedMessage.get(PendingMessageContainer.getKey(gwUserParams.userId, runtime.getService(), gwUserParams.terminal));
+                PendingMessageContainer container = runtimeContext.channelCreatedMessage.get(PendingMessageContainer.getKey(gwUserParams.userId, runtimeContext.getConfiguration().getService(), gwUserParams.terminal));
                 if(container != null){
                     synchronized (container) {
                         container.type = PendingMessageContainer.CHANNELCREATED;
@@ -78,7 +79,7 @@ public class GWUserHandler extends SingleThreadQueue.Handler<GWUserParams> {
                             if(container.pendingMessages != null && container.pendingMessages.size() > 0){
                                 for(Object message : container.pendingMessages){
                                     try {
-                                        runtime.messageReceived((Message) message, gwUserParams.terminal, onlineUser, container.needTcpResult);
+                                        runtimeContext.messageReceived((Message) message, gwUserParams.terminal, onlineUser, container.needTcpResult);
                                     } catch (Throwable t) {
                                         t.printStackTrace();
                                         LoggerEx.error(TAG, "Handle message " + gwUserParams.terminal + " created by " + gwUserParams.userId + " failed, " + ExceptionUtils.getFullStackTrace(t));
@@ -88,7 +89,7 @@ public class GWUserHandler extends SingleThreadQueue.Handler<GWUserParams> {
                             if(container.pendingDatas != null && container.pendingDatas.size() > 0){
                                 for(Object data : container.pendingDatas){
                                     try {
-                                        runtime.dataReceived((Message) data, gwUserParams.terminal, onlineUser);
+                                        runtimeContext.dataReceived((Message) data, gwUserParams.terminal, onlineUser);
                                     } catch (Throwable t) {
                                         t.printStackTrace();
                                         LoggerEx.error(TAG, "Handle message " + gwUserParams.terminal + " created by " + gwUserParams.userId + " failed, " + ExceptionUtils.getFullStackTrace(t));
@@ -111,8 +112,8 @@ public class GWUserHandler extends SingleThreadQueue.Handler<GWUserParams> {
                         LoggerEx.error(TAG, "Handle session " + gwUserParams.userId + " service " + gwUserParams.service + " close failed, " + ExceptionUtils.getFullStackTrace(t));
                     }
                 } else {
-                    if (runtime != null) {
-                        ServiceUserSessionAnnotationHandler handler = (ServiceUserSessionAnnotationHandler) runtime.getClassAnnotationHandler(ServiceUserSessionAnnotationHandler.class);
+                    if (runtimeContext != null) {
+                        ServiceUserSessionAnnotationHandler handler = (ServiceUserSessionAnnotationHandler) runtimeContext.getClassAnnotationHandler(ServiceUserSessionAnnotationHandler.class);
                         if (handler != null) {
                             ServiceUserSessionListener listener = handler.getAnnotatedListener(gwUserParams.userId, gwUserParams.service);
                             if (listener != null) {
@@ -142,8 +143,8 @@ public class GWUserHandler extends SingleThreadQueue.Handler<GWUserParams> {
                         LoggerEx.error(TAG, "Handle session " + gwUserParams.userId + " service " + gwUserParams.service + " sessionCreated failed, " + ExceptionUtils.getFullStackTrace(t));
                     }
                 } else {
-                    if (runtime != null) {
-                        ServiceUserSessionAnnotationHandler handler = (ServiceUserSessionAnnotationHandler) runtime.getClassAnnotationHandler(ServiceUserSessionAnnotationHandler.class);
+                    if (runtimeContext != null) {
+                        ServiceUserSessionAnnotationHandler handler = (ServiceUserSessionAnnotationHandler) runtimeContext.getClassAnnotationHandler(ServiceUserSessionAnnotationHandler.class);
                         if (handler != null) {
                             ServiceUserSessionListener listener = handler.createAnnotatedListener(gwUserParams.userId, gwUserParams.service);
                             if (listener != null)

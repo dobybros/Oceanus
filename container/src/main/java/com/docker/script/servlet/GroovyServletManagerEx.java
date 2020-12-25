@@ -4,9 +4,9 @@ import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.docker.server.OnlineServer;
 import com.google.common.collect.Lists;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.servlets.GroovyServlet;
-import script.groovy.servlets.GroovyServletManager;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.servlets.GroovyServlet;
+import script.core.servlets.GroovyServletManager;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -74,7 +74,7 @@ public class GroovyServletManagerEx extends GroovyServletManager {
             LoggerEx.error(TAG, "Uri " + uri + " is illegal, please use " + FORCEPREFIX + " or rest/" + service + "/ in front of your url");
             RuntimeException e = new RuntimeException("Uri " + uri + " is illegal, please use " + FORCEPREFIX + " or rest/" + service + "/ in front of your url");
             try {
-                List<StackTraceElement> list = Lists.asList(new StackTraceElement(groovyServlet.getGroovyClass().getName(), method.getName(), /*groovyServlet.getGroovyClass().getSimpleName() + ".groovy"*/groovyServlet.getGroovyPath(), 1), e.getStackTrace());
+                List<StackTraceElement> list = Lists.asList(new StackTraceElement(groovyServlet.getGroovyClass().getName(), method.getName(), /*groovyServlet.getGroovyClass().getSimpleName() + ".groovy"*/groovyServlet.getClassPath(), 1), e.getStackTrace());
                 StackTraceElement[] elements = new StackTraceElement[list.size()];
                 list.toArray(elements);
                 e.setStackTrace(elements);

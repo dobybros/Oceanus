@@ -1,5 +1,6 @@
 package com.docker.rpc.impl;
 
+import chat.config.BaseConfiguration;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import chat.logs.AnalyticsLogger;
@@ -18,14 +19,13 @@ import com.docker.rpc.remote.RpcServerInterceptor;
 import com.docker.rpc.remote.skeleton.ServiceSkeletonAnnotationHandler;
 import com.docker.rpc.remote.stub.RpcCacheManager;
 import com.docker.rpc.remote.stub.ServiceStubManager;
-import com.docker.script.MyBaseRuntime;
-import com.docker.script.ScriptManager;
+import com.docker.script.BaseRuntimeContext;
 import com.docker.server.OnlineServer;
-import com.docker.utils.SpringContextUtil;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.servlets.Tracker;
+import com.docker.utils.BeanFactory;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.servlets.Tracker;
 import script.memodb.ObjectId;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
+    private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     private RMIServerImplWrapper serverWrapper;
 
     public RMIServerImpl(Integer port, RMIServerImplWrapper serverWrapper) throws RemoteException {
@@ -87,7 +88,7 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
             case MethodRequest.RPCTYPE:
                 ServerStart.getInstance().getAsyncThreadPoolExecutor().execute(() -> {
                     AsyncCallbackRequest asyncCallbackRequest = new AsyncCallbackRequest();
-                    asyncCallbackRequest.setFromServerName(OnlineServer.getInstance().getServer());
+                    asyncCallbackRequest.setFromServerName(baseConfiguration.getServer());
                     asyncCallbackRequest.setEncode(encode);
                     asyncCallbackRequest.setType(asyncCallbackRequest.getType());
                     asyncCallbackRequest.setCallbackFutureId(callbackFutureId);
@@ -157,7 +158,11 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
                                 asyncCallbackRequest.setException((CoreException) exception);
                                 builder.append(" $$returnobj:: " + JSON.toJSONString(exception));
                                 AnalyticsLogger.error(TAG, builder.toString());
-                                handlePersistent(asyncCallbackRequest, request);
+                                try {
+                                    handlePersistent(asyncCallbackRequest, request);
+                                } catch (CoreException e) {
+                                    LoggerEx.error(TAG, "handlePersistent failed, errMsg: " + ExceptionUtils.getFullStackTrace(e));
+                                }
                             } finally {
                                 handleInterceptorsAfter(rpcServerInterceptors);
                             }
@@ -178,7 +183,7 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
                                             }
                                             throwable1.printStackTrace();
                                             if (throwable1 instanceof CoreException) {
-                                                throwable1 = (CoreException) throwable1;
+                                                throwable1 = throwable1;
                                             } else if(throwable1 instanceof AsyncRuntimeException){
                                                 LoggerEx.error(TAG, "Async callback err,err: " + ExceptionUtils.getFullStackTrace(throwable1));
                                                 throwable1 = new CoreException(ChatErrorCodes.ERROR_ASYNC_NEEDRETRY, "Async callback err,err: " + ExceptionUtils.getFullStackTrace(throwable1));
@@ -193,6 +198,8 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
                                             AnalyticsLogger.info(TAG, builder.toString());
                                         }
                                         handlePersistent(asyncCallbackRequest, request);
+                                    } catch (CoreException ex) {
+                                        LoggerEx.error(TAG, "handlePersistent failed, errMsg: " + ExceptionUtils.getFullStackTrace(ex));
                                     } finally {
                                         handleInterceptorsAfter(theRpcServerInterceptors);
                                     }
@@ -295,11 +302,10 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
         return true;
     }
 
-    private RPCClientAdapter getClientAdapter(RPCRequest request) {
+    private RPCClientAdapter getClientAdapter(RPCRequest request) throws CoreException {
         if (((MethodRequest) request).getSourceIp() != null && ((MethodRequest) request).getSourcePort() != null && ((MethodRequest) request).getFromServerName() != null) {
-            ScriptManager scriptManager = (ScriptManager) SpringContextUtil.getBean("scriptManager");
-            MyBaseRuntime baseRuntime = (MyBaseRuntime) scriptManager.getBaseRuntime(((MethodRequest) request).getFromService());
-            ServiceStubManager serviceStubManager = baseRuntime.getServiceStubManager();
+            BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(((MethodRequest)request).getFromService());
+            ServiceStubManager serviceStubManager = runtimeContext.getServiceStubManagerFactory().get(null);
             if (serviceStubManager != null) {
                 RPCClientAdapterMap clientAdapterMap = null;
                 if (serviceStubManager.getUsePublicDomain()) {
@@ -353,7 +359,7 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
         }
     }
 
-    private void handlePersistent(AsyncCallbackRequest asyncCallbackRequest, RPCRequest request) {
+    private void handlePersistent(AsyncCallbackRequest asyncCallbackRequest, RPCRequest request) throws CoreException {
         boolean persistentSuccess = true;
 
         try {

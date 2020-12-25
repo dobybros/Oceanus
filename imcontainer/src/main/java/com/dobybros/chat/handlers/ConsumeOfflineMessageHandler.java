@@ -1,5 +1,6 @@
 package com.dobybros.chat.handlers;
 
+import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.main.ServerStart;
@@ -18,7 +19,8 @@ import com.dobybros.chat.storage.adapters.UserInfoAdapter;
 import com.dobybros.chat.tasks.RPCMessageSendingTask;
 import com.docker.rpc.RPCClientAdapter;
 import com.docker.rpc.RPCClientAdapterMap;
-import com.docker.server.OnlineServer;
+import com.docker.rpc.RPCClientAdapterMapFactory;
+import com.docker.utils.BeanFactory;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -35,11 +37,10 @@ public class ConsumeOfflineMessageHandler {
     @Resource
     private RPCMessageSendingTask messageSendingTask;
 
-    @Resource
-    private RPCClientAdapterMap rpcClientAdapterMap;
+    private RPCClientAdapterMap rpcClientAdapterMap = RPCClientAdapterMapFactory.getInstance().getRpcClientAdapterMap();
 
-    @Resource
-    private RPCClientAdapterMap rpcClientAdapterMapSsl;
+    private RPCClientAdapterMap rpcClientAdapterMapSsl = RPCClientAdapterMapFactory.getInstance().getRpcClientAdapterMap();
+    private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
 
 	public ConsumeOfflineMessageHandler() {
 		
@@ -69,6 +70,8 @@ public class ConsumeOfflineMessageHandler {
                     result = handleOfflineMessage();
                 }
                 LoggerEx.info(TAG, "OfflineMessageReader ends, userId " + userId + " service " + service + " total " + total + " result " + (result >= 0 ? " successfully!" : "failed!"));
+            } catch (CoreException e) {
+                LoggerEx.error(TAG, "OfflineMessageReader handle, userId " + userId + " service " + service);
             } finally {
                 if(started.compareAndSet(STATUS_STARTED, STATUS_ENDED)) {
                     String key = userId + "@" + service;
@@ -101,7 +104,7 @@ public class ConsumeOfflineMessageHandler {
 			this.service = service;
 		}
 
-        public int handleOfflineMessage() {
+        public int handleOfflineMessage() throws CoreException {
             AtomicInteger result = new AtomicInteger(0);
             OfflineMessageAdapter offlineMessageAdapter = StorageManager.getInstance().getStorageAdapter(OfflineMessageAdapter.class);
             try {
@@ -128,7 +131,7 @@ public class ConsumeOfflineMessageHandler {
                                 String server = null;
                                 if (serverInfo != null) {
                                     server = serverInfo.getServer();
-                                    if (lanId.equals(OnlineServer.getInstance().getLanId())) {
+                                    if (lanId.equals(baseConfiguration.getLanId())) {
                                         ip = serverInfo.getIp();
                                         port = serverInfo.getRpcPort();
                                     } else {
@@ -138,7 +141,7 @@ public class ConsumeOfflineMessageHandler {
                                 }
                                 if(server != null && ip != null && port != null) {
                                     RPCClientAdapter gatewayClientAdapter = null;
-                                    if(lanId.equals(OnlineServer.getInstance().getLanId())) {
+                                    if(lanId.equals(baseConfiguration.getLanId())) {
                                         gatewayClientAdapter = rpcClientAdapterMap.registerServer(ip, port, server);
                                     } else {
                                         gatewayClientAdapter = rpcClientAdapterMapSsl.registerServer(ip, port, server);
@@ -180,7 +183,7 @@ public class ConsumeOfflineMessageHandler {
                             if(StringUtils.isBlank(receiverService))
                                 receiverService = message.getService();
                             request.setService(receiverService);
-                            request.setFromLanId(OnlineServer.getInstance().getLanId());
+                            request.setFromLanId(baseConfiguration.getLanId());
 //									request.setTargetIds(Arrays.asList(targetId));
                             UserPresenceResponse response;
                             try {
@@ -223,7 +226,7 @@ public class ConsumeOfflineMessageHandler {
 
                             if(onlineStatus == OnlineInfo.STATUS_ONLINE && server != null && ip != null && port != null && lanId != null) {
                                 RPCClientAdapter gatewayClientAdapter = null;
-                                if(lanId.equals(OnlineServer.getInstance().getLanId())) {
+                                if(lanId.equals(baseConfiguration.getLanId())) {
                                     gatewayClientAdapter = rpcClientAdapterMapTask.registerServer(ip, port, server);
                                 } else {
                                     gatewayClientAdapter = rpcClientAdapterMapTaskSsl.registerServer(ip, port, server);

@@ -1,5 +1,6 @@
 package com.docker.rpc.remote.stub;
 
+import chat.config.BaseConfiguration;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import chat.utils.TimerEx;
@@ -8,7 +9,7 @@ import com.docker.rpc.RPCClientAdapter;
 import com.docker.rpc.RPCClientAdapterMap;
 import com.docker.rpc.RPCClientAdapterMapFactory;
 import com.docker.rpc.async.AsyncRpcFuture;
-import com.docker.server.OnlineServer;
+import com.docker.utils.BeanFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RpcCacheManager {
     private static RpcCacheManager instance;
+    protected BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     private Map<String, AsyncRpcFuture> asyncCallbackHandlerMap = new ConcurrentHashMap<>();
     private Map<Long, String> crcMethodMap = new ConcurrentHashMap<>();
 
@@ -43,7 +45,7 @@ public class RpcCacheManager {
     }
     public AsyncRpcFuture handlerAsyncRpcFuture(String callbackFutureId) {
         AsyncRpcFuture asyncFuture= asyncCallbackHandlerMap.remove(callbackFutureId);
-        String server = OnlineServer.getInstance().getServer();
+        String server = baseConfiguration.getServer();
         if(server != null){
             RPCClientAdapterMap rpcClientAdapterMap = RPCClientAdapterMapFactory.getInstance().getRpcClientAdapterMap();
             RPCClientAdapter rpcClientAdapter = rpcClientAdapterMap.getClientAdapter(server);

@@ -3,10 +3,10 @@ package com.proxy.im;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.proxy.annotation.ProxySessionListener;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationGlobalHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
+import script.Runtime;
+import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationGlobalHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -23,15 +23,15 @@ public class ProxyAnnotationHandler extends ClassAnnotationGlobalHandler {
     private List<GroovyObjectEx<com.proxy.im.ProxySessionListener>> tcpListeners = new ArrayList<>();
 
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return ProxySessionListener.class;
     }
 
     @Override
-    public void handleAnnotatedClassesInjectBean(GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClassesInjectBean(AbstractRuntimeContext runtimeContext) {
         for (GroovyObjectEx<com.proxy.im.ProxySessionListener> groovyObjectEx : tcpListeners) {
             try {
-                groovyObjectEx = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyObjectEx.getGroovyClass());
+                groovyObjectEx = (GroovyObjectEx<com.proxy.im.ProxySessionListener>) getObject(null, groovyObjectEx.getGroovyClass(), runtimeContext);
             }catch (CoreException e){
                 LoggerEx.error(TAG, e.getMessage());
             }
@@ -39,7 +39,7 @@ public class ProxyAnnotationHandler extends ClassAnnotationGlobalHandler {
     }
 
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, AbstractRuntimeContext runtimeContext) throws CoreException {
         if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
             StringBuilder uriLogs = new StringBuilder(
                     "\r\n---------------------------------------\r\n");
@@ -51,7 +51,7 @@ public class ProxyAnnotationHandler extends ClassAnnotationGlobalHandler {
                 if (groovyClass != null) {
                     ProxySessionListener messageReceivedAnnotation = groovyClass.getAnnotation(ProxySessionListener.class);
                     if (messageReceivedAnnotation != null) {
-                        GroovyObjectEx<com.proxy.im.ProxySessionListener> messageReceivedObj = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+                        GroovyObjectEx<com.proxy.im.ProxySessionListener> messageReceivedObj = (GroovyObjectEx<com.proxy.im.ProxySessionListener>) getObject(null, groovyClass, runtimeContext);
                         if (messageReceivedObj != null) {
                             uriLogs.append("TcpListener " + "#" + groovyClass + "\r\n");
                             newTcpList.add(messageReceivedObj);

@@ -1,5 +1,6 @@
 package com.docker.script;
 
+import chat.config.BaseConfiguration;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import chat.json.Result;
@@ -16,10 +17,9 @@ import com.docker.rpc.remote.stub.ServiceStubManager;
 import com.docker.script.servlet.GroovyServletManagerEx;
 import com.docker.storage.adapters.impl.ScheduledTaskServiceImpl;
 import com.docker.tasks.RepairTaskHandler;
-import com.docker.utils.GroovyCloudBean;
+import com.docker.utils.BeanFactory;
 import com.docker.utils.JWTUtils;
 import com.docker.utils.RequestUtils;
-import com.docker.utils.SpringContextUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -28,9 +28,7 @@ import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.servlets.GroovyServletDispatcher;
-import script.groovy.servlets.GroovyServletManager;
+import script.core.servlets.GroovyServletManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -38,7 +36,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,12 +46,12 @@ import java.util.concurrent.CompletableFuture;
 @WebServlet(urlPatterns = "/base", asyncSupported = true)
 public class GroovyServletScriptDispatcher extends HttpServlet {
     private static final String TAG = GroovyServletManager.class.getSimpleName();
-    ScriptManager scriptManager = null;
     private ServiceStubManager serviceStubManager = null;
     private String key = "FSDdfFDWfR324fs98DSF*@#";
 
     public void handle(HttpServletRequest request, HttpServletResponse response) {
-        scriptManager = (ScriptManager) GroovyCloudBean.getBean(GroovyCloudBean.SCRIPTMANAGER);
+        BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
+
         try {
             String uri = request.getRequestURI();
             LoggerEx.info(TAG, "RequestURI " + uri + " method " + request.getMethod() + " from " + request.getRemoteAddr());
@@ -86,7 +83,7 @@ public class GroovyServletScriptDispatcher extends HttpServlet {
                 } else if (uriStrs[1].equals(GroovyServletManagerEx.BASE_REPAIR)) {
                     if (internalFilter(request, result).getCode() == 1) {
                         String repairId = uriStrs[2];
-                        RepairTaskHandler repairTaskHandler = (RepairTaskHandler) GroovyCloudBean.getBean(GroovyCloudBean.REPAIRTASKHANDLER);
+                        RepairTaskHandler repairTaskHandler = (RepairTaskHandler) BeanFactory.getBean(RepairTaskHandler.class.getName());
                         CompletableFuture repairFuture = CompletableFuture.supplyAsync(() -> {
                             try {
                                 Object resultObj = repairTaskHandler.execute(repairId);
@@ -138,26 +135,23 @@ public class GroovyServletScriptDispatcher extends HttpServlet {
                         String service = uriStrs[2];
                         String serviceVersion = getServiceVersion(service);
                         if (serviceVersion != null) {
-                            GroovyRuntime groovyRuntime = getGroovyRuntime(serviceVersion);
-                            if (groovyRuntime != null) {
-                                ServiceScaleHandler serviceScaleHandler = (ServiceScaleHandler) groovyRuntime.getClassAnnotationHandler(ServiceScaleHandler.class);
-                                if (serviceScaleHandler != null) {
-                                    String methodName = uriStrs[3];
-                                    if (uriStrs.length > 4) {
-                                        for (int i = 4; i < uriStrs.length; i++) {
-                                            methodName += captureName(uriStrs[i]);
-                                        }
+                            ServiceScaleHandler serviceScaleHandler = (ServiceScaleHandler) baseConfiguration.getRuntimeContext(service).getClassAnnotationHandler(ServiceScaleHandler.class);
+                            if (serviceScaleHandler != null) {
+                                String methodName = uriStrs[3];
+                                if (uriStrs.length > 4) {
+                                    for (int i = 4; i < uriStrs.length; i++) {
+                                        methodName += captureName(uriStrs[i]);
                                     }
-                                    Object resultObject = null;
-                                    try {
-                                        resultObject = serviceScaleHandler.invoke(methodName, jsonObject);
-                                    } catch (CoreException e) {
-                                        result.setCode(e.getCode());
-                                        result.setMsg(e.getMessage());
-                                    }
-                                    if (result.getMsg() == null) {
-                                        result.setData(resultObject);
-                                    }
+                                }
+                                Object resultObject = null;
+                                try {
+                                    resultObject = serviceScaleHandler.invoke(methodName, jsonObject);
+                                } catch (CoreException e) {
+                                    result.setCode(e.getCode());
+                                    result.setMsg(e.getMessage());
+                                }
+                                if (result.getMsg() == null) {
+                                    result.setData(resultObject);
                                 }
                             }
                         }
@@ -251,14 +245,10 @@ public class GroovyServletScriptDispatcher extends HttpServlet {
     }
 
     protected String getServiceVersion(String service) {
+        BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
         String serviceVersion = null;
         if (!service.contains("_v")) {
-            Integer version = scriptManager.getDefalutServiceVersionMap().get(service);
-            if (version != null) {
-                serviceVersion = service + "_v" + version;
-            } else {
-                LoggerEx.error(TAG, "The service not load, version is null");
-            }
+            return baseConfiguration.getRuntimeContext(service).getConfiguration().getServiceVersion();
         } else {
             serviceVersion = service;
         }
@@ -266,31 +256,11 @@ public class GroovyServletScriptDispatcher extends HttpServlet {
     }
 
     protected List handlerService(String service) {
-        GroovyRuntime groovyRuntime = getGroovyRuntime(service);
-        if (groovyRuntime != null) {
-            ServiceMemoryHandler classAnnotationHandler = (ServiceMemoryHandler) groovyRuntime.getClassAnnotationHandler(ServiceMemoryHandler.class);
-            if (classAnnotationHandler != null) {
-                List list = classAnnotationHandler.getMemory();
-                if (list == null) {
-                    list = new ArrayList();
-                }
-                Map<String, Object> baserunTimeMap = ((BaseRuntime) groovyRuntime).getMemoryCache();
-                if (!baserunTimeMap.isEmpty()) {
-                    for (String key : baserunTimeMap.keySet()) {
-                        list.add(baserunTimeMap.get(key));
-                    }
-                }
-                return list;
-            }
-        }
-        return null;
-    }
-
-    private GroovyRuntime getGroovyRuntime(String serviceVersion) {
-        GroovyServletManager groovyServletManager = GroovyServletDispatcher.getGroovyServletManagerEx(serviceVersion);
-        if (groovyServletManager != null) {
-            GroovyRuntime groovyRuntime = groovyServletManager.getGroovyRuntime();
-            return groovyRuntime;
+        BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
+        ServiceMemoryHandler classAnnotationHandler = (ServiceMemoryHandler) baseConfiguration.getRuntimeContext(service).getClassAnnotationHandler(ServiceMemoryHandler.class);
+        if (classAnnotationHandler != null) {
+            List list = classAnnotationHandler.getMemory();
+            return list;
         }
         return null;
     }
@@ -300,7 +270,7 @@ public class GroovyServletScriptDispatcher extends HttpServlet {
             Scheduler scheduler = QuartzFactory.getInstance().getSchedulerFactory().getScheduler();
             List<Map<String, String>> list = new ArrayList<Map<String, String>>();
             Map<String, String> map = null;
-            ScheduledTaskServiceImpl scheduledTaskService = (ScheduledTaskServiceImpl) SpringContextUtil.getBean("scheduledTaskService");
+            ScheduledTaskServiceImpl scheduledTaskService = (ScheduledTaskServiceImpl) BeanFactory.getBean(ScheduledTaskServiceImpl.class.getName());
             for (String groupName : scheduler.getJobGroupNames()) {
                 for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
                     String jobName = jobKey.getName();

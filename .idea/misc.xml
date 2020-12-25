@@ -7,7 +7,24 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/../Test/pom.xml" />
+        <option value="$PROJECT_DIR$/../Test/Test1/pom.xml" />
+        <option value="$PROJECT_DIR$/../Test/TestCore/pom.xml" />
+        <option value="$PROJECT_DIR$/../Space/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/../Space/Convert/pom.xml" />
+        <option value="$PROJECT_DIR$/../Space/ESService/pom.xml" />
+        <option value="$PROJECT_DIR$/../Space/SPAPIGatewayWeb/pom.xml" />
+        <option value="$PROJECT_DIR$/../Space/SPCore/pom.xml" />
+        <option value="$PROJECT_DIR$/../Space/SPEnterpriseService/pom.xml" />
+        <option value="$PROJECT_DIR$/../Space/SPFileService/pom.xml" />
+        <option value="$PROJECT_DIR$/../Space/SPUserService/pom.xml" />
+        <option value="$PROJECT_DIR$/../Space/SpaceWeb/pom.xml" />
+        <option value="$PROJECT_DIR$/../Space/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11" project-jdk-type="JavaSDK">

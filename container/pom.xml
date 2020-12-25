@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.wonerchats</groupId>
+        <groupId>oceanus</groupId>
         <artifactId>Oceanus</artifactId>
         <version>1.0</version>
         <relativePath>../pom.xml</relativePath>
@@ -14,12 +14,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.wonerchats</groupId>
+            <groupId>oceanus</groupId>
             <artifactId>core</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>com.wonerchats</groupId>
+            <groupId>oceanus</groupId>
             <artifactId>MongodbConnector</artifactId>
             <version>1.0</version>
         </dependency>
@@ -32,50 +32,7 @@
                 <version>4.2.1</version>
                 <extensions>true</extensions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>container.container.ContainerApplication</mainClass>
-<!--                            <classpathPrefix>/home/aculearn/disk/lib/groovycloud-libs/</classpathPrefix>-->
-                            <classpathPrefix>libs/</classpathPrefix>  <!--used for windows -->
-                            <classpathLayoutType>repository</classpathLayoutType>
-                        </manifest>
-                        <!--						<manifestEntries>-->
-                        <!--							<Class-Path>lib/cloudcore-0.0.1-SNAPSHOT.jar lib/core-0.0.1-SNAPSHOT.jar lib/mongodbconnector-0.0.1-SNAPSHOT.jar</Class-Path>-->
-                        <!--						</manifestEntries>-->
-                    </archive>
-                    <excludes>
-                        <exclude>**/*.xml </exclude>
-                        <exclude>**/*.properties</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.1</version>
-                <!-- The configuration of the plugin -->
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/resources/config/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
-        <finalName>container-1.0</finalName>
     </build>
 
 </project>

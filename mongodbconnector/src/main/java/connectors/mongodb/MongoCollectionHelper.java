@@ -5,8 +5,9 @@ import connectors.mongodb.annotations.handlers.MongoDBHandler;
 import connectors.mongodb.annotations.handlers.MongoDBHandler.CollectionHolder;
 import connectors.mongodb.codec.DataObject;
 import org.bson.Document;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
+import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.groovy.GroovyRuntime;
+import script.core.runtime.classloader.MyGroovyClassLoader;
 
 import java.util.HashMap;
 
@@ -15,9 +16,9 @@ public class MongoCollectionHelper {
 		ClassLoader classLoader = this.getClass().getClassLoader().getParent();
 		if(classLoader != null && classLoader instanceof MyGroovyClassLoader) {
 			MyGroovyClassLoader myGroovyClassLoader = (MyGroovyClassLoader) classLoader;
-			GroovyRuntime runtime = myGroovyClassLoader.getGroovyRuntime();
-			if(runtime != null) {
-				MongoDBHandler handler = (MongoDBHandler) runtime.getClassAnnotationHandler(MongoDBHandler.class);
+			AbstractRuntimeContext runtimeContext = myGroovyClassLoader.getRuntimeContext();
+			if(runtimeContext != null) {
+				MongoDBHandler handler = (MongoDBHandler) runtimeContext.getClassAnnotationHandler(MongoDBHandler.class);
 				if(handler != null) {
 					HashMap<Class<?>, CollectionHolder> map = handler.getCollectionMap();
 					if(map != null) {
@@ -36,9 +37,9 @@ public class MongoCollectionHelper {
 		ClassLoader classLoader = this.getClass().getClassLoader().getParent();
 		if(classLoader != null && classLoader instanceof MyGroovyClassLoader) {
 			MyGroovyClassLoader myGroovyClassLoader = (MyGroovyClassLoader) classLoader;
-			GroovyRuntime runtime = myGroovyClassLoader.getGroovyRuntime();
-			if(runtime != null) {
-				MongoDBHandler handler = (MongoDBHandler) runtime.getClassAnnotationHandler(MongoDBHandler.class);
+			AbstractRuntimeContext runtimeContext = myGroovyClassLoader.getRuntimeContext();
+			if(runtimeContext != null) {
+				MongoDBHandler handler = (MongoDBHandler) runtimeContext.getClassAnnotationHandler(MongoDBHandler.class);
 				if(handler != null) {
 					HashMap<Class<?>, CollectionHolder> map = handler.getCollectionMap();
 					if(map != null) {

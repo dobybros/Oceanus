@@ -27,8 +27,6 @@ public abstract class OnlineUserManager {
     @Resource
     private OfflineMessageSavingTask offlineMessageSavingTask;
 
-    private Class<? extends OnlineUser> adminOnlineUserClass;        //admin
-
     private UserExpireTimer expireTimerTask = new UserExpireTimer();
 
     private ConcurrentHashMap<String, SingleThreadQueue<EventEntity>> queueMap = new ConcurrentHashMap<>();
@@ -176,11 +174,6 @@ public abstract class OnlineUserManager {
         String userId = user.getUserId();
         OnlineUser onlineUser = onlineUserHolder.getOnlineUser(userId);
         if (onlineUser == null) {
-//				if(userId.equals(AdminOnlineUserImpl.ADMIN_ACCOUNT_ID) || userId.equals(AdminOnlineUserImpl.ALLUSERS_ACCOUNT_ID) || userId.equals(AdminOnlineUserImpl.PAIDUSERS_ACCOUNT_ID)) {
-//					onlineUser = adminOnlineUserClass.newInstance();
-//				} else {
-//					onlineUser = onlineUserClass.newInstance();
-//				}
             onlineUser = new OnlineUser();
             onlineUser.setUserId(userId);
             onlineUser.setOnlineUseManager(this);
@@ -312,16 +305,6 @@ public abstract class OnlineUserManager {
     }
 
     protected abstract void sendEventToOnlineUsers(Message event, OnlineUser excludeUser) throws CoreException;
-
-
-    public Class<? extends OnlineUser> getAdminOnlineUserClass() {
-        return adminOnlineUserClass;
-    }
-
-
-    public void setAdminOnlineUserClass(Class<? extends OnlineUser> adminOnlineUserClass) {
-        this.adminOnlineUserClass = adminOnlineUserClass;
-    }
 
     public void getOnlineUsers(IteratorEx<OnlineUser> iterator) {
         if (onlineUserHolder != null) {

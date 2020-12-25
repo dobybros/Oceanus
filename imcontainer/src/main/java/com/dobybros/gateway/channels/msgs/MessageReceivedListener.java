@@ -4,13 +4,14 @@ import chat.errors.CoreException;
 import com.dobybros.chat.annotation.MessageReceived;
 import com.dobybros.chat.binary.data.Data;
 import com.dobybros.gateway.onlineusers.OnlineUserManager;
-import com.docker.utils.SpringContextUtil;
+import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import org.apache.mina.core.session.IoSession;
+import com.docker.utils.BeanFactory;
 
 public abstract class MessageReceivedListener {
 	private Class<? extends Data> dataClass;
 	
-	protected OnlineUserManager onlineUserManager = (OnlineUserManager) SpringContextUtil.getBean("onlineUserManager");
+	protected OnlineUserManager onlineUserManager = (OnlineUserManager) BeanFactory.getBean(OnlineUserManagerImpl.class.getName());
 
 	public abstract void messageReceived(Data data, IoSession session)
 			throws CoreException;

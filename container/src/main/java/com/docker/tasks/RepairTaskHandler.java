@@ -6,11 +6,10 @@ import com.docker.data.RepairData;
 import com.docker.server.OnlineServer;
 import com.docker.storage.adapters.impl.RepairServiceImpl;
 import com.docker.tasks.annotations.RepairTaskListener;
-import com.docker.utils.GroovyCloudBean;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationGlobalHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
+import script.core.runtime.AbstractRuntimeContext;
+import com.docker.utils.BeanFactory;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationGlobalHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -23,19 +22,19 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RepairTaskHandler extends ClassAnnotationGlobalHandler {
     private final String TAG = RepairTaskHandler.class.getSimpleName();
+    private RepairServiceImpl repairService;
     private Map<String, GroovyObjectEx> groovyObjectExMap = new ConcurrentHashMap<>();
-    private RepairServiceImpl repairService = (RepairServiceImpl) GroovyCloudBean.getBean(GroovyCloudBean.REPAIRSERVICE);
 
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return RepairTaskListener.class;
     }
 
     @Override
-    public void handleAnnotatedClassesInjectBean(GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClassesInjectBean(AbstractRuntimeContext runtimeContext) {
         for (GroovyObjectEx groovyObjectEx : groovyObjectExMap.values()) {
             try {
-                groovyObjectEx = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyObjectEx.getGroovyClass());
+                groovyObjectEx = (GroovyObjectEx) getObject(null, groovyObjectEx.getGroovyClass(), runtimeContext);
             }catch (CoreException e){
                 LoggerEx.error(TAG, e.getMessage());
             }
@@ -43,7 +42,8 @@ public class RepairTaskHandler extends ClassAnnotationGlobalHandler {
     }
 
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, GroovyRuntime groovyRuntime) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, AbstractRuntimeContext runtimeContext) throws CoreException {
+        repairService = (RepairServiceImpl) BeanFactory.getBean(RepairServiceImpl.class.getName());
         LoggerEx.info(TAG, "I will add repair task");
         if (annotatedClassMap != null) {
             Collection<Class<?>> values = annotatedClassMap.values();
@@ -55,28 +55,16 @@ public class RepairTaskHandler extends ClassAnnotationGlobalHandler {
                     String createTime = repairTaskListener.createTime();
                     String id = repairTaskListener.id();
                     int type = repairTaskListener.type();
-                    GroovyObjectEx<?> groovyObj = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
-//                    GroovyObjectEx existGroovyObj = groovyObjectExMap.get(id);
-//                    boolean newGroovyPath = false;
-//                    if(existGroovyObj != null){
-//                        if (existGroovyObj.getGroovyPath().equals(groovyObj.getGroovyPath())) {
-//                            newGroovyPath = true;
-//                        } else {
-//                            LoggerEx.error(TAG, "Repair task: " + groovyClass + " has been ignored because of duplicated id: " + id);
-//                        }
-//                    }else {
-//                        newGroovyPath = true;
-//                    }
-//                    if(newGroovyPath){
+                    GroovyObjectEx<?> groovyObj = (GroovyObjectEx) getObject(null, groovyClass, runtimeContext);
                         groovyObjectExMap.put(id, groovyObj);
                         try {
                             RepairData repairData = repairService.getRepairData(id);
                             if (repairData == null) {
-                                repairData = new RepairData(id, description, createTime, type, "null", "http://" + OnlineServer.getInstance().getIp() + ":" + OnlineServer.getInstance().getHttpPort());
+                                repairData = new RepairData(id, description, createTime, type, "null", "http://" + OnlineServer.getInstance().getIp() + ":" + runtimeContext.getConfiguration().getBaseConfiguration().getServerPort());
                                 repairData.setExecuteResult("null");
                                 repairService.addRepairData(repairData);
                             } else {
-                                repairData.setServerUri("http://" + OnlineServer.getInstance().getIp() + ":" + OnlineServer.getInstance().getHttpPort());
+                                repairData.setServerUri("http://" + OnlineServer.getInstance().getIp() + ":" + runtimeContext.getConfiguration().getBaseConfiguration().getServerPort());
                                 repairData.setCreateTime(createTime);
                                 repairData.setDescription(description);
                                 repairData.setType(type);

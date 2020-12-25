@@ -1,5 +1,6 @@
 package com.dobybros.gateway.onlineusers;
 
+import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.dobybros.chat.channels.Channel;
 import com.dobybros.chat.data.userinfo.UserInfo;
@@ -29,7 +30,7 @@ public class OnlineUser {
 	protected UserInfoAdapter userInfoAdapter;
 	protected OfflineMessageSavingTask offlineMessageSavingTask;
 	protected OfflineMessageAdapter offlineMessageAdapter;
-	public OnlineUser() {
+	public OnlineUser() throws CoreException {
 		userInfoAdapter = StorageManager.getInstance().getStorageAdapter(UserInfoAdapter.class);
 		offlineMessageAdapter = StorageManager.getInstance().getStorageAdapter(OfflineMessageAdapter.class);
 	}
@@ -130,7 +131,7 @@ public class OnlineUser {
 //
 //		return serviceUser;
 //	}
-	public synchronized OnlineServiceUser addOnlineServiceUser(String service, UserInfo userInfo, String preSessionId, OnlineServiceUser onlineServiceUser) {
+	public synchronized OnlineServiceUser addOnlineServiceUser(String service, UserInfo userInfo, String preSessionId, OnlineServiceUser onlineServiceUser) throws CoreException {
 		OnlineServiceUser serviceUser = serviceUserMap.get(service);
 		if(serviceUser != null) {
 			return serviceUser;
@@ -213,7 +214,7 @@ public class OnlineUser {
 		this.serviceUserMap = serviceUserMap;
 	}
 
-	public void removeChannel(Channel channel, int closeError) {
+	public void removeChannel(Channel channel, int closeError) throws CoreException {
 		if(channel instanceof TcpChannel) {
 			TcpChannel tcpChannel = (TcpChannel) channel;
 			Map<String, OnlineServiceUser> map = tcpChannel.getOnlineServiceUsers();

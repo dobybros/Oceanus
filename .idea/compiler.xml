@@ -2,24 +2,42 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="core" />
-        <module name="MongodbConnector" />
-        <module name="proxycontainer" />
         <module name="container" />
         <module name="imcontainer" />
+        <module name="core" />
+        <module name="TestCore" />
+        <module name="MongodbConnector" />
+        <module name="proxycontainer" />
+        <module name="Test2" />
+        <module name="Test1" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="container" target="11" />
+      <module name="Convert" target="11" />
       <module name="core" target="11" />
+      <module name="ESService" target="11" />
       <module name="imcontainer" target="11" />
       <module name="MongodbConnector" target="11" />
       <module name="Oceanus" target="11" />
       <module name="proxycontainer" target="11" />
+      <module name="Space" target="11" />
+      <module name="SpaceWeb" target="11" />
+      <module name="SPAPIGatewayWeb" target="11" />
+      <module name="SPCore" target="11" />
+      <module name="SPEnterpriseService" target="11" />
+      <module name="SPFileService" target="11" />
+      <module name="SPUserService" target="11" />
+      <module name="Test" target="11" />
+      <module name="Test1" target="11" />
+      <module name="Test2" target="11" />
+      <module name="Test3" target="11" />
+      <module name="TestCore" target="11" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

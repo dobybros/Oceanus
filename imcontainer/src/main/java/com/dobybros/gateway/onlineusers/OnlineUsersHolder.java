@@ -1,9 +1,11 @@
 package com.dobybros.gateway.onlineusers;
 
 
+import chat.config.BaseConfiguration;
 import chat.utils.TimerEx;
 import chat.utils.TimerTaskEx;
 import com.docker.server.OnlineServer;
+import com.docker.utils.BeanFactory;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -18,7 +20,7 @@ public class OnlineUsersHolder {
     //	private EventReceivingTaskEx eventReceivingTask;
     private OnlineUserManager onlineUserManager;
     private OnlineServer onlineServer;
-
+    private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     public OnlineUsersHolder() {
     }
 
@@ -153,7 +155,7 @@ public class OnlineUsersHolder {
                 serverCountTotal += longAdder.longValue();
             }
         }
-        Long maxUserNumber = onlineServer.getMaxUserNumber();
+        Long maxUserNumber = baseConfiguration.getMaxUserNumber();
         if (isAvailable(serverCountTotal, maxUserNumber)) {
             LongAdder longAdder = serviceUserCountMap.get(service);
             if (longAdder != null) {

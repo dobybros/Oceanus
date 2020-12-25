@@ -11,10 +11,7 @@ import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.skeleton.ServiceSkeletonAnnotationHandler;
 import com.docker.rpc.remote.stub.RpcCacheManager;
 import com.docker.rpc.remote.stub.ServiceStubManager;
-import com.docker.script.BaseRuntime;
-import com.docker.script.MyBaseRuntime;
-import com.docker.script.ScriptManager;
-import com.docker.utils.SpringContextUtil;
+import com.docker.script.BaseRuntimeContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -25,6 +22,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class MethodRequest extends RPCRequest {
+
 	public static final String RPCTYPE = "mthd";
     private static final String TAG = MethodRequest.class.getSimpleName();
     private byte version = 1;
@@ -95,11 +93,11 @@ public class MethodRequest extends RPCRequest {
 
                         if(service == null)
                             throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NULL, "Service is null for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                        ScriptManager scriptManager = (ScriptManager) SpringContextUtil.getBean("scriptManager");
-                        BaseRuntime baseRuntime = scriptManager.getBaseRuntime(service);
-                        if(baseRuntime == null)
-                            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + service + " not found for service_class_method " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                        ServiceSkeletonAnnotationHandler serviceSkeletonAnnotationHandler = (ServiceSkeletonAnnotationHandler) baseRuntime.getClassAnnotationHandler(ServiceSkeletonAnnotationHandler.class);
+                        BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(service);
+                        if(runtimeContext == null){
+                            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + service + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+                        }
+                        ServiceSkeletonAnnotationHandler serviceSkeletonAnnotationHandler = (ServiceSkeletonAnnotationHandler) runtimeContext.getClassAnnotationHandler(ServiceSkeletonAnnotationHandler.class);
                         if(serviceSkeletonAnnotationHandler == null)
                             throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SKELETON_NULL, "Skeleton handler is not for service " + service + " on method service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
                         MethodMapping methodMapping = serviceSkeletonAnnotationHandler.getMethodMapping(crc);
@@ -191,17 +189,14 @@ public class MethodRequest extends RPCRequest {
 
                 ServiceStubManager serviceStubManager = this.serviceStubManager;
                 if(serviceStubManager == null) {
-                    ScriptManager scriptManager = (ScriptManager) SpringContextUtil.getBean("scriptManager");
-                    MyBaseRuntime baseRuntime = (MyBaseRuntime) scriptManager.getBaseRuntime(fromService);
-                    if(baseRuntime == null)
-                        throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + service + " not found for service_class_method " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-
-                    serviceStubManager = baseRuntime.getServiceStubManager();
+                    BaseRuntimeContext runtimeContext = (BaseRuntimeContext)baseConfiguration.getRuntimeContext(fromService);
+                    if(runtimeContext == null){
+                        throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + fromService + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+                    }
+                    serviceStubManager = runtimeContext.getServiceStubManagerFactory().get(null);
                 }
 
                 MethodMapping methodMapping = serviceStubManager.getMethodMapping(crc);
-//                if(methodMapping == null)
-//                    throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_METHODNOTFOUND, "Method doesn't be found by crc " + crc);
                 if(methodMapping != null) {
                     Class<?>[] parameterTypes = methodMapping.getParameterTypes();
                     if(parameterTypes != null) {

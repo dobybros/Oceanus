@@ -7,7 +7,7 @@ import com.docker.rpc.*;
 import com.docker.rpc.impl.RMIServerImplWrapper;
 import com.docker.rpc.impl.RPCEntity;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import script.groovy.object.GroovyObjectEx;
+import script.core.runtime.groovy.object.GroovyObjectEx;
 
 import java.rmi.RemoteException;
 

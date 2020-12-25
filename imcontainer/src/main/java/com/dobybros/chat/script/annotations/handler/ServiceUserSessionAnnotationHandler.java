@@ -5,18 +5,15 @@ import chat.logs.LoggerEx;
 import com.dobybros.chat.handlers.imextention.IMExtensionCache;
 import com.dobybros.chat.script.annotations.gateway.ServiceUserSessionHandler;
 import com.dobybros.chat.script.annotations.gateway.ServiceUserSessionListener;
-import com.docker.script.MyBaseRuntime;
-import com.docker.utils.GroovyCloudBean;
-import script.groovy.runtime.ClassAnnotationHandler;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
+import com.docker.utils.BeanFactory;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServiceUserSessionAnnotationHandler extends ClassAnnotationHandler {
-    private IMExtensionCache imExtensionCache = (IMExtensionCache) GroovyCloudBean.getBean(GroovyCloudBean.IMEXTENSIONCACHE);
+    private IMExtensionCache imExtensionCache = (IMExtensionCache) BeanFactory.getBean(IMExtensionCache.class.getName());
 
     public static final String TAG = ServiceUserSessionAnnotationHandler.class.getSimpleName();
 
@@ -25,12 +22,12 @@ public class ServiceUserSessionAnnotationHandler extends ClassAnnotationHandler 
     private ConcurrentHashMap<String, ServiceUserSessionListener> listenerMap = new ConcurrentHashMap<>();
 
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return ServiceUserSessionHandler.class;
     }
 
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, MyGroovyClassLoader classLoader) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) {
         this.setAnnotatedClassMap(annotatedClassMap);
     }
 
@@ -62,10 +59,7 @@ public class ServiceUserSessionAnnotationHandler extends ClassAnnotationHandler 
                         listener.setParentUserId(imExtensionCache.getUserId(userId));
                         listener.setUserId(userId);
                         listener.setService(service);
-                        if (getGroovyRuntime() instanceof MyBaseRuntime) {
-                            MyBaseRuntime myBaseRuntime = (MyBaseRuntime)getGroovyRuntime();
-                            myBaseRuntime.injectBean(listener);
-                        }
+                        runtimeContext.injectBean(listener);
                     }
                 } catch (Throwable t) {
                     LoggerEx.error(TAG, "Create listener error, eMsg : " + t.getMessage());

@@ -6,11 +6,8 @@ import chat.logs.LoggerEx;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.script.servlet.annotations.WebService;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
-import script.groovy.runtime.classloader.MyGroovyClassLoader;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -29,11 +26,11 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
     }
 
     @Override
-    public Class<? extends Annotation> handleAnnotationClass(GroovyRuntime groovyRuntime) {
+    public Class<? extends Annotation> handleAnnotationClass() {
         return WebService.class;
     }
     @Override
-    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, MyGroovyClassLoader classLoader) {
+    public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
         if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
             StringBuilder uriLogs = new StringBuilder(
                     "\r\n---------------------------------------\r\n");
@@ -49,7 +46,7 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
                     // Handle RequestIntercepting
                     WebService requestIntercepting = groovyClass.getAnnotation(WebService.class);
                     if (requestIntercepting != null) {
-                        GroovyObjectEx<?> serverAdapter = ((GroovyBeanFactory)getGroovyRuntime().getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+                        GroovyObjectEx<?> serverAdapter = (GroovyObjectEx<?>) getObject(null, groovyClass, runtimeContext);
                         scanClass(groovyClass, serverAdapter, newMethodMap);
                     }
                 }

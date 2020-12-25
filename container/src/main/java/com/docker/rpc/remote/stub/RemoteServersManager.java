@@ -13,7 +13,7 @@ import com.docker.storage.adapters.impl.ServiceVersionServiceImpl;
 import com.docker.utils.ScriptHttpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import script.groovy.servlets.grayreleased.GrayReleased;
+import script.core.servlets.grayreleased.GrayReleased;
 
 import java.util.ArrayList;
 import java.util.HashMap;

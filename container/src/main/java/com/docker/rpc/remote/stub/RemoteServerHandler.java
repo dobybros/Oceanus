@@ -1,5 +1,6 @@
 package com.docker.rpc.remote.stub;
 
+import chat.config.BaseConfiguration;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import chat.json.Result;
@@ -11,6 +12,7 @@ import com.docker.rpc.remote.MethodMapping;
 import com.docker.server.OnlineServer;
 import com.docker.utils.ScriptHttpUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import com.docker.utils.BeanFactory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -22,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Description：
  */
 public class RemoteServerHandler {
+    protected BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     private Random random = new Random();
     private long touch;
     private RemoteServers remoteServers;
@@ -131,9 +134,9 @@ public class RemoteServerHandler {
                 request.setService(toService + "_v" + server.getVersion());
                 request.setCallbackFutureId(this.callbackFutureId);
                 if (OnlineServer.getInstance() != null) {
-                    request.setFromServerName(OnlineServer.getInstance().getServer());
+                    request.setFromServerName(baseConfiguration.getServer());
                     request.setSourceIp(OnlineServer.getInstance().getIp());
-                    request.setSourcePort(Integer.valueOf(OnlineServer.getInstance().getRpcPort()));
+                    request.setSourcePort(Integer.valueOf(baseConfiguration.getRpcPort()));
                 }
                 if (ip != null && port != null) {
                     RPCClientAdapter clientAdapter = thisRpcClientAdapterMap.registerServer(ip, port, server.getServer());
@@ -197,11 +200,11 @@ public class RemoteServerHandler {
                 } else {
                     port = server.getRpcPort();
                 }
-                request.setService(toService + "_v" + server.getVersion());
+                request.setService(toService);
                 if (OnlineServer.getInstance() != null) {
-                    request.setFromServerName(OnlineServer.getInstance().getServer());
+                    request.setFromServerName(baseConfiguration.getServer());
                     request.setSourceIp(OnlineServer.getInstance().getIp());
-                    request.setSourcePort(Integer.valueOf(OnlineServer.getInstance().getRpcPort()));
+                    request.setSourcePort(Integer.valueOf(baseConfiguration.getRpcPort()));
                 }
                 if (ip != null && port != null) {
                     long time = System.currentTimeMillis();

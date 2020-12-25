@@ -5,10 +5,10 @@ import chat.logs.LoggerEx;
 import com.dobybros.chat.annotation.MessageReceived;
 import com.dobybros.chat.binary.data.Data;
 import com.dobybros.gateway.channels.msgs.MessageReceivedListener;
-import script.groovy.object.GroovyObjectEx;
-import script.groovy.runtime.ClassAnnotationGlobalHandler;
-import script.groovy.runtime.GroovyBeanFactory;
-import script.groovy.runtime.GroovyRuntime;
+import script.Runtime;
+import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationGlobalHandler;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
@@ -28,11 +28,11 @@ public class UpStreamAnnotationHandler extends ClassAnnotationGlobalHandler {
 	}
 
 	@Override
-	public void handleAnnotatedClassesInjectBean(GroovyRuntime groovyRuntime) {
+	public void handleAnnotatedClassesInjectBean(AbstractRuntimeContext runtimeContext) {
 		if(messageReceivedMap != null){
 			for (GroovyObjectEx<MessageReceivedListener> groovyObjectEx : messageReceivedMap.values()) {
 				try {
-					groovyObjectEx = ((GroovyBeanFactory) groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyObjectEx.getGroovyClass());
+					groovyObjectEx = (GroovyObjectEx<MessageReceivedListener>)getObject(null, groovyObjectEx.getGroovyClass(), runtimeContext);
 				}catch (CoreException e){
 					LoggerEx.error(TAG, e.getMessage());
 				}
@@ -41,14 +41,12 @@ public class UpStreamAnnotationHandler extends ClassAnnotationGlobalHandler {
 	}
 
 	@Override
-	public Class<? extends Annotation> handleAnnotationClass(
-			GroovyRuntime groovyRuntime) {
+	public Class<? extends Annotation> handleAnnotationClass() {
 		return MessageReceived.class;
 	}
 
 	@Override
-	public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap,
-			GroovyRuntime groovyRuntime) {
+	public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap, AbstractRuntimeContext runtimeContext) throws CoreException {
 		if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
 			StringBuilder uriLogs = new StringBuilder(
 					"\r\n---------------------------------------\r\n");
@@ -63,7 +61,7 @@ public class UpStreamAnnotationHandler extends ClassAnnotationGlobalHandler {
 						Class<? extends Data> dataClass = messageReceivedAnnotation.dataClass();
 						Byte type = (byte)messageReceivedAnnotation.type();
 						if (dataClass != null && type != null) {
-							GroovyObjectEx<MessageReceivedListener> messageReceivedObj = ((GroovyBeanFactory)groovyRuntime.getClassAnnotationHandler(GroovyBeanFactory.class)).getClassBean(groovyClass);
+							GroovyObjectEx<MessageReceivedListener> messageReceivedObj = (GroovyObjectEx<MessageReceivedListener>) getObject(null, groovyClass, runtimeContext);
 							if (messageReceivedObj != null) {
 								uriLogs.append("MessageReceivedListener " + dataClass + "#" + groovyClass + "\r\n");
 								newMessageReceivedMap.put(type, messageReceivedObj);
