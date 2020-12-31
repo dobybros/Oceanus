@@ -1,7 +1,6 @@
 package com.docker.script.i18n;
 
 
-import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

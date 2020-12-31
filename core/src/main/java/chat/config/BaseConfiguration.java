@@ -1,7 +1,6 @@
 package chat.config;
 
 import chat.utils.ChatUtils;
-import lombok.Data;
 import script.core.runtime.AbstractRuntimeContext;
 
 import java.util.Map;
@@ -13,7 +12,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Created by lick on 2020/12/17.
  * Description：
  */
-@Data
 public class BaseConfiguration {
     private final String TAG = BaseConfiguration.class.getName();
     private String server = ChatUtils.generateFixedRandomString();
@@ -116,6 +114,398 @@ public class BaseConfiguration {
     public void close(){
         serviceConfiguration.values().forEach(AbstractRuntimeContext::close);
         serviceConfiguration.clear();
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public String getMongoHost() {
+        return mongoHost;
+    }
+
+    public void setMongoHost(String mongoHost) {
+        this.mongoHost = mongoHost;
+    }
+
+    public String getMongoConnectionsPerHost() {
+        return mongoConnectionsPerHost;
+    }
+
+    public void setMongoConnectionsPerHost(String mongoConnectionsPerHost) {
+        this.mongoConnectionsPerHost = mongoConnectionsPerHost;
+    }
+
+    public String getDbName() {
+        return dbName;
+    }
+
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
+
+    public String getLogsDBName() {
+        return logsDBName;
+    }
+
+    public void setLogsDBName(String logsDBName) {
+        this.logsDBName = logsDBName;
+    }
+
+    public String getConfigDBName() {
+        return configDBName;
+    }
+
+    public void setConfigDBName(String configDBName) {
+        this.configDBName = configDBName;
+    }
+
+    public String getMongoUsername() {
+        return mongoUsername;
+    }
+
+    public void setMongoUsername(String mongoUsername) {
+        this.mongoUsername = mongoUsername;
+    }
+
+    public String getMongoPassword() {
+        return mongoPassword;
+    }
+
+    public void setMongoPassword(String mongoPassword) {
+        this.mongoPassword = mongoPassword;
+    }
+
+    public String getRedisHost() {
+        return redisHost;
+    }
+
+    public void setRedisHost(String redisHost) {
+        this.redisHost = redisHost;
+    }
+
+    public String getGridHost() {
+        return gridHost;
+    }
+
+    public void setGridHost(String gridHost) {
+        this.gridHost = gridHost;
+    }
+
+    public String getGirdConnectionsPerHost() {
+        return girdConnectionsPerHost;
+    }
+
+    public void setGirdConnectionsPerHost(String girdConnectionsPerHost) {
+        this.girdConnectionsPerHost = girdConnectionsPerHost;
+    }
+
+    public String getGridDbName() {
+        return gridDbName;
+    }
+
+    public void setGridDbName(String gridDbName) {
+        this.gridDbName = gridDbName;
+    }
+
+    public String getGridUsername() {
+        return gridUsername;
+    }
+
+    public void setGridUsername(String gridUsername) {
+        this.gridUsername = gridUsername;
+    }
+
+    public String getGridPassword() {
+        return gridPassword;
+    }
+
+    public void setGridPassword(String gridPassword) {
+        this.gridPassword = gridPassword;
+    }
+
+    public String getIpPrefix() {
+        return ipPrefix;
+    }
+
+    public void setIpPrefix(String ipPrefix) {
+        this.ipPrefix = ipPrefix;
+    }
+
+    public String getEthPrefix() {
+        return ethPrefix;
+    }
+
+    public void setEthPrefix(String ethPrefix) {
+        this.ethPrefix = ethPrefix;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getServerType() {
+        return serverType;
+    }
+
+    public void setServerType(String serverType) {
+        this.serverType = serverType;
+    }
+
+    public String getInternalKey() {
+        return internalKey;
+    }
+
+    public void setInternalKey(String internalKey) {
+        this.internalKey = internalKey;
+    }
+
+    public Integer getRpcPort() {
+        return rpcPort;
+    }
+
+    public void setRpcPort(Integer rpcPort) {
+        this.rpcPort = rpcPort;
+    }
+
+    public Integer getSslRpcPort() {
+        return sslRpcPort;
+    }
+
+    public void setSslRpcPort(Integer sslRpcPort) {
+        this.sslRpcPort = sslRpcPort;
+    }
+
+    public String getPublicDomain() {
+        return publicDomain;
+    }
+
+    public void setPublicDomain(String publicDomain) {
+        this.publicDomain = publicDomain;
+    }
+
+    public String getRpcSslClientTrustJksPath() {
+        return rpcSslClientTrustJksPath;
+    }
+
+    public void setRpcSslClientTrustJksPath(String rpcSslClientTrustJksPath) {
+        this.rpcSslClientTrustJksPath = rpcSslClientTrustJksPath;
+    }
+
+    public String getRpcSslServerJksPath() {
+        return rpcSslServerJksPath;
+    }
+
+    public void setRpcSslServerJksPath(String rpcSslServerJksPath) {
+        this.rpcSslServerJksPath = rpcSslServerJksPath;
+    }
+
+    public String getRpcSslJksPwd() {
+        return rpcSslJksPwd;
+    }
+
+    public void setRpcSslJksPwd(String rpcSslJksPwd) {
+        this.rpcSslJksPwd = rpcSslJksPwd;
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
+    }
+
+    public String getRemotePath() {
+        return remotePath;
+    }
+
+    public void setRemotePath(String remotePath) {
+        this.remotePath = remotePath;
+    }
+
+    public String getRuntimeBootClass() {
+        return runtimeBootClass;
+    }
+
+    public void setRuntimeBootClass(String runtimeBootClass) {
+        this.runtimeBootClass = runtimeBootClass;
+    }
+
+    public Integer getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(Integer serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public Long getMaxUsers() {
+        return maxUsers;
+    }
+
+    public void setMaxUsers(Long maxUsers) {
+        this.maxUsers = maxUsers;
+    }
+
+    public Boolean getHotDeployment() {
+        return hotDeployment;
+    }
+
+    public void setHotDeployment(Boolean hotDeployment) {
+        this.hotDeployment = hotDeployment;
+    }
+
+    public Boolean getKillProcess() {
+        return killProcess;
+    }
+
+    public void setKillProcess(Boolean killProcess) {
+        this.killProcess = killProcess;
+    }
+
+    public String getFileBucket() {
+        return fileBucket;
+    }
+
+    public void setFileBucket(String fileBucket) {
+        this.fileBucket = fileBucket;
+    }
+
+    public String getDockerName() {
+        return dockerName;
+    }
+
+    public void setDockerName(String dockerName) {
+        this.dockerName = dockerName;
+    }
+
+    public String getScaleInstanceId() {
+        return scaleInstanceId;
+    }
+
+    public void setScaleInstanceId(String scaleInstanceId) {
+        this.scaleInstanceId = scaleInstanceId;
+    }
+
+    public String getLanId() {
+        return lanId;
+    }
+
+    public void setLanId(String lanId) {
+        this.lanId = lanId;
+    }
+
+    public Boolean getUseHulkAdmin() {
+        return useHulkAdmin;
+    }
+
+    public void setUseHulkAdmin(Boolean useHulkAdmin) {
+        this.useHulkAdmin = useHulkAdmin;
+    }
+
+    public String getLibsPath() {
+        return libsPath;
+    }
+
+    public void setLibsPath(String libsPath) {
+        this.libsPath = libsPath;
+    }
+
+    public String getMavenSettingsPath() {
+        return mavenSettingsPath;
+    }
+
+    public void setMavenSettingsPath(String mavenSettingsPath) {
+        this.mavenSettingsPath = mavenSettingsPath;
+    }
+
+    public Integer getUpstreamPort() {
+        return upstreamPort;
+    }
+
+    public void setUpstreamPort(Integer upstreamPort) {
+        this.upstreamPort = upstreamPort;
+    }
+
+    public String getKeystorePwd() {
+        return keystorePwd;
+    }
+
+    public void setKeystorePwd(String keystorePwd) {
+        this.keystorePwd = keystorePwd;
+    }
+
+    public String getKeystorePath() {
+        return keystorePath;
+    }
+
+    public void setKeystorePath(String keystorePath) {
+        this.keystorePath = keystorePath;
+    }
+
+    public String getKeymanagerPwd() {
+        return keymanagerPwd;
+    }
+
+    public void setKeymanagerPwd(String keymanagerPwd) {
+        this.keymanagerPwd = keymanagerPwd;
+    }
+
+    public Integer getUpstreamSslPort() {
+        return upstreamSslPort;
+    }
+
+    public void setUpstreamSslPort(Integer upstreamSslPort) {
+        this.upstreamSslPort = upstreamSslPort;
+    }
+
+    public Integer getUpstreamWsPort() {
+        return upstreamWsPort;
+    }
+
+    public void setUpstreamWsPort(Integer upstreamWsPort) {
+        this.upstreamWsPort = upstreamWsPort;
+    }
+
+    public Integer getPublicWsPort() {
+        return publicWsPort;
+    }
+
+    public void setPublicWsPort(Integer publicWsPort) {
+        this.publicWsPort = publicWsPort;
+    }
+
+    public Boolean getUseProxy() {
+        return useProxy;
+    }
+
+    public void setUseProxy(Boolean useProxy) {
+        this.useProxy = useProxy;
+    }
+
+    public Long getMaxUserNumber() {
+        return maxUserNumber;
+    }
+
+    public void setMaxUserNumber(Long maxUserNumber) {
+        this.maxUserNumber = maxUserNumber;
+    }
+
+    public Properties getExtraProperties() {
+        return extraProperties;
+    }
+
+    public void setExtraProperties(Properties extraProperties) {
+        this.extraProperties = extraProperties;
     }
 
     @Override

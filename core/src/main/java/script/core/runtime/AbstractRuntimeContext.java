@@ -4,8 +4,6 @@ import chat.config.Configuration;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.Runtime;
@@ -26,8 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by lick on 2020/12/22.
  * Description：
  */
-@Getter
-@Setter
 public abstract class AbstractRuntimeContext implements RuntimeContext {
     private final String TAG = AbstractRuntimeContext.class.getSimpleName();
     public AbstractRuntimeContext(Configuration configuration) throws CoreException {
@@ -97,7 +93,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     }
     @Override
     public void close(){
-        for (AbstractClassAnnotationHandler annotationHandler : this.getAnnotationHandlerMap().values()) {
+        for (AbstractClassAnnotationHandler annotationHandler : annotationHandlerMap.values()) {
             try {
                 annotationHandler.handlerShutdown();
             } catch (Throwable t) {
@@ -117,5 +113,69 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
         if(this.runtime != null){
             this.runtime.close();
         }
+    }
+
+    public Runtime getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(Runtime runtime) {
+        this.runtime = runtime;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    public RuntimeBeanFactory getRuntimeBeanFactory() {
+        return runtimeBeanFactory;
+    }
+
+    public void setRuntimeBeanFactory(RuntimeBeanFactory runtimeBeanFactory) {
+        this.runtimeBeanFactory = runtimeBeanFactory;
+    }
+
+    public ClassLoader getCurrentClassLoader() {
+        return currentClassLoader;
+    }
+
+    public void setCurrentClassLoader(ClassLoader currentClassLoader) {
+        this.currentClassLoader = currentClassLoader;
+    }
+
+    public Map<Object, AbstractClassAnnotationHandler> getAnnotationHandlerMap() {
+        return annotationHandlerMap;
+    }
+
+    public void setAnnotationHandlerMap(Map<Object, AbstractClassAnnotationHandler> annotationHandlerMap) {
+        this.annotationHandlerMap = annotationHandlerMap;
+    }
+
+    public Map<String, ClassHolder> getCachedClasses() {
+        return cachedClasses;
+    }
+
+    public void setCachedClasses(Map<String, ClassHolder> cachedClasses) {
+        this.cachedClasses = cachedClasses;
+    }
+
+    public Map<String, Class<?>> getAllClasses() {
+        return allClasses;
+    }
+
+    public void setAllClasses(Map<String, Class<?>> allClasses) {
+        this.allClasses = allClasses;
+    }
+
+    public List<AbstractFieldAnnotationHandler> getFieldAnnotationHandlers() {
+        return fieldAnnotationHandlers;
+    }
+
+    public void setFieldAnnotationHandlers(List<AbstractFieldAnnotationHandler> fieldAnnotationHandlers) {
+        this.fieldAnnotationHandlers = fieldAnnotationHandlers;
     }
 }

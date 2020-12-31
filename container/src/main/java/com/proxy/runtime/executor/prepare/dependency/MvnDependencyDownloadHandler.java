@@ -19,7 +19,7 @@ import java.io.IOException;
  * Description：
  */
 public class MvnDependencyDownloadHandler implements DependencyDownloadHandler {
-    private final String TAG = MvnDependencyDownloadHandler.class.getName();
+    private final String TAG = MvnDependencyDownloadHandler.class.getSimpleName();
     private final String MVN_SYMBOL = "AllThisDependencies";
     private final String MVN_SYMBOL_START = "<!--AllThisDependencies";
     private final String MVN_SYMBOL_END = "AllThisDependencies-->";

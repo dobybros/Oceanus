@@ -14,8 +14,6 @@ import com.docker.server.OnlineServer;
 import com.docker.storage.adapters.impl.DeployServiceVersionServiceImpl;
 import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
 import com.docker.storage.adapters.impl.ServiceVersionServiceImpl;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +23,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
 public class ScriptManager implements ShutdownListener {
     private static final String TAG = ScriptManager.class.getSimpleName();
 
@@ -158,6 +154,13 @@ public class ScriptManager implements ShutdownListener {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
 
+    public void setRuntimeExecutor(RuntimeExecutor runtimeExecutor) {
+        this.runtimeExecutor = runtimeExecutor;
+    }
+
+    public void setBaseConfiguration(BaseConfiguration baseConfiguration) {
+        this.baseConfiguration = baseConfiguration;
     }
 }

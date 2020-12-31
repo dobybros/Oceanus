@@ -153,7 +153,14 @@
     <orderEntry type="library" name="Maven: jakarta.websocket:jakarta.websocket-api:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlets:9.4.31.v20200723" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:9.4.31.v20200723" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:9.4.31.v20200723" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:9.4.31.v20200723" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:9.4.31.v20200723" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-webapp:9.4.31.v20200723" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-xml:9.4.31.v20200723" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlet:9.4.31.v20200723" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-security:9.4.31.v20200723" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:9.4.31.v20200723" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.websocket:websocket-server:9.4.31.v20200723" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.websocket:websocket-common:9.4.31.v20200723" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.websocket:websocket-api:9.4.31.v20200723" level="project" />
@@ -190,13 +197,6 @@
     <orderEntry type="library" name="Maven: org.mortbay.jetty:jetty:6.1.26" level="project" />
     <orderEntry type="library" name="Maven: org.mortbay.jetty:jetty-util:6.1.26" level="project" />
     <orderEntry type="library" name="Maven: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:9.4.18.v20190429" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:9.4.31.v20200723" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:9.4.31.v20200723" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-webapp:9.4.18.v20190429" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-xml:9.4.31.v20200723" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlet:9.4.18.v20190429" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-security:9.4.31.v20200723" level="project" />
     <orderEntry type="library" name="Maven: org.apache.curator:curator-recipes:4.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.curator:curator-framework:4.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.curator:curator-client:4.2.0" level="project" />
@@ -327,6 +327,5 @@
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna:5.2.0" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:5.2.0" level="project" />
     <orderEntry type="library" name="Maven: com.belerweb:pinyin4j:2.5.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.16" level="project" />
   </component>
 </module>

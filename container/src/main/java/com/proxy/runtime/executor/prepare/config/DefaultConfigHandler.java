@@ -93,7 +93,9 @@ public class DefaultConfigHandler implements ConfigHandler {
         service.setService(configuration.getService());
         service.setVersion(configuration.getVersion());
         service.setUploadTime(configuration.getDeployVersion());
-        service.setMaxUserNumber((Long) configuration.getConfig().get(Service.FIELD_MAXUSERNUMBER));
+        if(configuration.getConfig().get(Service.FIELD_MAXUSERNUMBER) != null){
+            service.setMaxUserNumber(Long.parseLong((String) configuration.getConfig().get(Service.FIELD_MAXUSERNUMBER)));
+        }
         dockerStatusService.deleteService(configuration.getBaseConfiguration().getServer(), service.getService(), service.getVersion());
         dockerStatusService.addService(configuration.getBaseConfiguration().getServer(), service);
     }

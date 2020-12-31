@@ -3,8 +3,6 @@ package com.proxy.runtime;
 import chat.config.Configuration;
 import chat.errors.CoreException;
 import com.dobybros.chat.script.IMRuntimeContext;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Created by lick on 2020/12/23.

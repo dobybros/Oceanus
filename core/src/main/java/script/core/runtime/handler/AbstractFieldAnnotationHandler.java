@@ -1,15 +1,11 @@
 package script.core.runtime.handler;
 
 import chat.errors.CoreException;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
-import script.Runtime;
 import script.core.runtime.AbstractRuntimeContext;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-@Setter
 public abstract class AbstractFieldAnnotationHandler<T extends Annotation> {
     protected AbstractRuntimeContext runtimeContext;
     public abstract Class<T> annotationClass();
@@ -32,5 +28,13 @@ public abstract class AbstractFieldAnnotationHandler<T extends Annotation> {
             }
         }
         return markParam;
+    }
+
+    public AbstractRuntimeContext getRuntimeContext() {
+        return runtimeContext;
+    }
+
+    public void setRuntimeContext(AbstractRuntimeContext runtimeContext) {
+        this.runtimeContext = runtimeContext;
     }
 }

@@ -40,13 +40,13 @@ import org.springframework.context.annotation.ComponentScan;
 import script.core.servlets.GroovyServletDispatcher;
 @ComponentScan(basePackages = {"com", "container"})
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-		GroovyTemplateAutoConfiguration.class, AopAutoConfiguration.class, ElasticsearchRestClientAutoConfiguration.class, EmbeddedWebServerFactoryCustomizerAutoConfiguration.class,
+		GroovyTemplateAutoConfiguration.class,/**, AopAutoConfiguration.class, ElasticsearchRestClientAutoConfiguration.class, EmbeddedWebServerFactoryCustomizerAutoConfiguration.class,
 		ErrorMvcAutoConfiguration.class, GsonAutoConfiguration.class, HttpEncodingAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class, JacksonAutoConfiguration.class,
 		KafkaAutoConfiguration.class, LifecycleAutoConfiguration.class, MultipartAutoConfiguration.class, QuartzAutoConfiguration.class, RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class,
 		RestTemplateAutoConfiguration.class, SpringDataWebAutoConfiguration.class, TaskExecutionAutoConfiguration.class, TaskSchedulingAutoConfiguration.class,
 		TransactionAutoConfiguration.class, WebMvcAutoConfiguration.class, WebSocketServletAutoConfiguration.class, ActiveMQAutoConfiguration.class, BatchAutoConfiguration.class, CacheAutoConfiguration.class,
-		CassandraAutoConfiguration.class, CassandraReactiveDataAutoConfiguration.class, CassandraReactiveRepositoriesAutoConfiguration.class, CassandraRepositoriesAutoConfiguration.class, QuartzAutoConfiguration.class})
-public class ContainerApplication {
+		CassandraAutoConfiguration.class, CassandraReactiveDataAutoConfiguration.class, CassandraReactiveRepositoriesAutoConfiguration.class, CassandraRepositoriesAutoConfiguration.class, */QuartzAutoConfiguration.class})
+public class OceanusApplication {
 	@Bean
 	public ServletRegistrationBean servletRegistrationBean() {
 		//用ServletRegistrationBean包装servlet
@@ -68,7 +68,7 @@ public class ContainerApplication {
 		return baseServletRegistrationBean;
 	}
 	public static void main(String[] args) {
-		SpringApplication.run(ContainerApplication.class, args);
+		SpringApplication.run(OceanusApplication.class, args);
 	}
 
 }

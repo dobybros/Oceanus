@@ -24,9 +24,8 @@ import com.dobybros.gateway.onlineusers.OnlineUserManager;
 import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import com.dobybros.gateway.open.GatewayMSGServers;
 import com.docker.script.BaseRuntimeContext;
-import lombok.Setter;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import com.docker.utils.BeanFactory;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by lick on 2020/12/23.
  * Description：
  */
-@Setter
 public class IMRuntimeContext extends BaseRuntimeContext {
     private final String TAG = IMRuntimeContext.class.getSimpleName();
     public IMRuntimeContext(Configuration configuration) throws CoreException {
@@ -52,6 +50,25 @@ public class IMRuntimeContext extends BaseRuntimeContext {
     private OnlineUserManager onlineUserManager = (OnlineUserManager) BeanFactory.getBean(OnlineUserManagerImpl.class.getName());
     public ConcurrentHashMap<String, PendingMessageContainer> channelCreatedMessage = new ConcurrentHashMap<>();
 
+    public void setSessionListener(GroovyObjectEx<SessionListener> sessionListener) {
+        this.sessionListener = sessionListener;
+    }
+
+    public void setMessageNotReceivedListeners(List<GroovyObjectEx<MessageNotReceivedListener>> messageNotReceivedListeners) {
+        this.messageNotReceivedListeners = messageNotReceivedListeners;
+    }
+
+    public void setSingleThreadMap(ConcurrentHashMap<String, SingleThreadQueue> singleThreadMap) {
+        this.singleThreadMap = singleThreadMap;
+    }
+
+    public void setOnlineUserManager(OnlineUserManager onlineUserManager) {
+        this.onlineUserManager = onlineUserManager;
+    }
+
+    public void setChannelCreatedMessage(ConcurrentHashMap<String, PendingMessageContainer> channelCreatedMessage) {
+        this.channelCreatedMessage = channelCreatedMessage;
+    }
 
     /**
      * 这个接口会被调用两次， 一次是http的authorized的时候， 另一次是从tcp通道收到identity的时候

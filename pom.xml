@@ -191,24 +191,6 @@
 			<artifactId>google-oauth-client-jetty</artifactId>
 			<version>1.23.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>9.4.18.v20190429</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-webapp -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>9.4.18.v20190429</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>9.4.18.v20190429</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.curator/curator-recipes -->
 		<dependency>
 			<groupId>org.apache.curator</groupId>
@@ -524,13 +506,6 @@
 			<groupId>com.belerweb</groupId>
 			<artifactId>pinyin4j</artifactId>
 			<version>2.5.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.16</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>

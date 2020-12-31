@@ -2,11 +2,7 @@ package com.docker.onlineserver;
 
 import com.docker.data.DockerStatus;
 import com.docker.server.OnlineServer;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class OnlineServerWithStatus extends OnlineServer {
 	private Integer statusForBalancer;
 	private boolean changingForBalancer;
@@ -21,4 +17,5 @@ public class OnlineServerWithStatus extends OnlineServer {
 		dockerStatus.setPublicDomain(baseConfiguration.getPublicDomain());
 		return dockerStatus;
 	}
+
 }

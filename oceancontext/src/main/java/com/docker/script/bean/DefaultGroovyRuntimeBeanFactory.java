@@ -5,7 +5,6 @@ import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ReflectionUtil;
 import groovy.lang.GroovyObject;
-import lombok.SneakyThrows;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.annotation.Bean;

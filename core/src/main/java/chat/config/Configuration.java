@@ -1,19 +1,12 @@
 package chat.config;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 /**
  * Created by lick on 2020/12/17.
  * Description：
  */
-@Getter
-@Setter
 public class Configuration {
     /**
      * service's name, such as tcuser
@@ -75,5 +68,61 @@ public class Configuration {
                 ", version=" + version +
                 ", languageType='" + languageType + '\'' +
                 ", config=" + config;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public String getLanguageType() {
+        return languageType;
+    }
+
+    public void setLanguageType(String languageType) {
+        this.languageType = languageType;
+    }
+
+    public Properties getConfig() {
+        return config;
+    }
+
+    public void setConfig(Properties config) {
+        this.config = config;
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public Long getDeployVersion() {
+        return deployVersion;
+    }
+
+    public void setDeployVersion(Long deployVersion) {
+        this.deployVersion = deployVersion;
+    }
+
+    public String getLocalDependencyLibsPath() {
+        return localDependencyLibsPath;
+    }
+
+    public void setLocalDependencyLibsPath(String localDependencyLibsPath) {
+        this.localDependencyLibsPath = localDependencyLibsPath;
+    }
+
+    public BaseConfiguration getBaseConfiguration() {
+        return baseConfiguration;
     }
 }

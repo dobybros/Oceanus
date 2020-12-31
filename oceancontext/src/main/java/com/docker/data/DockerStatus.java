@@ -2,9 +2,6 @@ package com.docker.data;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -16,8 +13,6 @@ import java.util.Map;
  *
  * @author aplombchen
  */
-@Getter
-@Setter
 public class DockerStatus extends DataObject {
     public static final String FIELD_DOCKERSTATUS_IP = "ip";
     public static final String FIELD_DOCKERSTATUS_HTTPPORT = "httpPort";
@@ -243,5 +238,181 @@ public class DockerStatus extends DataObject {
             dbObj.put(FIELD_DOCKERSTATUS_INFO, JSON.toJSONString(info));
         }
         return dbObj;
+    }
+
+    public String getServerType() {
+        return serverType;
+    }
+
+    public void setServerType(String serverType) {
+        this.serverType = serverType;
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public String getDockerName() {
+        return dockerName;
+    }
+
+    public void setDockerName(String dockerName) {
+        this.dockerName = dockerName;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public Integer getHttpPort() {
+        return httpPort;
+    }
+
+    public void setHttpPort(Integer httpPort) {
+        this.httpPort = httpPort;
+    }
+
+    public Integer getRpcPort() {
+        return rpcPort;
+    }
+
+    public void setRpcPort(Integer rpcPort) {
+        this.rpcPort = rpcPort;
+    }
+
+    public Integer getSslRpcPort() {
+        return sslRpcPort;
+    }
+
+    public void setSslRpcPort(Integer sslRpcPort) {
+        this.sslRpcPort = sslRpcPort;
+    }
+
+    public String getPublicDomain() {
+        return publicDomain;
+    }
+
+    public void setPublicDomain(String publicDomain) {
+        this.publicDomain = publicDomain;
+    }
+
+    public String getLanId() {
+        return lanId;
+    }
+
+    public void setLanId(String lanId) {
+        this.lanId = lanId;
+    }
+
+    public List<Service> getServices() {
+        return services;
+    }
+
+    public void setServices(List<Service> services) {
+        this.services = services;
+    }
+
+    public Integer getTcpPort() {
+        return tcpPort;
+    }
+
+    public void setTcpPort(Integer tcpPort) {
+        this.tcpPort = tcpPort;
+    }
+
+    public Integer getSslTcpPort() {
+        return sslTcpPort;
+    }
+
+    public void setSslTcpPort(Integer sslTcpPort) {
+        this.sslTcpPort = sslTcpPort;
+    }
+
+    public Integer getWsPort() {
+        return wsPort;
+    }
+
+    public void setWsPort(Integer wsPort) {
+        this.wsPort = wsPort;
+    }
+
+    public Integer getPublicWsPort() {
+        return publicWsPort;
+    }
+
+    public void setPublicWsPort(Integer publicWsPort) {
+        this.publicWsPort = publicWsPort;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getHealth() {
+        return health;
+    }
+
+    public void setHealth(Integer health) {
+        this.health = health;
+    }
+
+    public Map getInfo() {
+        return info;
+    }
+
+    public void setInfo(Map info) {
+        this.info = info;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Long getMaxUserNumber() {
+        return maxUserNumber;
+    }
+
+    public void setMaxUserNumber(Long maxUserNumber) {
+        this.maxUserNumber = maxUserNumber;
+    }
+
+    public String getDeployId() {
+        return deployId;
+    }
+
+    public void setDeployId(String deployId) {
+        this.deployId = deployId;
+    }
+
+    public String getFailedReason() {
+        return failedReason;
+    }
+
+    public void setFailedReason(String failedReason) {
+        this.failedReason = failedReason;
     }
 }

@@ -21,7 +21,7 @@ import java.util.List;
  * Description：将依赖包通过URLClassLoader加载
  */
 public class DependencyPrepareClassLoaderHandler implements PrepareClassLoaderHandler {
-    private final String TAG = DependencyPrepareClassLoaderHandler.class.getName();
+    private final String TAG = DependencyPrepareClassLoaderHandler.class.getSimpleName();
     private ClassLoaderFactory classLoaderFactory = (ClassLoaderFactory) BeanFactory.getBean(DefaultClassLoaderFactory.class.getName());
     @Override
     public ClassLoader prepare(AbstractRuntimeContext runtimeContext) {
