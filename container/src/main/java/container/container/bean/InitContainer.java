@@ -1,4 +1,4 @@
-package proxycontainer.proxycontainer.bean;
+package container.container.bean;
 
 import chat.utils.IPHolder;
 import com.alibaba.fastjson.util.TypeUtils;

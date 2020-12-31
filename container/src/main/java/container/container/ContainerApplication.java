@@ -1,8 +1,7 @@
-package proxycontainer.proxycontainer;
+package container.container;
 
 import com.dobybros.gateway.script.GroovyServletScriptDispatcher;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
@@ -38,9 +37,8 @@ import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServlet
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import script.core.servlets.GroovyServletDispatcher;
-@ComponentScan(basePackages = {"com", "proxycontainer"})
+@ComponentScan(basePackages = {"com", "container"})
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 		GroovyTemplateAutoConfiguration.class, AopAutoConfiguration.class, ElasticsearchRestClientAutoConfiguration.class, EmbeddedWebServerFactoryCustomizerAutoConfiguration.class,
 		ErrorMvcAutoConfiguration.class, GsonAutoConfiguration.class, HttpEncodingAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class, JacksonAutoConfiguration.class,
@@ -48,7 +46,7 @@ import script.core.servlets.GroovyServletDispatcher;
 		RestTemplateAutoConfiguration.class, SpringDataWebAutoConfiguration.class, TaskExecutionAutoConfiguration.class, TaskSchedulingAutoConfiguration.class,
 		TransactionAutoConfiguration.class, WebMvcAutoConfiguration.class, WebSocketServletAutoConfiguration.class, ActiveMQAutoConfiguration.class, BatchAutoConfiguration.class, CacheAutoConfiguration.class,
 		CassandraAutoConfiguration.class, CassandraReactiveDataAutoConfiguration.class, CassandraReactiveRepositoriesAutoConfiguration.class, CassandraRepositoriesAutoConfiguration.class, QuartzAutoConfiguration.class})
-public class ProxyContainerApplication {
+public class ContainerApplication {
 	@Bean
 	public ServletRegistrationBean servletRegistrationBean() {
 		//用ServletRegistrationBean包装servlet
@@ -70,7 +68,7 @@ public class ProxyContainerApplication {
 		return baseServletRegistrationBean;
 	}
 	public static void main(String[] args) {
-		SpringApplication.run(ProxyContainerApplication.class, args);
+		SpringApplication.run(ContainerApplication.class, args);
 	}
 
 }

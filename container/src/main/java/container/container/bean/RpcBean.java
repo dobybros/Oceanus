@@ -1,4 +1,4 @@
-package proxycontainer.proxycontainer.bean;
+package container.container.bean;
 
 import com.docker.rpc.impl.RMIServerHandler;
 import org.springframework.context.annotation.Bean;

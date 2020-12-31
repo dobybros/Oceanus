@@ -1,4 +1,4 @@
-package proxycontainer.proxycontainer.bean;
+package container.container.bean;
 
 import com.dobybros.chat.handlers.*;
 import com.dobybros.chat.handlers.imextention.IMExtensionCache;
@@ -31,7 +31,7 @@ import java.util.Map;
  * @Description:
  * @Date:2019/5/26 15:41
  */
-public class IMBeanApp extends BeanApp {
+public class IMBeanApp extends ContextBeanApp {
     private static volatile IMBeanApp instance;
     private UpStreamHandler upstreamHandler;
     private ProtocolCodecFilter tcpCodecFilter;
@@ -289,7 +289,7 @@ public class IMBeanApp extends BeanApp {
             synchronized (IMBeanApp.class){
                 if (instance == null){
                     instance = new IMBeanApp();
-                    BeanApp.getInstance();
+                    ContextBeanApp.getInstance();
                 }
             }
         }

@@ -1,4 +1,4 @@
-package proxycontainer.proxycontainer.bean;
+package container.container.bean;
 
 import chat.config.BaseConfiguration;
 import chat.utils.IPHolder;
@@ -45,9 +45,9 @@ import java.util.Map;
  * @Date:2019/5/26 15:41
  */
 
-public class BeanApp {
-    private static final String TAG = BeanApp.class.getSimpleName();
-    private static volatile BeanApp instance;
+public class ContextBeanApp {
+    private static final String TAG = ContextBeanApp.class.getSimpleName();
+    private static volatile ContextBeanApp instance;
     protected static BaseConfiguration baseConfiguration;
     private PlainSocketFactory plainSocketFactory;
     private BeanFactory.SpringContextUtil springContextUtil;
@@ -518,11 +518,11 @@ public class BeanApp {
         return instance.fileAdapter;
     }
 
-    public static BeanApp getInstance() {
+    public static ContextBeanApp getInstance() {
         if (instance == null) {
-            synchronized (BeanApp.class) {
+            synchronized (ContextBeanApp.class) {
                 if (instance == null) {
-                    instance = new BeanApp();
+                    instance = new ContextBeanApp();
                     baseConfiguration = new BaseConfigurationBuilder().build();
                     BeanFactory.init(baseConfiguration);
                 }

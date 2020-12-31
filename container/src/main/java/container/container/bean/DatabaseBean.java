@@ -1,4 +1,4 @@
-package proxycontainer.proxycontainer.bean;
+package container.container.bean;
 
 import com.docker.file.adapters.GridFSFileHandler;
 import com.docker.storage.adapters.impl.*;

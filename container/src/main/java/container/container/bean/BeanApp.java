@@ -1,4 +1,4 @@
-package proxycontainer.proxycontainer.bean;
+package container.container.bean;
 
 import com.proxy.runtime.executor.DefaultRuntimeExecutor;
 import com.proxy.runtime.ScriptManager;
@@ -12,8 +12,8 @@ import java.net.InetSocketAddress;
  * @author lick
  * @date 2019/11/12
  */
-public class ProxyBeanApp extends IMBeanApp {
-    private static volatile ProxyBeanApp instance;
+public class BeanApp extends IMBeanApp {
+    private static volatile BeanApp instance;
     private ProxyUpStreamHandler proxyUpStreamHandler;
     private ProxyAnnotationHandler proxyAnnotationHandler;
     private NioSocketAcceptorEx wsIoAcceptor;
@@ -76,11 +76,11 @@ public class ProxyBeanApp extends IMBeanApp {
         return instance.proxyAnnotationHandler;
     }
 
-    public static ProxyBeanApp getInstance() {
+    public static BeanApp getInstance() {
         if (instance == null) {
-            synchronized (ProxyBeanApp.class) {
+            synchronized (BeanApp.class) {
                 if (instance == null) {
-                    instance = new ProxyBeanApp();
+                    instance = new BeanApp();
                 }
             }
         }

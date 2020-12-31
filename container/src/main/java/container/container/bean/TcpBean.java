@@ -1,4 +1,4 @@
-package proxycontainer.proxycontainer.bean;
+package container.container.bean;
 
 import com.dobybros.chat.handlers.ProxyContainerDuplexSender;
 import com.dobybros.chat.handlers.RpcProxyContainerDuplexSender;
@@ -28,9 +28,9 @@ import java.util.Map;
  */
 @Configuration
 public class TcpBean {
-    private ProxyBeanApp instance;
+    private BeanApp instance;
     TcpBean(){
-        instance = ProxyBeanApp.getInstance();
+        instance = BeanApp.getInstance();
     }
     @Bean
     public ProxyUpStreamAnnotationHandler proxyUpStreamAnnotationHandler() {

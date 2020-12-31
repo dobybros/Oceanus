@@ -1,4 +1,4 @@
-package proxycontainer.proxycontainer.bean;
+package container.container.bean;
 
 import chat.config.BaseConfiguration;
 import chat.utils.IPHolder;
@@ -28,9 +28,9 @@ import script.filter.JsonFilterFactory;
  */
 @Configuration
 public class CommonBean {
-    private ProxyBeanApp instance;
+    private BeanApp instance;
     CommonBean(){
-        instance = ProxyBeanApp.getInstance();
+        instance = BeanApp.getInstance();
     }
     @Bean
     public BeanFactory.SpringContextUtil springContextUtil() {
