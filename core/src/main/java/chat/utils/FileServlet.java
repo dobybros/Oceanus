@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -132,7 +133,7 @@ public class FileServlet extends HttpServlet {
         }
 
         // URL-decode the file name (might contain spaces and on) and prepare file object.
-        File file = new File(basePath, URLDecoder.decode(requestedFile, "UTF-8"));
+        File file = new File(basePath, URLDecoder.decode(requestedFile, StandardCharsets.UTF_8));
 
         // Check if file actually exists in filesystem.
         if (!file.exists()) {

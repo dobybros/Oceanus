@@ -91,7 +91,7 @@ public abstract class GZipUtils {
         GZIPOutputStream gos = new GZIPOutputStream(os);  
   
         int count;  
-        byte data[] = new byte[BUFFER];  
+        byte[] data = new byte[BUFFER];
         while ((count = is.read(data, 0, BUFFER)) != -1) {  
             gos.write(data, 0, count);  
         }  
@@ -197,7 +197,7 @@ public abstract class GZipUtils {
         GZIPInputStream gis = new GZIPInputStream(is);  
   
         int count;  
-        byte data[] = new byte[BUFFER];  
+        byte[] data = new byte[BUFFER];
         while ((count = gis.read(data, 0, BUFFER)) != -1) {  
             os.write(data, 0, count);  
         }  

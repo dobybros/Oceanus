@@ -34,9 +34,9 @@ public abstract class ReloadHandler {
 				}
 			}
 		}, period, period);
-	};
+	}
 
-	public abstract void load() throws Throwable;
+    public abstract void load() throws Throwable;
 
 	public Long getPeriod() {
 		return period;

@@ -8,7 +8,7 @@ package script.filter;
  * @param <T>
  */
 public interface JsonFilter<T> {
-	public Object filter(T target, Object... arguments);
+	Object filter(T target, Object... arguments);
 
-	public T from(Object doc, Object... arguments);
+	T from(Object doc, Object... arguments);
 }

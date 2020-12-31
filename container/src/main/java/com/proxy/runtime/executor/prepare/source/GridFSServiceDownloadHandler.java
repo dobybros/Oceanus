@@ -57,7 +57,7 @@ public class GridFSServiceDownloadHandler implements ServiceDownloadHandler {
                 //删除旧的zip
                 FileUtils.deleteQuietly(zipFile);
                 //下载zip
-                try (OutputStream zipOs = FileUtils.openOutputStream(zipFile);){
+                try (OutputStream zipOs = FileUtils.openOutputStream(zipFile)){
                     fileAdapter.readFile(new FileAdapter.PathEx(fileEntity.getAbsolutePath()), zipOs);
                 }
                 //解压后的文件夹如果之前有文件，就把这些文件删掉
@@ -80,7 +80,7 @@ public class GridFSServiceDownloadHandler implements ServiceDownloadHandler {
                 //删除旧的jar
                 FileUtils.deleteQuietly(jarFile);
                 //下载zip
-                try (OutputStream zipOs = FileUtils.openOutputStream(jarFile);){
+                try (OutputStream zipOs = FileUtils.openOutputStream(jarFile)){
                     fileAdapter.readFile(new FileAdapter.PathEx(fileEntity.getAbsolutePath()), zipOs);
                 }
             }

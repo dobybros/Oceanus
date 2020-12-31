@@ -7,23 +7,23 @@ import com.dobybros.chat.binary.data.Data;
  * @date 2019/11/13
  */
 public interface SessionContext {
-    public void setAttribute(Object key, Object value);
+    void setAttribute(Object key, Object value);
 
-    public Object getAttribute(Object key);
+    Object getAttribute(Object key);
 
-    public  Short getEncodeVersion();
+    Short getEncodeVersion();
 
-    public void removeAttribute(Object key);
+    void removeAttribute(Object key);
 
-    public void write(Data data);
+    void write(Data data);
 
-    public void write(byte[] data, byte type);
+    void write(byte[] data, byte type);
 
-    public void write(int code, String description, String forId);
+    void write(int code, String description, String forId);
 
-    public void close();
+    void close();
 
-    public void close(boolean immediately);
+    void close(boolean immediately);
 
-    public boolean isClosing();
+    boolean isClosing();
 }

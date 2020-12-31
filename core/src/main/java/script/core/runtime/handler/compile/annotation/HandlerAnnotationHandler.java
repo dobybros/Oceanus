@@ -9,5 +9,5 @@ import script.core.runtime.AbstractRuntimeContext;
  * Description：
  */
 public interface HandlerAnnotationHandler {
-    public void handle(AbstractRuntimeContext runtimeContext) throws CoreException;
+    void handle(AbstractRuntimeContext runtimeContext) throws CoreException;
 }

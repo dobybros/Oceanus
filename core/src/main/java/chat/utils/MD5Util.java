@@ -44,7 +44,7 @@ import org.apache.commons.codec.binary.Base64;
 /*    */   }
 /*    */ 
 /*    */   public static final String md5(byte[] src) {
-/* 46 */     String s = (String)cache.get(src);
+/* 46 */     String s = cache.get(src);
 /* 47 */     if (s == null) {
 /* 48 */       s = md5s(src);
 /* 49 */       lock.lock();

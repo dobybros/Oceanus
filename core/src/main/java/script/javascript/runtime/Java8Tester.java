@@ -45,7 +45,7 @@ public class Java8Tester {
 		return nashorn;
 	}
 
-	public static void main(String args[]) throws IOException, NoSuchMethodException, ScriptException {
+	public static void main(String[] args) throws IOException, NoSuchMethodException, ScriptException {
 
 		for (int i = 0; i < 4; i++) {
 			ScriptEngine nashorn = Java8Tester.getEngine();

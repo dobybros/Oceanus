@@ -91,7 +91,7 @@ public class MD5OutputStream extends FilterOutputStream {
 	 *
 	 * @since ostermillerutils 1.00.00
 	 */
-	@Override public void write(byte b[], int off, int len) throws IOException {
+	@Override public void write(byte[] b, int off, int len) throws IOException {
 		out.write(b, off, len);
 		md5.update(b, off, len);
 	}

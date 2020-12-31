@@ -29,8 +29,8 @@ public abstract class FileAdapter {
 	
 	public enum READWRITE
 	{
-	    READ, WRITE;
-	}
+	    READ, WRITE
+    }
 	protected void copy(PathEx path, InputStream is, OutputStream os, READWRITE readWrite) throws IOException {
 		boolean encrypted = false;
 		EncryptService encrypterListener = null;
@@ -60,8 +60,8 @@ public abstract class FileAdapter {
 	
 	public enum FileReplaceStrategy
 	{
-	    REPLACE, DONTREPLACE;
-	}
+	    REPLACE, DONTREPLACE
+    }
 	
 	public interface SaveFileCachedListener {
 		/**
@@ -70,14 +70,14 @@ public abstract class FileAdapter {
 		 * @param entity
 		 * @throws IOException
 		 */
-		public void fileCached(FileEntity entity) throws IOException;
+        void fileCached(FileEntity entity) throws IOException;
 		/**
 		 * File saved to S3 or other remote system.
 		 * 
 		 * @param entity
 		 * @throws IOException
 		 */
-		public void fileSaved(FileEntity entity) throws IOException;
+        void fileSaved(FileEntity entity) throws IOException;
 		
 		/**
 		 * File saved to S3 or other remote system failed.
@@ -85,7 +85,7 @@ public abstract class FileAdapter {
 		 * @param entity
 		 * @throws IOException
 		 */
-		public void saveFailed(FileEntity entity, Throwable e) throws IOException;
+        void saveFailed(FileEntity entity, Throwable e) throws IOException;
 	}
 	
 	public static class MetadataEx {

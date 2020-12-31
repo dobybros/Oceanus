@@ -136,8 +136,7 @@ var SortedMap = (function () {
         if (Object.defineProperty) {
             Object.defineProperty(obj, prop, {enumerable:false});
         }
-    };
-
+    }
     return SortedMap;
 
 })();

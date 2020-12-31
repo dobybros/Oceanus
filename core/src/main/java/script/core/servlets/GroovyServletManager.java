@@ -70,7 +70,7 @@ public class GroovyServletManager extends ClassAnnotationHandler {
 	}
 
 	public interface PermissionIntercepter {
-		public void invoke(String[] perms, String method, HttpServletRequest request, HttpServletResponse response) throws CoreException;
+		void invoke(String[] perms, String method, HttpServletRequest request, HttpServletResponse response) throws CoreException;
 	}
 
 	private void handleRequestUri(String groovyPath, RequestURI requestUri, RequestURIWrapper requestUriWrapper, HashTree<String, RequestURIWrapper> tree, StringBuilder uriLogs) {

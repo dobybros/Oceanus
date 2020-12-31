@@ -386,11 +386,7 @@ public final class ObjectId implements Comparable<ObjectId>, Serializable {
         if (processIdentifier != objectId.processIdentifier) {
             return false;
         }
-        if (timestamp != objectId.timestamp) {
-            return false;
-        }
-
-        return true;
+        return timestamp == objectId.timestamp;
     }
 
     @Override

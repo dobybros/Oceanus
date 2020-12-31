@@ -43,7 +43,7 @@ public class RequestHolder {
     }
 
     public interface ParameterHandler {
-        public Object valueForParameter(Parameter parameter);
+        Object valueForParameter(Parameter parameter);
     }
 
     public String getResponseType() {

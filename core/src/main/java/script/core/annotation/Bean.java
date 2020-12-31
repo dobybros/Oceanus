@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
 public @interface Bean {
-	public String name() default "";
+	String name() default "";
 }

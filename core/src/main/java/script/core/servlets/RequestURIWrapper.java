@@ -36,13 +36,13 @@ public class RequestURIWrapper implements AbstractObject.ObjectListener {
 	private String[] permissions;
 	private Boolean asyncSupported;
 	
-	public static interface HandleRequest {
+	public interface HandleRequest {
 	}
 	
 	private static Map<Class<? extends Annotation>, HandleRequestAnnotation> annotationHandlerMap = new HashMap<>();
-	public static interface HandleRequestAnnotation extends HandleRequest{
-		public Object handle(Parameter param, Annotation annotation, RequestHolder requestHolder) throws CoreException;
-		public Class<? extends Annotation> getAnnotationClass();
+	public interface HandleRequestAnnotation extends HandleRequest{
+		Object handle(Parameter param, Annotation annotation, RequestHolder requestHolder) throws CoreException;
+		Class<? extends Annotation> getAnnotationClass();
 	}
 	static {
 		annotationHandlerMap.put(RequestParam.class, new RequestParamHandler());
@@ -51,8 +51,8 @@ public class RequestURIWrapper implements AbstractObject.ObjectListener {
 	}
 	
 	private static Map<Class<?>, HandleRequestParameterClass> paramClassHandlerMap = new HashMap<>();
-	public static interface HandleRequestParameterClass extends HandleRequest {
-		public Object handle(Parameter param, RequestHolder requestHolder) throws CoreException;
+	public interface HandleRequestParameterClass extends HandleRequest {
+		Object handle(Parameter param, RequestHolder requestHolder) throws CoreException;
 	}
 	static {
 		paramClassHandlerMap.put(HttpServletRequest.class, new HttpServletRequestHandler());

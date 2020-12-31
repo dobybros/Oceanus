@@ -327,7 +327,7 @@ public class MD5 {
 	 *
 	 * @since ostermillerutils 1.00.00
 	 */
-	private void update (MD5State state, byte buffer[], int offset, int length) {
+	private void update (MD5State state, byte[] buffer, int offset, int length) {
 
 		finalState.valid = false;
 
@@ -376,7 +376,7 @@ public class MD5 {
 	 *
 	 * @since ostermillerutils 1.00.00
 	 */
-	public void update (byte buffer[], int offset, int length) {
+	public void update (byte[] buffer, int offset, int length) {
 		update(workingState, buffer, offset, length);
 	}
 
@@ -391,7 +391,7 @@ public class MD5 {
 	 *
 	 * @since ostermillerutils 1.00.00
 	 */
-	public void update (byte buffer[], int length) {
+	public void update (byte[] buffer, int length) {
 		update(buffer, 0, length);
 	}
 
@@ -402,7 +402,7 @@ public class MD5 {
 	 *
 	 * @since ostermillerutils 1.00.00
 	 */
-	public void update (byte buffer[]) {
+	public void update (byte[] buffer) {
 		update(buffer, 0, buffer.length);
 	}
 
@@ -414,7 +414,7 @@ public class MD5 {
 	 * @since ostermillerutils 1.00.00
 	 */
 	public void update (byte b) {
-		byte buffer[] = new byte[1];
+		byte[] buffer = new byte[1];
 		buffer[0] = b;
 		update(buffer, 1);
 	}
@@ -475,7 +475,7 @@ public class MD5 {
 	 *
 	 * @since ostermillerutils 1.00.00
 	 */
-	private static final byte padding[] = {
+	private static final byte[] padding = {
 		(byte) 0x80, 0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0, 0, 0,
@@ -520,7 +520,7 @@ public class MD5 {
 		 *
 		 * @since ostermillerutils 1.00.00
 		 */
-		private int state[] = new int[4];
+		private int[] state = new int[4];
 
 		/**
 		 * 64-bit count of the number of bits that have been hashed.
@@ -534,7 +534,7 @@ public class MD5 {
 		 *
 		 * @since ostermillerutils 1.00.00
 		 */
-		private byte buffer[] = new byte[64];
+		private byte[] buffer = new byte[64];
 
 		private MD5State() {
 			reset();
@@ -565,7 +565,7 @@ public class MD5 {
 	 *
 	 * @since ostermillerutils 1.00.00
 	 */
-	private static String toHex(byte hash[]){
+	private static String toHex(byte[] hash){
 		StringBuffer buf = new StringBuffer(hash.length * 2);
 		for (byte element: hash) {
 			int intVal = element & 0xff;
@@ -628,7 +628,7 @@ public class MD5 {
 		return out;
 	}
 
-	private static byte[] encode(int input[], int len){
+	private static byte[] encode(int[] input, int len){
 		byte[] out = new byte[len];
 		int i, j;
 		for (i = j = 0; j  < len; i++, j += 4) {
@@ -640,7 +640,7 @@ public class MD5 {
 		return out;
 	}
 
-	private int[] decode(byte buffer[], int len, int offset){
+	private int[] decode(byte[] buffer, int len, int offset){
 		int i, j;
 		for (i = j = 0; j < len; i++, j += 4) {
 			decodeBuffer[i] = (

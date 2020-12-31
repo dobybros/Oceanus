@@ -12,9 +12,9 @@ import script.core.servlets.GroovyServletManager;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequestMapping {
-	public String method() default "GET";
-	public String uri();
-	public String responseType() default GroovyServletManager.RESPONSETYPE_JSON;
-	public String[] perms() default "";
-	public boolean asyncSupported() default false;
+	String method() default "GET";
+	String uri();
+	String responseType() default GroovyServletManager.RESPONSETYPE_JSON;
+	String[] perms() default "";
+	boolean asyncSupported() default false;
 }

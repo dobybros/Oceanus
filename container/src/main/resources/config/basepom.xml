@@ -10,28 +10,28 @@
 
     <dependencies>
         <dependency>
-            <groupId>groovycloud</groupId>
+            <groupId>oceanus</groupId>
             <artifactId>core</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>groovycloud</groupId>
+            <groupId>oceanus</groupId>
             <artifactId>MongodbConnector</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>groovycloud</groupId>
+            <groupId>oceanus</groupId>
             <artifactId>container</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>groovycloud</groupId>
+            <groupId>oceanus</groupId>
             <artifactId>imcontainer</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>groovycloud</groupId>
-            <artifactId>proxycontainer</artifactId>
+            <groupId>oceanus</groupId>
+            <artifactId>oceancontext</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>

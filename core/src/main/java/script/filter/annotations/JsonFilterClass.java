@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
 public @interface JsonFilterClass {
-	public String key() default "";
+	String key() default "";
 }

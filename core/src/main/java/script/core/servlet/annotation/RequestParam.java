@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequestParam {
-	public String key() default "";
-	public boolean required() default false;
+	String key() default "";
+	boolean required() default false;
 }

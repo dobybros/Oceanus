@@ -8,7 +8,7 @@ import script.core.runtime.AbstractRuntimeContext;
  * Description：
  */
 public interface DefaultClassLoader {
-    public AbstractRuntimeContext getRuntimeContext();
+    AbstractRuntimeContext getRuntimeContext();
 
-    public ClassHolder getClass(String className);
+    ClassHolder getClass(String className);
 }

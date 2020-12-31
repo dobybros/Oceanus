@@ -13,7 +13,7 @@ public class Switch64 {
 	}
 	
 	public void setSwitch(int position, int switchOn) {
-		setSwitch(position, switchOn != 1? false : true);
+		setSwitch(position, switchOn == 1);
 	}
 	
 	public void setSwitch(int position, boolean switchOn) {

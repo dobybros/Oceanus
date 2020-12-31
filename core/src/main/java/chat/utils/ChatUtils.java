@@ -28,8 +28,8 @@ public class ChatUtils {
 		return sdf.format(new Date());
 	}
 	
-	public static interface CostClassListener {
-		public Object costClass(String str, Class<?> costClass);
+	public interface CostClassListener {
+		Object costClass(String str, Class<?> costClass);
 	}
 	private static Map<Class<?>, CostClassListener> costClassMap = new HashMap<>();
 	static {
@@ -179,7 +179,7 @@ public class ChatUtils {
 //			String anyIp = null;
 			for(Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();ifaces.hasMoreElements();)
 			{
-				iface = (NetworkInterface)ifaces.nextElement();
+				iface = ifaces.nextElement();
 				ethr = iface.getDisplayName();
 
 				if (faceStartWith == null || isStartWith(ethr, faceStartWith))
@@ -187,7 +187,7 @@ public class ChatUtils {
 					InetAddress ia = null;
 					for(Enumeration<InetAddress> ips = iface.getInetAddresses();ips.hasMoreElements();)
 					{
-						ia = (InetAddress)ips.nextElement();
+						ia = ips.nextElement();
 						String anyIp = ia.getHostAddress();
 						if (ipStartWith == null || anyIp.startsWith(ipStartWith))
 						{
@@ -212,9 +212,7 @@ public class ChatUtils {
 					}
 				}
 			} else {
-				if(str.startsWith(faceStartWith)) {
-					return true;
-				}
+                return str.startsWith(faceStartWith);
 			}
 		}
 		return false;
@@ -285,8 +283,8 @@ public class ChatUtils {
 	
 	public static void main(String[] args) {
 		for(int i = 0; i < 100; i++)
-			System.out.println(randomString.nextString());;
-	}
+			System.out.println(randomString.nextString());
+    }
 	
 	public static byte[] intToByte(int i) {
 

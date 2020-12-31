@@ -11,11 +11,11 @@ import java.util.Collection;
  *
  */
 public interface RuntimeBeanFactory {
-    public Object get(String beanName, String clazz) throws CoreException;
+    Object get(String beanName, String clazz) throws CoreException;
 
-    public void fillAllObject() throws CoreException;
+    void fillAllObject() throws CoreException;
 
-    public void fillObject(Object o) throws CoreException;
+    void fillObject(Object o) throws CoreException;
 
-    public void close();
+    void close();
 }

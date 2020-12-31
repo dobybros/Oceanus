@@ -29,11 +29,8 @@ public class DataInputStreamEx {
 	
 	public boolean hasValue() throws IOException {
 		byte hasValue = dis.readByte();
-		if(hasValue == HASVALUE) {
-			return true;
-		}
-		return false;
-	}
+        return hasValue == HASVALUE;
+    }
 	
 	public void close() throws IOException {
 		dis.close();
@@ -176,7 +173,7 @@ public class DataInputStreamEx {
 			T[] ts = (T[]) Array.newInstance(clazz, length);
 			for(int i = 0; i < length;i++) {
 				try {
-					ts[i] = (T) clazz.newInstance();
+					ts[i] = clazz.newInstance();
 					ts[i].resurrect(dis);
 				} catch (InstantiationException e) {
 					e.printStackTrace();
@@ -194,7 +191,7 @@ public class DataInputStreamEx {
 		if(length != 0 && iterator != null) {
 			for(int i = 0; i < length;i++) {
 				try {
-					T t = (T) clazz.newInstance();
+					T t = clazz.newInstance();
 					t.resurrect(dis);
 					if(!iterator.iterate(t))
 						break;
@@ -211,7 +208,7 @@ public class DataInputStreamEx {
 		if(length != 0) {
 			for(int i = 0; i < length;i++) {
 				try {
-					T t = (T) clazz.newInstance();
+					T t = clazz.newInstance();
 					t.resurrect(dis);
 					collectionAcuObjects.add(t);
 				} catch (InstantiationException e) {
@@ -229,7 +226,7 @@ public class DataInputStreamEx {
 			for(int i = 0; i < length;i++) {
 				try {
 					String key = dis.readUTF();
-					T t = (T) clazz.newInstance();
+					T t = clazz.newInstance();
 					t.resurrect(dis);
 					acuObjectMap.put(key, t);
 				} catch (InstantiationException e) {

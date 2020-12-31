@@ -15,15 +15,15 @@ public class LoggerEx {
     }
 
     public interface LogListener {
-        public void debug(String log);
+        void debug(String log);
 
-        public void info(String log);
+        void info(String log);
 
-        public void warn(String log);
+        void warn(String log);
 
-        public void error(String log);
+        void error(String log);
 
-        public void fatal(String log);
+        void fatal(String log);
     }
 
     public static String getClassTag(Class<?> clazz) {

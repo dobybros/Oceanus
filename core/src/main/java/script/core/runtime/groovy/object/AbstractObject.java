@@ -70,7 +70,7 @@ public abstract class AbstractObject<T> {
     public T getObject() throws CoreException{
         isFill = true;
         return getObject(true);
-    };
+    }
 
     public T getObject(boolean forceFill) throws CoreException {
         DefaultClassLoader classLoader = (DefaultClassLoader) runtimeContext.getCurrentClassLoader();
@@ -135,6 +135,6 @@ public abstract class AbstractObject<T> {
     public abstract Object invokeMethod(String method, Object... parameters) throws CoreException;
 
     public interface ObjectListener {
-        public void objectPrepared(Object obj) throws CoreException;
+        void objectPrepared(Object obj) throws CoreException;
     }
 }

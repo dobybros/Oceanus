@@ -5,5 +5,5 @@ import script.core.runtime.groovy.object.MethodInvocation;
 
 public interface MethodInterceptor {
 
-    public Object invoke(MethodInvocation methodInvocation) throws CoreException;
+    Object invoke(MethodInvocation methodInvocation) throws CoreException;
 }

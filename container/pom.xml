@@ -81,7 +81,7 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<finalName>proxycontainer-1.0</finalName>
+		<finalName>container-1.0</finalName>
 	</build>
 
 </project>

@@ -411,7 +411,7 @@ public class ReflectionUtil {
         Class ownerClass = obj.getClass();
 
         //获得对象的属性，包括private级的，用getField()可以获得public级的所有属性。括号内可指定属性名称获得特定的属性  
-        Field fields[] = getFields(ownerClass);
+        Field[] fields = getFields(ownerClass);
 
         String objName = ownerClass.getName();//获得对象的全路径名称  
 

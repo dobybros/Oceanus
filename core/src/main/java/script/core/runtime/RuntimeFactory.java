@@ -12,5 +12,5 @@ import java.lang.reflect.InvocationTargetException;
  * Description：
  */
 public interface RuntimeFactory {
-    public Runtime create(AbstractRuntimeContext runtimeContext) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+    Runtime create(AbstractRuntimeContext runtimeContext) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
 }
