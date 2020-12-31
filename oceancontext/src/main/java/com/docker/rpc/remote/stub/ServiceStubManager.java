@@ -264,12 +264,12 @@ public class ServiceStubManager {
             ServiceVersionServiceImpl serviceVersionService = (ServiceVersionServiceImpl) BeanFactory.getBean(ServiceVersionServiceImpl.class.getName());
             DockerStatusServiceImpl dockerStatusService = (DockerStatusServiceImpl) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
             if(serviceVersionService == null || dockerStatusService == null){
-                ClassPathResource configResource = new ClassPathResource("groovycloud.properties");
+                ClassPathResource configResource = new ClassPathResource("oceanus.properties");
                 Properties properties = new Properties();
                 try {
                     properties.load(configResource.getInputStream());
                     String mongoHost = properties.getProperty("database.host");
-                    LoggerEx.info(TAG, "Groovycloud.properties, mongoHost: " + mongoHost);
+                    LoggerEx.info(TAG, "oceanus.properties, mongoHost: " + mongoHost);
                     if(mongoHost == null){
                         LoggerEx.error(TAG, "Cant find config:database.host");
                         throw new CoreException(CoreErrorCodes.ERROR_GROOVYCLOUDCONFIG_ILLEGAL, "Cant find config:database.host");
@@ -294,7 +294,7 @@ public class ServiceStubManager {
                         dockerStatusService.setDockerStatusDAO(dockerStatusDAO);
                     }
                 }catch (Throwable t){
-                    LoggerEx.error(TAG, "Get groovycloud.properties err, errMsg : " + ExceptionUtils.getFullStackTrace(t));
+                    LoggerEx.error(TAG, "Get oceanus.properties err, errMsg : " + ExceptionUtils.getFullStackTrace(t));
                 }finally {
                     try {
                         configResource.getInputStream().close();

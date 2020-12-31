@@ -29,7 +29,7 @@ public class RPCClientAdapterMapFactory {
         if(rpcClientAdapterMapSsl == null){
             rpcClientAdapterMapSsl = new RPCClientAdapterMap();
             rpcClientAdapterMapSsl.setEnableSsl(true);
-            ClassPathResource resource = new ClassPathResource("groovycloud.properties");
+            ClassPathResource resource = new ClassPathResource("oceanus.properties");
             Properties pro = new Properties();
             try {
                 pro.load(resource.getInputStream());
