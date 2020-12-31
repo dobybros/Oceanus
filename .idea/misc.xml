@@ -24,6 +24,7 @@
         <option value="$PROJECT_DIR$/../Space/SPUserService/pom.xml" />
         <option value="$PROJECT_DIR$/../Space/SpaceWeb/pom.xml" />
         <option value="$PROJECT_DIR$/../Space/pom.xml" />
+        <option value="$PROJECT_DIR$/../Test/pom.xml" />
       </set>
     </option>
   </component>

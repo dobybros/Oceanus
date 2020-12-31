@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: oceanus:proxycontainer:1.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/proxycontainer/pom.xml!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/proxycontainer/proxycontainer-1.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/proxycontainer/proxycontainer-1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

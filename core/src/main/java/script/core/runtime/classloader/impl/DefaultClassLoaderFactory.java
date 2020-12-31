@@ -24,6 +24,7 @@ public class DefaultClassLoaderFactory implements ClassLoaderFactory {
                 case Configuration.LANGEUAGE_GROOVY:
                     return MyGroovyClassLoader.newClassLoader(parentClassLoader, runtimeContext);
                 case Configuration.LANGEUAGE_JAVA:
+                case Configuration.LANGEUAGE_JAVA_JAR:
                     return new MyJavaClassLoader(urls, parentClassLoader, runtimeContext);
             }
         }

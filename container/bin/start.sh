@@ -2,7 +2,7 @@
 cd `dirname $0`
  BIN_DIR=`pwd`
 cd ..
-JAR_NAME='container'
+JAR_NAME='proxycontainer'
 JAR_VERSION='1.0'
 #最大堆大小(64)
 xmx64='2000m'
@@ -13,7 +13,7 @@ G1NewSizePercent='80'
 #年轻代最大大小占用堆的百分比
 G1MaxNewSizePercent='90'
 #gc最大暂停时间（单位:毫秒）
-MaxGCPauseMillis='180'
+MaxGCPauseMillis='20'
 #rmi线程数量
 rmiThreads='200'
 DEPLOY_DIR=`pwd`
@@ -65,4 +65,3 @@ java $JAVA_OPTS $JAVA_MEM_OPTS $JAVA_DEBUG_OPTS $JAVA_JMX_OPTS $CONFIG_FILES -ja
  echo "PID: $PIDS"
  #echo "STDOUT: $STDOUT_FILE"
  #mvn install -DskipTests
- #mvn deploy -DskipTests

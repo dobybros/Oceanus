@@ -116,4 +116,5 @@ public interface ChatErrorCodes {
 	public static final int ERROR_SOURCE_DWONLOAD_FAILED= CODE_CORE - 221;
 	public static final int ERROR_CLASSLOADER_CREATE_FAILED= CODE_CORE - 222;
 	public static final int ERROR_REFLECT = CODE_CORE - 223;
+	public static final int ERROR_BOOT = CODE_CORE - 224;
 }

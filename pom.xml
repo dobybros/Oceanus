@@ -16,9 +16,9 @@
 	<modules>
 		<module>core</module>
 		<module>mongodbconnector</module>
-		<module>container</module>
+		<module>oceancontext</module>
 		<module>imcontainer</module>
-		<module>proxycontainer</module>
+		<module>container</module>
 	</modules>
 
 	<properties>
@@ -69,10 +69,19 @@
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
 
 		<dependency>
@@ -140,7 +149,6 @@
 			<version>2.0.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
 		<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
 		<dependency>
 			<groupId>org.mongodb</groupId>

@@ -33,7 +33,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     public AbstractRuntimeContext(Configuration configuration) throws CoreException {
         try {
             this.configuration = configuration;
-            Class<?> runtimeFactoryClass = Class.forName("com.docker.script.bean.Default" + this.configuration.getLanguageType() + RuntimeBeanFactory.class.getSimpleName());
+            Class<?> runtimeFactoryClass = Class.forName("com.docker.script.bean.Default" + (configuration.getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR) ? Configuration.LANGEUAGE_JAVA : configuration.getLanguageType()) + RuntimeBeanFactory.class.getSimpleName());
             this.runtimeBeanFactory = (RuntimeBeanFactory) runtimeFactoryClass.getDeclaredConstructor(AbstractRuntimeContext.class).newInstance((AbstractRuntimeContext)this);
         }catch (Throwable t){
             throw new CoreException(ChatErrorCodes.ERROR_REFLECT, "Init runtimeBeanFactory failed");
@@ -111,7 +111,11 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
         this.fieldAnnotationHandlers.clear();
         this.cachedClasses.clear();
         this.allClasses.clear();
-        this.runtimeBeanFactory.close();
-        this.runtime.close();
+        if(this.runtimeBeanFactory != null){
+            this.runtimeBeanFactory.close();
+        }
+        if(this.runtime != null){
+            this.runtime.close();
+        }
     }
 }

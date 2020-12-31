@@ -20,7 +20,7 @@
 		</dependency>
 		<dependency>
 			<groupId>oceanus</groupId>
-			<artifactId>container</artifactId>
+			<artifactId>oceancontext</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<dependency>

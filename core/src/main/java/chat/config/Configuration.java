@@ -29,6 +29,7 @@ public class Configuration {
     private String languageType = LANGEUAGE_GROOVY;
     public static final String LANGEUAGE_GROOVY = "Groovy";
     public static final String LANGEUAGE_JAVA = "Java";
+    public static final String LANGEUAGE_JAVA_JAR = "Jar";
     //service's config
     private Properties config;
     //local source's path,such as ../local/gdim/groovy
@@ -43,11 +44,15 @@ public class Configuration {
     public String getServiceVersion(){
         return service + "_v" + version;
     }
+
     public String getFileName(){
-        if (LANGEUAGE_JAVA.equals(languageType)) {
-            return "java.zip";
+        switch (languageType){
+            case LANGEUAGE_JAVA:
+                return "java.zip";
+            case LANGEUAGE_JAVA_JAR:
+                return "java.jar";
+            default:return "groovy.zip";
         }
-        return "groovy.zip";
     }
 
     public String[] getExcludeDependencies(){

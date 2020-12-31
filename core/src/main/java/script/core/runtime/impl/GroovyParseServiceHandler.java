@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import script.RuntimeContext;
 import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.ParseServiceHandler;
 import script.core.runtime.classloader.ClassHolder;
@@ -32,29 +33,19 @@ import java.util.concurrent.TimeUnit;
 public class GroovyParseServiceHandler implements ParseServiceHandler {
     protected static final String TAG = ParseServiceHandler.class.getSimpleName();
 
-    private AbstractRuntimeContext runtimeContext;
-
-    public GroovyParseServiceHandler(AbstractRuntimeContext runtimeContext) {
-        this.runtimeContext = runtimeContext;
-    }
-
-
-    @Override
-    public AbstractRuntimeContext getRuntimeContext() {
-        return runtimeContext;
-    }
-
-    public void beforeDeploy() {
+    public void beforeDeploy(AbstractRuntimeContext runtimeContext) {
 
     }
 
     @Override
     public synchronized void start(ClassLoader classLoader) throws CoreException {
+        MyGroovyClassLoader myGroovyClassLoader = (MyGroovyClassLoader)classLoader;
+        AbstractRuntimeContext runtimeContext = myGroovyClassLoader.getRuntimeContext();
         if (runtimeContext == null)
             throw new NullPointerException("runtime is empty while redeploy for Booter " + this);
         String path = runtimeContext.getConfiguration().getLocalPath() + File.separator;
         try {
-            beforeDeploy();
+            beforeDeploy(runtimeContext);
         } catch (Throwable t) {
             LoggerEx.warn(TAG, "beforeDeploy failed, " + ExceptionUtils.getFullStackTrace(t));
         }
@@ -141,7 +132,6 @@ public class GroovyParseServiceHandler implements ParseServiceHandler {
 
                 FileUtils.writeStringToFile(importPath, importBuilder.toString(), "utf8");
             }
-            MyGroovyClassLoader myGroovyClassLoader = (MyGroovyClassLoader)classLoader;
             for (File file : compileFirstFiles) {
                 myGroovyClassLoader.parseClass(file);
             }

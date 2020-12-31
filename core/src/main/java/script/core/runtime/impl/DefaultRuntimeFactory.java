@@ -15,7 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 public class DefaultRuntimeFactory implements RuntimeFactory {//script.core.runtime.groovy
     @Override
     public Runtime create(AbstractRuntimeContext runtimeContext) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Class<?> clazz = Class.forName("script.core.runtime." + runtimeContext.getConfiguration().getLanguageType().toLowerCase() + "." + runtimeContext.getConfiguration().getLanguageType() + "Runtime");
+        Class<?> clazz = Class.forName("script.core.runtime." + (runtimeContext.getConfiguration().getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR) ? Configuration.LANGEUAGE_JAVA.toLowerCase() : runtimeContext.getConfiguration().getLanguageType().toLowerCase())
+                + "." + (runtimeContext.getConfiguration().getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR) ? Configuration.LANGEUAGE_JAVA : runtimeContext.getConfiguration().getLanguageType()) + "Runtime");
         return (Runtime) clazz.getDeclaredConstructor(AbstractRuntimeContext.class).newInstance((AbstractRuntimeContext)runtimeContext);
     }
 }

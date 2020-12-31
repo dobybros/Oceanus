@@ -10,7 +10,5 @@ import script.RuntimeContext;
  */
 public interface ParseServiceHandler {
 
-    AbstractRuntimeContext getRuntimeContext();
-
     void start(ClassLoader classLoader) throws CoreException;
 }

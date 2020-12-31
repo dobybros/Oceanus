@@ -2,12 +2,12 @@ package chat.main;
 
 import chat.config.BaseConfiguration;
 import chat.thread.CloudThreadFactory;
-import org.apache.tomcat.util.threads.TaskQueue;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -104,21 +104,21 @@ public class ServerStart {
     //业务使用
     public ThreadPoolExecutor getThreadPool() {
         if (threadPoolExecutor == null) {
-            threadPoolExecutor = new ThreadPoolExecutor(Integer.parseInt(coreSize), Integer.parseInt(maximumPoolSize), Integer.parseInt(keepAliveTime), TimeUnit.SECONDS, new TaskQueue(Integer.parseInt(queueCapacity)), new CloudThreadFactory("Normal"));
+            threadPoolExecutor = new ThreadPoolExecutor(Integer.parseInt(coreSize), Integer.parseInt(maximumPoolSize), Integer.parseInt(keepAliveTime), TimeUnit.SECONDS, new LinkedBlockingQueue<>(Integer.parseInt(queueCapacity)), new CloudThreadFactory("Normal"));
         }
         return threadPoolExecutor;
     }
     //gateway专用
     public ThreadPoolExecutor getGatewayThreadPoolExecutor() {
         if (gatewayThreadPoolExecutor == null) {
-            gatewayThreadPoolExecutor = new ThreadPoolExecutor(Integer.parseInt(gatewayCoreSize), Integer.parseInt(gatewayMaximumPoolSize), Integer.parseInt(keepAliveTime), TimeUnit.SECONDS, new TaskQueue(Integer.parseInt(queueCapacity)), new CloudThreadFactory("Gateway"));
+            gatewayThreadPoolExecutor = new ThreadPoolExecutor(Integer.parseInt(gatewayCoreSize), Integer.parseInt(gatewayMaximumPoolSize), Integer.parseInt(keepAliveTime), TimeUnit.SECONDS, new LinkedBlockingQueue(Integer.parseInt(queueCapacity)), new CloudThreadFactory("Gateway"));
         }
         return gatewayThreadPoolExecutor;
     }
     //定时器专用
     public ThreadPoolExecutor getTimerThreadPoolExecutor() {
         if (timerThreadPoolExecutor == null) {
-            timerThreadPoolExecutor = new ThreadPoolExecutor(Integer.parseInt(timerCoreSize), Integer.parseInt(timerMaximumPoolSize), Integer.parseInt(keepAliveTime), TimeUnit.SECONDS, new TaskQueue(Integer.parseInt(queueCapacity)), new CloudThreadFactory("Timer"));
+            timerThreadPoolExecutor = new ThreadPoolExecutor(Integer.parseInt(timerCoreSize), Integer.parseInt(timerMaximumPoolSize), Integer.parseInt(keepAliveTime), TimeUnit.SECONDS, new LinkedBlockingQueue(Integer.parseInt(queueCapacity)), new CloudThreadFactory("Timer"));
         }
         return timerThreadPoolExecutor;
     }
@@ -126,7 +126,7 @@ public class ServerStart {
     //异步专用
     public ThreadPoolExecutor getAsyncThreadPoolExecutor() {
         if (asyncThreadPoolExecutor == null) {
-            asyncThreadPoolExecutor = new ThreadPoolExecutor(Integer.parseInt(asyncCoreSize), Integer.parseInt(asyncMaximumPoolSize), Integer.parseInt(keepAliveTime), TimeUnit.SECONDS, new TaskQueue(Integer.parseInt(queueCapacity)), new CloudThreadFactory("Async"));
+            asyncThreadPoolExecutor = new ThreadPoolExecutor(Integer.parseInt(asyncCoreSize), Integer.parseInt(asyncMaximumPoolSize), Integer.parseInt(keepAliveTime), TimeUnit.SECONDS, new LinkedBlockingQueue(Integer.parseInt(queueCapacity)), new CloudThreadFactory("Async"));
         }
         return asyncThreadPoolExecutor;
     }

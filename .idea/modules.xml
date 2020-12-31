@@ -4,14 +4,13 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/mongodbconnector/MongodbConnector.iml" filepath="$PROJECT_DIR$/mongodbconnector/MongodbConnector.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Oceanus.iml" filepath="$PROJECT_DIR$/.idea/Oceanus.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Test/Test.iml" filepath="$PROJECT_DIR$/../Test/Test.iml" />
       <module fileurl="file://$PROJECT_DIR$/../Test/Test1/Test1.iml" filepath="$PROJECT_DIR$/../Test/Test1/Test1.iml" />
       <module fileurl="file://$PROJECT_DIR$/../Test/Test2/Test2.iml" filepath="$PROJECT_DIR$/../Test/Test2/Test2.iml" />
       <module fileurl="file://$PROJECT_DIR$/../Test/TestCore/TestCore.iml" filepath="$PROJECT_DIR$/../Test/TestCore/TestCore.iml" />
       <module fileurl="file://$PROJECT_DIR$/container/container.iml" filepath="$PROJECT_DIR$/container/container.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/imcontainer/imcontainer.iml" filepath="$PROJECT_DIR$/imcontainer/imcontainer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/proxycontainer/proxycontainer.iml" filepath="$PROJECT_DIR$/proxycontainer/proxycontainer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/oceancontext/oceancontext.iml" filepath="$PROJECT_DIR$/oceancontext/oceancontext.iml" />
     </modules>
   </component>
 </project>
