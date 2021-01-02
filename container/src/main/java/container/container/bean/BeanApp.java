@@ -1,9 +1,9 @@
 package container.container.bean;
 
-import com.proxy.runtime.executor.DefaultRuntimeExecutor;
-import com.proxy.runtime.ScriptManager;
-import com.proxy.im.ProxyAnnotationHandler;
-import com.proxy.im.ProxyUpStreamHandler;
+import com.container.runtime.executor.DefaultRuntimeExecutor;
+import com.container.runtime.BootManager;
+import com.container.im.ProxyAnnotationHandler;
+import com.container.im.ProxyUpStreamHandler;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptorEx;
 
 import java.net.InetSocketAddress;
@@ -19,7 +19,7 @@ public class BeanApp extends IMBeanApp {
     private NioSocketAcceptorEx wsIoAcceptor;
     private NioSocketAcceptorEx sslTcpIoAcceptor;
     private NioSocketAcceptorEx tcpIoAcceptor;
-    private ScriptManager scriptManager;
+    private BootManager scriptManager;
 
     public synchronized NioSocketAcceptorEx getTcpIoAcceptor() {
         if(instance.tcpIoAcceptor == null){
@@ -41,9 +41,9 @@ public class BeanApp extends IMBeanApp {
         }
         return instance.sslTcpIoAcceptor;
     }
-    public synchronized ScriptManager getScriptManager() {
+    public synchronized BootManager getScriptManager() {
         if (instance.scriptManager == null) {
-            instance.scriptManager = new ScriptManager();
+            instance.scriptManager = new BootManager();
             instance.scriptManager.setBaseConfiguration(baseConfiguration);
             instance.scriptManager.setRuntimeExecutor(new DefaultRuntimeExecutor());
         }

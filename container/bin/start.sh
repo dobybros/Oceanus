@@ -2,7 +2,7 @@
 cd `dirname $0`
  BIN_DIR=`pwd`
 cd ..
-JAR_NAME='proxycontainer'
+JAR_NAME='container'
 JAR_VERSION='1.0'
 #最大堆大小(64)
 xmx64='2000m'

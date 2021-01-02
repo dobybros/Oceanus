@@ -3,8 +3,8 @@ package com.docker.handler.annotation.field;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.docker.context.Context;
-import com.docker.context.ServiceContext;
-import com.docker.script.BaseRuntimeContext;
+import com.docker.context.ContextFactory;
+import com.docker.context.impl.DefaultContextFactory;
 import com.docker.script.i18n.I18nHandler;
 import com.docker.script.i18n.MessageProperties;
 import com.docker.storage.cache.CacheStorageFactory;
@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
  */
 public class JavaBeanHandler extends AbstractFieldAnnotationHandler<JavaBean> {
     private ZookeeperFactory zookeeperFactory = (ZookeeperFactory) BeanFactory.getBean(ZookeeperFactory.class.getName());
+    private ContextFactory contextFactory = (ContextFactory) BeanFactory.getBean(DefaultContextFactory.class.getName());
     private final String TAG = JavaBeanHandler.class.getSimpleName();
     //TODO need implement
     @Override
@@ -40,7 +41,7 @@ public class JavaBeanHandler extends AbstractFieldAnnotationHandler<JavaBean> {
         try {
             Object o = null;
             if(fieldClass.equals(Context.class)){
-                o = new ServiceContext((BaseRuntimeContext) runtimeContext);
+                o = contextFactory.get(runtimeContext);
             }else if(fieldClass.equals(RedisHandler.class)){
                 String redisHost = runtimeContext.getConfiguration().getConfig().getProperty("db.redis.uri");
                 if(StringUtils.isBlank(redisHost)){

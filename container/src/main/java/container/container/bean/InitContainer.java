@@ -10,7 +10,7 @@ import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.impl.RMIServerHandler;
 import com.docker.storage.mongodb.MongoHelper;
 import com.docker.storage.mongodb.daos.*;
-import com.proxy.runtime.ScriptManager;
+import com.container.runtime.BootManager;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptorEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -60,7 +60,7 @@ public class InitContainer implements CommandLineRunner{
     @Autowired
     IPHolder ipHolder;
     @Autowired
-    ScriptManager scriptManager;
+    BootManager scriptManager;
     @Autowired
     RMIServerHandler dockerRpcServerAdapter;
     @Autowired

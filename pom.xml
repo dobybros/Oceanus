@@ -127,7 +127,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>4.0.1</version>
-			<scope>provided</scope>
+<!--			<scope>provided</scope>-->
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client -->

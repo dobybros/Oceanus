@@ -2,6 +2,8 @@ package container.container.bean;
 
 import chat.config.BaseConfiguration;
 import chat.utils.IPHolder;
+import com.docker.context.ContextFactory;
+import com.docker.context.impl.DefaultContextFactory;
 import com.docker.file.adapters.GridFSFileHandler;
 import com.docker.http.MyHttpParameters;
 import com.docker.onlineserver.OnlineServerWithStatus;
@@ -17,8 +19,8 @@ import com.docker.storage.redis.RedisSubscribeHandler;
 import com.docker.storage.zookeeper.ZookeeperFactory;
 import com.docker.tasks.RepairTaskHandler;
 import com.docker.utils.BeanFactory;
-import com.proxy.runtime.ScriptManager;
-import com.proxy.runtime.executor.DefaultRuntimeExecutor;
+import com.container.runtime.BootManager;
+import com.container.runtime.executor.DefaultRuntimeExecutor;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -74,7 +76,7 @@ public class ContextBeanApp {
     private IPHolder ipHolder;
     private JsonFilterFactory jsonFilterFactory;
     private RequestPermissionHandler requestPermissionHandler;
-    private ScriptManager scriptManager;
+    private BootManager scriptManager;
     private OnlineServerWithStatus onlineServer;
     private RMIServerImplWrapper rpcServer;
     private RMIServerImplWrapper rpcServerSsl;
@@ -306,7 +308,13 @@ public class ContextBeanApp {
     public BaseConfiguration getBaseConfiguration(){
         return baseConfiguration;
     }
-
+    private ContextFactory contextFactory;
+    public synchronized ContextFactory getContextFactory(){
+        if(contextFactory == null){
+            contextFactory = new DefaultContextFactory();
+        }
+        return contextFactory;
+    }
     public synchronized RMIServerImplWrapper getRpcServer() {
         if (instance.rpcServer == null) {
             try {
@@ -327,9 +335,9 @@ public class ContextBeanApp {
         return instance.onlineServer;
     }
 
-    public synchronized ScriptManager getScriptManager() {
+    public synchronized BootManager getScriptManager() {
         if (instance.scriptManager == null) {
-            instance.scriptManager = new ScriptManager();
+            instance.scriptManager = new BootManager();
             instance.scriptManager.setRuntimeExecutor(new DefaultRuntimeExecutor());
         }
         return instance.scriptManager;

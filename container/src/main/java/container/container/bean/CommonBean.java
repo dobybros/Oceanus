@@ -8,11 +8,12 @@ import com.dobybros.chat.handlers.imextention.IMExtensionCache;
 import com.dobybros.chat.tasks.OfflineMessageSavingTask;
 import com.dobybros.chat.tasks.RPCMessageSendingTask;
 import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
+import com.docker.context.ContextFactory;
 import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.QueueSimplexListener;
 import com.docker.tasks.RepairTaskHandler;
 import com.docker.utils.BeanFactory;
-import com.proxy.runtime.ScriptManager;
+import com.container.runtime.BootManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import script.core.runtime.RuntimeFactory;
@@ -67,7 +68,7 @@ public class CommonBean {
     }
 
     @Bean(destroyMethod = "shutdown")
-    public ScriptManager scriptManager() {
+    public BootManager scriptManager() {
         return instance.getScriptManager();
     }
 
@@ -108,5 +109,10 @@ public class CommonBean {
     @Bean
     public BaseConfiguration baseConfiguration(){
         return instance.getBaseConfiguration();
+    }
+
+    @Bean
+    public ContextFactory contextFactory(){
+        return instance.getContextFactory();
     }
 }
