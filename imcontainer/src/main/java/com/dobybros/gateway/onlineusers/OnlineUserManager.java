@@ -13,20 +13,17 @@ import com.dobybros.chat.utils.SingleThreadQueue;
 import com.dobybros.chat.utils.SingleThreadQueue.Handler;
 import com.dobybros.gateway.errors.GatewayErrorCodes;
 import com.docker.onlineserver.OnlineServerWithStatus;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public abstract class OnlineUserManager {
     private static final String TAG = "OUM";
-    @Resource
     protected OnlineServerWithStatus onlineServer;
-    @Resource
-    private OfflineMessageSavingTask offlineMessageSavingTask;
-
+    protected OfflineMessageSavingTask offlineMessageSavingTask;
     private UserExpireTimer expireTimerTask = new UserExpireTimer();
 
     private ConcurrentHashMap<String, SingleThreadQueue<EventEntity>> queueMap = new ConcurrentHashMap<>();
@@ -319,4 +316,11 @@ public abstract class OnlineUserManager {
         return onlineUserHolder;
     }
 
+    public void setOnlineServer(OnlineServerWithStatus onlineServer) {
+        this.onlineServer = onlineServer;
+    }
+
+    public void setOfflineMessageSavingTask(OfflineMessageSavingTask offlineMessageSavingTask) {
+        this.offlineMessageSavingTask = offlineMessageSavingTask;
+    }
 }

@@ -4,7 +4,7 @@ import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.dobybros.chat.script.IMRuntimeContext;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
 

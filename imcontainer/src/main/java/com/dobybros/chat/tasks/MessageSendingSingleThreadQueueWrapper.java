@@ -18,7 +18,7 @@ import com.dobybros.chat.utils.SingleThreadQueue;
 import com.docker.rpc.RPCClientAdapter;
 import com.docker.rpc.RPCClientAdapterMap;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 import java.util.HashMap;
 import java.util.Set;

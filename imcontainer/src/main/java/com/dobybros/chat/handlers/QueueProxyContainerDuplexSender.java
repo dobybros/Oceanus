@@ -5,9 +5,10 @@ import com.dobybros.chat.rpc.reqres.balancer.IMProxyResponse;
 import com.dobybros.chat.rpc.reqres.balancer.ProxyIMRequest;
 import com.dobybros.chat.rpc.reqres.balancer.ProxyIMResponse;
 import com.docker.rpc.QueueSimplexListener;
+import com.docker.rpc.queue.KafkaSimplexListener;
 import com.docker.rpc.remote.stub.RemoteServers;
+import com.docker.oceansbean.BeanFactory;
 
-import javax.annotation.Resource;
 
 /**
  * @author lick
@@ -15,8 +16,7 @@ import javax.annotation.Resource;
  */
 public class QueueProxyContainerDuplexSender {
     private final String TAG = QueueProxyContainerDuplexSender.class.getSimpleName();
-    @Resource
-    QueueSimplexListener queueSimplexListener;
+    private QueueSimplexListener queueSimplexListener = (QueueSimplexListener) BeanFactory.getBean(KafkaSimplexListener.class.getName());
     ProxyIMResponse sendIM(ProxyIMRequest request, RemoteServers.Server server) {
         if (request != null && request.checkParamsNotNull()) {
             if (server != null) {

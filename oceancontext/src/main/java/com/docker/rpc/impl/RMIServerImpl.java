@@ -23,7 +23,7 @@ import com.docker.script.BaseRuntimeContext;
 import com.docker.server.OnlineServer;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.servlets.Tracker;
 import script.memodb.ObjectId;

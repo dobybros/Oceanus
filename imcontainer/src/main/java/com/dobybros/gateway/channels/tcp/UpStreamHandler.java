@@ -13,13 +13,14 @@ import com.dobybros.gateway.errors.GatewayErrorCodes;
 import com.dobybros.gateway.onlineusers.OnlineServiceUser;
 import com.dobybros.gateway.onlineusers.OnlineUser;
 import com.dobybros.gateway.onlineusers.OnlineUserManager;
+import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import com.dobybros.gateway.pack.Pack;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 
-import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 public class UpStreamHandler extends IoHandlerAdapter {
@@ -31,13 +32,11 @@ public class UpStreamHandler extends IoHandlerAdapter {
 	public static final String ATTRIBUTE_SESSIONCONTEXTATTR = "SESSIONCONTEXTATTR";
 	public static final String ATTRIBUTE_IP = "IP";
 	private static final String TAG = "UpStream";
-    @Resource
-    private OnlineUserManager onlineUserManager;
+    private OnlineUserManager onlineUserManager = (OnlineUserManager) BeanFactory.getBean(OnlineUserManagerImpl.class.getName());
     private int readIdleTime;
 	private int writeIdleTime;
 
-	@Resource
-	private UpStreamAnnotationHandler upStreamAnnotationHandler;
+	private UpStreamAnnotationHandler upStreamAnnotationHandler = (UpStreamAnnotationHandler) BeanFactory.getBean(UpStreamAnnotationHandler.class.getName());
 	
 	@Override
 	public void sessionCreated(final IoSession session) throws Exception {

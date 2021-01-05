@@ -1,9 +1,8 @@
 package com.docker.context.config;
 
 import chat.config.BaseConfiguration;
-import chat.utils.ChatUtils;
 import chat.utils.IPHolder;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 /**
  * Created by lick on 2021/1/2.

@@ -2,7 +2,7 @@ package com.docker.rpc;
 
 
 import chat.config.BaseConfiguration;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 public abstract class RPCResponse extends RPCBase {
 	protected BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());

@@ -8,12 +8,12 @@ import com.docker.data.RepairData;
 import com.docker.storage.DBException;
 import com.docker.storage.adapters.RepairService;
 import com.docker.storage.mongodb.daos.RepairDAO;
+import com.docker.oceansbean.BeanFactory;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bson.Document;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +23,6 @@ import java.util.List;
  */
 public class RepairServiceImpl implements RepairService {
     private final String TAG = RepairServiceImpl.class.getSimpleName();
-    @Resource
     private RepairDAO repairDAO;
 
     @Override
@@ -81,5 +80,9 @@ public class RepairServiceImpl implements RepairService {
             LoggerEx.error(TAG, "Query repairData " + id + " failed, " + ExceptionUtils.getFullStackTrace(e));
             throw new CoreException(ChatErrorCodes.ERROR_ONLINESERVER_QUERY_FAILED, "Query repairData " + id + " failed, " + e.getMessage());
         }
+    }
+
+    public void setRepairDAO(RepairDAO repairDAO) {
+        this.repairDAO = repairDAO;
     }
 }

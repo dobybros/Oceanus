@@ -20,9 +20,8 @@ import com.dobybros.chat.tasks.RPCMessageSendingTask;
 import com.docker.rpc.RPCClientAdapter;
 import com.docker.rpc.RPCClientAdapterMap;
 import com.docker.rpc.RPCClientAdapterMapFactory;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
-import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +33,6 @@ public class ConsumeOfflineMessageHandler {
 
 	private ConcurrentHashMap<String, OfflineMessageReader> readerMap = new ConcurrentHashMap<>();
 
-    @Resource
     private RPCMessageSendingTask messageSendingTask;
 
     private RPCClientAdapterMap rpcClientAdapterMap = RPCClientAdapterMapFactory.getInstance().getRpcClientAdapterMap();
@@ -46,7 +44,11 @@ public class ConsumeOfflineMessageHandler {
 		
 	}
 
-	public class OfflineMessageReader implements Runnable {
+    public void setMessageSendingTask(RPCMessageSendingTask messageSendingTask) {
+        this.messageSendingTask = messageSendingTask;
+    }
+
+    public class OfflineMessageReader implements Runnable {
 		private String userId;
 		private String service;
         public static final int STATUS_IDLE = 0;

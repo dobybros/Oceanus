@@ -29,7 +29,7 @@ import com.dobybros.gateway.utils.FreezableQueue;
 import com.dobybros.gateway.utils.RecentTopicMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import script.memodb.ObjectId;
 
 import java.util.*;

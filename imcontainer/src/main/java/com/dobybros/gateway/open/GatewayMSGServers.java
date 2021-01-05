@@ -15,7 +15,7 @@ import com.dobybros.gateway.onlineusers.OnlineUser;
 import com.dobybros.gateway.onlineusers.OnlineUserManager;
 import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import org.apache.commons.lang.StringUtils;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import script.memodb.ObjectId;
 
 import java.nio.charset.StandardCharsets;

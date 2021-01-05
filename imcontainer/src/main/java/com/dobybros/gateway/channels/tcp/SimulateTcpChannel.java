@@ -12,7 +12,7 @@ import com.dobybros.gateway.onlineusers.OnlineServiceUser;
 import com.dobybros.gateway.pack.Pack;
 import com.docker.rpc.BinaryCodec;
 import com.docker.rpc.remote.stub.RemoteServers;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 /**

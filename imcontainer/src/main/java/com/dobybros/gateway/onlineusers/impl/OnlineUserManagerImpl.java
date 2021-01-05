@@ -8,21 +8,18 @@ import com.dobybros.chat.tasks.RPCMessageSendingTask;
 import com.dobybros.gateway.eventhandler.MessageEventHandler;
 import com.dobybros.gateway.onlineusers.OnlineUser;
 import com.dobybros.gateway.onlineusers.OnlineUserManager;
+import com.docker.oceansbean.BeanFactory;
 
-import javax.annotation.Resource;
 import java.util.Collection;
 
 public class OnlineUserManagerImpl extends OnlineUserManager {
 	private static final String TAG = "OUMI";
-	@Resource
-	private OfflineMessageSavingTask offlineMessageSavingTask;
-	@Resource
-	private RPCMessageSendingTask messageSendingTask;
+	private RPCMessageSendingTask messageSendingTask;;
 	
-	@Resource
 	private MessageEventHandler messageEventHandler;
 
 	public OnlineUserManagerImpl() {
+		System.out.println();
 	}
 	
 	@Override
@@ -45,5 +42,12 @@ public class OnlineUserManagerImpl extends OnlineUserManager {
 	public Collection<String> eventReceived(Message event, OnlineUser excludeUser) throws CoreException {
 		Collection<String> receivedUserIds = new ConcurrentHashSet<>();
 		return messageEventHandler.handleEvent(event, excludeUser, receivedUserIds, true);
+	}
+	public void setMessageSendingTask(RPCMessageSendingTask messageSendingTask) {
+		this.messageSendingTask = messageSendingTask;
+	}
+
+	public void setMessageEventHandler(MessageEventHandler messageEventHandler) {
+		this.messageEventHandler = messageEventHandler;
 	}
 }

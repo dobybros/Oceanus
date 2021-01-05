@@ -6,14 +6,12 @@ import com.docker.data.SDocker;
 import com.docker.storage.DBException;
 import com.docker.storage.adapters.SDockersService;
 import com.docker.storage.mongodb.daos.SDockerDAO;
+import com.docker.oceansbean.BeanFactory;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 
-import javax.annotation.Resource;
-
 public class SDockersServiceImpl implements SDockersService {
-    @Resource
     private SDockerDAO sDockerDAO;
 
     @Override
@@ -29,5 +27,9 @@ public class SDockersServiceImpl implements SDockersService {
         }
         return null;
 
+    }
+
+    public void setsDockerDAO(SDockerDAO sDockerDAO) {
+        this.sDockerDAO = sDockerDAO;
     }
 }

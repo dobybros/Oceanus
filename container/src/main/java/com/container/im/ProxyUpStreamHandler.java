@@ -3,15 +3,15 @@ package com.container.im;
 import chat.logs.LoggerEx;
 import chat.utils.TimerEx;
 import chat.utils.TimerTaskEx;
-import com.dobybros.chat.binary.data.Data;
 import com.container.im.mina.MinaSessionContext;
+import com.dobybros.chat.binary.data.Data;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -25,10 +25,8 @@ public class ProxyUpStreamHandler extends IoHandlerAdapter {
     private int readIdleTime;
     private int writeIdleTime;
     private final int[] lock = new int[0];
-    @Resource
-    ProxyAnnotationHandler proxyAnnotationHandler;
-    @Resource
-    ProxyUpStreamAnnotationHandler proxyUpStreamAnnotationHandler;
+    private ProxyAnnotationHandler proxyAnnotationHandler;
+    private ProxyUpStreamAnnotationHandler proxyUpStreamAnnotationHandler;
 
     @Override
     public void sessionCreated(final IoSession session) throws Exception {
@@ -179,4 +177,11 @@ public class ProxyUpStreamHandler extends IoHandlerAdapter {
         return sessionContext;
     }
 
+    public void setProxyAnnotationHandler(ProxyAnnotationHandler proxyAnnotationHandler) {
+        this.proxyAnnotationHandler = proxyAnnotationHandler;
+    }
+
+    public void setProxyUpStreamAnnotationHandler(ProxyUpStreamAnnotationHandler proxyUpStreamAnnotationHandler) {
+        this.proxyUpStreamAnnotationHandler = proxyUpStreamAnnotationHandler;
+    }
 }

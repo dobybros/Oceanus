@@ -5,8 +5,9 @@ import chat.errors.CoreException;
 import chat.config.Configuration;
 import com.docker.script.executor.prepare.source.ServiceDownloadHandler;
 import com.docker.file.adapters.GridFSFileHandler;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import com.container.runtime.DefaultRuntimeContext;
+import com.sun.xml.bind.v2.runtime.output.C14nXmlOutput;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.FileHeader;
 import org.apache.commons.io.FileUtils;
@@ -37,12 +38,16 @@ public class GridFSServiceDownloadHandler implements ServiceDownloadHandler {
         boolean needRedeploy = true;
         DefaultRuntimeContext runtimeContext = (DefaultRuntimeContext) configuration.getBaseConfiguration().getRuntimeContext(configuration.getService());
         if(runtimeContext != null){
-            if(runtimeContext.getConfiguration().getDeployVersion() != null){
-                if(runtimeContext.getConfiguration().getDeployVersion() >= fileEntity.getLastModificationTime()){
-                    needRedeploy = false;
-                }else {
-                    runtimeContext.close();
-                    configuration.getBaseConfiguration().removeRuntimeContext(configuration.getService());
+            if(runtimeContext.getConfiguration().getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR)){
+                needRedeploy = false;
+            }else {
+                if(runtimeContext.getConfiguration().getDeployVersion() != null){
+                    if(runtimeContext.getConfiguration().getDeployVersion() >= fileEntity.getLastModificationTime()){
+                        needRedeploy = false;
+                    }else {
+                        runtimeContext.close();
+                        configuration.getBaseConfiguration().removeRuntimeContext(configuration.getService());
+                    }
                 }
             }
         }

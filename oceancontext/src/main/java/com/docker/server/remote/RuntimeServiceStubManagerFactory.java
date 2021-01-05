@@ -10,7 +10,7 @@ import com.docker.storage.adapters.impl.LansServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import com.docker.rpc.remote.stub.ServiceStubManager;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import com.docker.rpc.remote.stub.ServiceStubManagerFactory;
 import script.core.runtime.classloader.ClassHolder;
 import script.core.runtime.classloader.MyGroovyClassLoader;

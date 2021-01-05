@@ -4,7 +4,6 @@ import com.docker.file.adapters.GridFSFileHandler;
 import com.docker.storage.DBException;
 import com.docker.storage.mongodb.MongoHelper;
 import org.apache.commons.io.FileUtils;
-import org.springframework.cache.annotation.CacheEvict;
 import script.file.FileAdapter;
 
 import java.io.File;

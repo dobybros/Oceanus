@@ -15,7 +15,7 @@ import com.docker.storage.zookeeper.ZookeeperFactory;
 import com.docker.storage.zookeeper.ZookeeperHandler;
 import org.apache.commons.lang.StringUtils;
 import script.core.annotation.JavaBean;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import script.core.runtime.handler.AbstractFieldAnnotationHandler;
 
 import java.io.File;

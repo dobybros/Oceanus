@@ -11,7 +11,7 @@ import com.docker.storage.adapters.DeployServiceVersionService;
 import com.docker.storage.adapters.DockerStatusService;
 import com.docker.storage.adapters.impl.DeployServiceVersionServiceImpl;
 import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 import java.util.HashMap;
 import java.util.Map;

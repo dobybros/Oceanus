@@ -20,7 +20,7 @@ public class MongoHelper extends MongoInstance {
 	}
 	
 	
-	public synchronized void init() throws DBException {
+	public synchronized void init(){
 		db = getMongo().getDatabase(dbName);
 		dbForGridFS = getMongo().getDB(dbName);
 	}

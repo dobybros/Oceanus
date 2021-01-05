@@ -18,10 +18,9 @@ import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.RPCClientAdapterMap;
 import com.docker.rpc.RPCClientAdapterMapFactory;
 import com.docker.tasks.Task;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.StringUtils;
-import com.docker.utils.BeanFactory;
 
-import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,10 +36,8 @@ public class RPCMessageSendingTask extends Task {
 
 	private ConcurrentHashMap<String, MessageSendingSingleThreadQueueWrapper> serverQueueMap = new ConcurrentHashMap<>();
 	
-	@Resource
 	private OfflineMessageSavingTask offlineMessageSavingTask;
 
-	@Resource
 	private OnlineServerWithStatus onlineServer;
 	private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
 	
@@ -49,7 +46,15 @@ public class RPCMessageSendingTask extends Task {
 	public MessageSendingSingleThreadQueueWrapper getServerQueue(String server, String ip, Integer port) {
 		return getServerQueue(server, ip, port, null);
 	}
-	
+
+	public void setOfflineMessageSavingTask(OfflineMessageSavingTask offlineMessageSavingTask) {
+		this.offlineMessageSavingTask = offlineMessageSavingTask;
+	}
+
+	public void setOnlineServer(OnlineServerWithStatus onlineServer) {
+		this.onlineServer = onlineServer;
+	}
+
 	public MessageSendingSingleThreadQueueWrapper getServerQueue(String server, String ip, Integer port, String lanId) {
 		MessageSendingSingleThreadQueueWrapper serverQueue = serverQueueMap.get(server);
 //		IMessageQueueService messageQueueService = messageQueueMap.get(server);

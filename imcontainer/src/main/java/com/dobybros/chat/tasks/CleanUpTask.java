@@ -2,12 +2,13 @@ package com.dobybros.chat.tasks;
 
 import chat.logs.LoggerEx;
 import com.dobybros.chat.utils.CommonUtils;
+import com.docker.file.adapters.GridFSFileHandler;
 import com.docker.tasks.Task;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.file.FileAdapter;
 import script.file.FileAdapter.PathEx;
 
-import javax.annotation.Resource;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class CleanUpTask extends Task {
@@ -15,8 +16,7 @@ public class CleanUpTask extends Task {
 
 	private LinkedBlockingQueue<CleanUp> queue;
 	
-	@Resource
-	private FileAdapter fileAdapter;
+	private FileAdapter fileAdapter = (FileAdapter) BeanFactory.getBean(GridFSFileHandler.class.getName());
 	
 	private boolean isStarted = true;
 	

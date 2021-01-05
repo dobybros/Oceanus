@@ -14,9 +14,9 @@ import com.docker.data.ServiceAnnotation;
 import com.docker.rpc.RPCClientAdapter;
 import com.docker.rpc.remote.stub.RemoteServers;
 import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +27,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2019/11/15
  */
 public class ProxyContainerDuplexSender {
-    @Resource
-    RpcProxyContainerDuplexSender rpcProxyContainerDuplexSender;
-//    @Resource
-//    QueueProxyContainerDuplexSender queueProxyContainerDuplexSender;
-    @Resource
-    DockerStatusServiceImpl dockerStatusService;
+    private RpcProxyContainerDuplexSender rpcProxyContainerDuplexSender;
+    private DockerStatusServiceImpl dockerStatusService;
     private final String TAG = ProxyContainerDuplexSender.class.getSimpleName();
     //serviceTransportTypeMap
     private Map<String, Map<String, Integer>> serviceMap = new ConcurrentHashMap<>();
+
+    public void setRpcProxyContainerDuplexSender(RpcProxyContainerDuplexSender rpcProxyContainerDuplexSender) {
+        this.rpcProxyContainerDuplexSender = rpcProxyContainerDuplexSender;
+    }
+
+    public void setDockerStatusService(DockerStatusServiceImpl dockerStatusService) {
+        this.dockerStatusService = dockerStatusService;
+    }
 
     private Integer select(String service, String contentType){
         Integer type = ProxyContainerTransportType.TYPE_RPC;

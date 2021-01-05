@@ -17,7 +17,7 @@ import com.dobybros.gateway.onlineusers.OnlineServiceUser;
 import com.dobybros.gateway.onlineusers.PushInfo;
 import com.dobybros.gateway.onlineusers.PushInfo.SpecialHandler;
 import org.apache.mina.util.ConcurrentHashSet;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 import java.util.*;
 

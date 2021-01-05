@@ -7,19 +7,18 @@ import com.docker.data.Lan;
 import com.docker.storage.DBException;
 import com.docker.storage.adapters.LansService;
 import com.docker.storage.mongodb.daos.LansDAO;
+import com.docker.oceansbean.BeanFactory;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bson.Document;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LansServiceImpl implements LansService {
     private static final String TAG = LansServiceImpl.class.getSimpleName();
 
-    @Resource
     private LansDAO lansDAO;
 
     @Override
@@ -54,5 +53,9 @@ public class LansServiceImpl implements LansService {
             LoggerEx.error(TAG, "Query lans failed, " + ExceptionUtils.getFullStackTrace(e));
             throw new CoreException(ChatErrorCodes.ERROR_ONLINESERVER_QUERY_FAILED, "Query lans failed, " + e.getMessage());
         }
+    }
+
+    public void setLansDAO(LansDAO lansDAO) {
+        this.lansDAO = lansDAO;
     }
 }

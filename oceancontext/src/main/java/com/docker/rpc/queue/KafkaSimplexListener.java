@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.docker.rpc.QueueSimplexListener;
 import com.docker.rpc.impl.RMIServerImplWrapper;
 import com.docker.rpc.remote.RpcRequestCall;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -15,9 +16,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.core.appender.mom.kafka.DefaultKafkaProducerFactory;
 import org.apache.logging.log4j.core.appender.mom.kafka.KafkaProducerFactory;
-import com.docker.utils.BeanFactory;
 
-import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.util.Arrays;
@@ -29,8 +28,7 @@ import java.util.Properties;
  * Description：
  */
 public class KafkaSimplexListener implements QueueSimplexListener {
-    @Resource
-    RMIServerImplWrapper dockerRpcServer;
+    private RMIServerImplWrapper dockerRpcServer;
     private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     private KafkaProducer producer;
     private KafkaConsumer consumer;
@@ -125,6 +123,10 @@ public class KafkaSimplexListener implements QueueSimplexListener {
         }catch (Throwable t){
             LoggerEx.error(TAG, "Consumer close err, errMsg: " + ExceptionUtils.getFullStackTrace(t));
         }
+    }
+
+    public void setDockerRpcServer(RMIServerImplWrapper dockerRpcServer) {
+        this.dockerRpcServer = dockerRpcServer;
     }
 
     @Override

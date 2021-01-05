@@ -7,8 +7,9 @@ import com.dobybros.chat.tasks.RPCMessageSendingTask;
 import com.dobybros.gateway.onlineusers.OnlineUser;
 import com.dobybros.gateway.onlineusers.OnlineUserManager;
 import com.dobybros.gateway.onlineusers.OnlineUsersHolder;
+import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
+import com.docker.oceansbean.BeanFactory;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -16,11 +17,8 @@ import java.util.Collection;
 public abstract class CommonEventHandler implements EventHandler {
     private static final String TAG = "EH";
 
-    @Resource
     private OnlineUserManager onlineUserManager;
-    @Resource
     private RPCMessageSendingTask messageSendingTask;
-    @Resource
     private OfflineMessageSavingTask offlineMessageSavingTask;
 
     public CommonEventHandler() {

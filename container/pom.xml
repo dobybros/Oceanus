@@ -49,7 +49,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>container.container.ContainerApplication</mainClass>
+							<mainClass>com.container.runtime.boot.OceanusStart</mainClass>
 							<classpathPrefix>libs/</classpathPrefix>
 							<classpathLayoutType>repository</classpathLayoutType>
 						</manifest>

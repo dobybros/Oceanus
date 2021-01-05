@@ -17,7 +17,7 @@ import com.docker.rpc.remote.stub.ServiceStubManager;
 import com.docker.script.servlet.GroovyServletManagerEx;
 import com.docker.storage.adapters.impl.ScheduledTaskServiceImpl;
 import com.docker.tasks.RepairTaskHandler;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import com.docker.utils.JWTUtils;
 import com.docker.utils.RequestUtils;
 import org.apache.commons.io.IOUtils;

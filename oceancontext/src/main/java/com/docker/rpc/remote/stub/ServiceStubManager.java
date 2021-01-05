@@ -14,7 +14,7 @@ import com.docker.storage.adapters.impl.ServiceVersionServiceImpl;
 import com.docker.storage.mongodb.MongoHelper;
 import com.docker.storage.mongodb.daos.DockerStatusDAO;
 import com.docker.storage.mongodb.daos.ServiceVersionDAO;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.core.io.ClassPathResource;
 import script.core.servlets.Tracker;

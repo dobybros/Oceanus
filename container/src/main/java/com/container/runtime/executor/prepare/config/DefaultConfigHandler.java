@@ -10,7 +10,7 @@ import com.docker.storage.adapters.DockerStatusService;
 import com.docker.storage.adapters.ServersService;
 import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
 import com.docker.storage.adapters.impl.ServersServiceImpl;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -80,23 +80,9 @@ public class DefaultConfigHandler implements ConfigHandler {
                 }
             }
             configuration.setConfig(properties);
-            //add service to dockerStatus
-            updateService(configuration);
             LoggerEx.info(TAG, "Read service: " + configuration.getServiceVersion() + ", merge config: " + properties);
         } catch (Throwable t) {
             LoggerEx.error(TAG, "Read service " + configuration.getServiceVersion() + " config failed, " + ExceptionUtils.getFullStackTrace(t));
         }
-    }
-    private void updateService(Configuration configuration) throws CoreException {
-        DockerStatusService dockerStatusService = (DockerStatusService) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
-        Service service = new Service();
-        service.setService(configuration.getService());
-        service.setVersion(configuration.getVersion());
-        service.setUploadTime(configuration.getDeployVersion());
-        if(configuration.getConfig().get(Service.FIELD_MAXUSERNUMBER) != null){
-            service.setMaxUserNumber(Long.parseLong((String) configuration.getConfig().get(Service.FIELD_MAXUSERNUMBER)));
-        }
-        dockerStatusService.deleteService(configuration.getBaseConfiguration().getServer(), service.getService(), service.getVersion());
-        dockerStatusService.addService(configuration.getBaseConfiguration().getServer(), service);
     }
 }

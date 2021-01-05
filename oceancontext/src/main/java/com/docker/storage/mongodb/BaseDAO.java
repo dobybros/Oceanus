@@ -165,7 +165,7 @@ public abstract class BaseDAO implements DAO {
 	
 	@Override
 	
-	public BaseDAO init() throws DBException {
+	public BaseDAO init(){
 		col = mongoHelper.getDBCollection(getCollectionName());
 		col.withWriteConcern(WriteConcern.SAFE);
 //		ensureIndexes(col); Don't ensureIndexes in application. 

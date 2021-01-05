@@ -5,7 +5,7 @@ import chat.config.BaseConfiguration;
 import chat.utils.TimerEx;
 import chat.utils.TimerTaskEx;
 import com.docker.server.OnlineServer;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 import java.text.DecimalFormat;
 import java.util.Collection;

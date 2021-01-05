@@ -24,7 +24,7 @@ import com.dobybros.gateway.onlineusers.OnlineUserManager;
 import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import com.dobybros.gateway.open.GatewayMSGServers;
 import com.docker.script.BaseRuntimeContext;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 

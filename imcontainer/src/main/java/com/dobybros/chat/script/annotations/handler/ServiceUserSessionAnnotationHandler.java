@@ -5,7 +5,7 @@ import chat.logs.LoggerEx;
 import com.dobybros.chat.handlers.imextention.IMExtensionCache;
 import com.dobybros.chat.script.annotations.gateway.ServiceUserSessionHandler;
 import com.dobybros.chat.script.annotations.gateway.ServiceUserSessionListener;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.lang.annotation.Annotation;

@@ -9,7 +9,7 @@ import com.docker.rpc.RPCClientAdapter;
 import com.docker.rpc.RPCClientAdapterMap;
 import com.docker.rpc.RPCClientAdapterMapFactory;
 import com.docker.rpc.async.AsyncRpcFuture;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

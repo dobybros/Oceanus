@@ -15,6 +15,7 @@ import com.docker.handler.annotation.field.ConfigPropertyHandler;
 import com.docker.handler.annotation.field.JavaBeanHandler;
 import com.docker.handler.annotation.field.ServiceBeanHandler;
 import com.docker.rpc.remote.skeleton.ServiceSkeletonAnnotationHandler;
+import com.docker.script.BaseRuntimeContext;
 import com.docker.script.ServiceMemoryHandler;
 import com.docker.script.ServiceScaleHandler;
 import com.docker.script.executor.prepare.runtime.RuntimeHandler;
@@ -33,7 +34,7 @@ import connectors.mongodb.annotations.handlers.MongoDBHandler;
 import connectors.mongodb.annotations.handlers.MongoDatabaseAnnotationHolder;
 import connectors.mongodb.annotations.handlers.MongoDocumentAnnotationHolder;
 import script.Runtime;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.RuntimeFactory;
 import script.core.runtime.ServerLifeCircleHandler;
@@ -59,7 +60,7 @@ import java.util.Set;
 public class DefaultRuntimeHandler implements RuntimeHandler {
     private final String TAG = DefaultRuntimeFactory.class.getName();
     @Override
-    public void prepare(Configuration configuration) throws CoreException {
+    public BaseRuntimeContext prepare(Configuration configuration) throws CoreException {
         RuntimeFactory runtimeFactory = (RuntimeFactory) BeanFactory.getBean(DefaultRuntimeFactory.class.getName());
         try {
             //创建runtimeContext
@@ -71,6 +72,7 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
             runtimeContext.setRuntime(runtime);
             //启动编译，以及后续处理
             runtime.start();
+            return runtimeContext;
         }catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e){
             AbstractRuntimeContext runtimeContext = configuration.getBaseConfiguration().removeRuntimeContext(configuration.getService());
             if(runtimeContext != null){

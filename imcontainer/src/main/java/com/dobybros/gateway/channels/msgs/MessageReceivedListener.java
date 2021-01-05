@@ -6,7 +6,7 @@ import com.dobybros.chat.binary.data.Data;
 import com.dobybros.gateway.onlineusers.OnlineUserManager;
 import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import org.apache.mina.core.session.IoSession;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 public abstract class MessageReceivedListener {
 	private Class<? extends Data> dataClass;

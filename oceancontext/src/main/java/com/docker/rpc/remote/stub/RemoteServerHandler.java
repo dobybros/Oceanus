@@ -12,7 +12,7 @@ import com.docker.rpc.remote.MethodMapping;
 import com.docker.server.OnlineServer;
 import com.docker.utils.ScriptHttpUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;

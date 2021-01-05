@@ -5,13 +5,24 @@ import chat.logs.LoggerEx;
 import chat.main.ServerStart;
 import chat.config.BaseConfiguration;
 import chat.config.Configuration;
+import com.container.runtime.DefaultRuntimeContext;
+import com.docker.data.Service;
+import com.docker.oceansbean.BeanFactory;
+import com.docker.script.ClassAnnotationHandlerEx;
 import com.docker.script.executor.RuntimeExecutor;
 import com.docker.script.executor.RuntimeExecutorHandler;
-import com.docker.script.executor.prepare.PrepareServiceHandler;
-import com.container.runtime.executor.prepare.DefaultPrepareServiceHandler;
+import com.docker.script.executor.prepare.PrepareAndStartServiceHandler;
+import com.container.runtime.executor.prepare.DefaultPrepareAndStartServiceHandler;
+import com.docker.script.executor.prepare.PrepareAndStartServiceProcessHandler;
 import com.docker.script.executor.serviceversion.ServiceVersionsHandler;
 import com.container.runtime.executor.serviceversion.DefaultServiceVersionsHandler;
+import com.docker.storage.adapters.DockerStatusService;
+import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
+import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.handler.AbstractClassAnnotationHandler;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -22,10 +33,10 @@ import java.util.concurrent.CountDownLatch;
 public class DefaultRuntimeExecutor implements RuntimeExecutor {
     private final String TAG = DefaultRuntimeExecutor.class.getName();
     private ServiceVersionsHandler serviceVersionsHandler;
-    private PrepareServiceHandler prepareServiceHandler;
+    private PrepareAndStartServiceHandler prepareServiceHandler;
     public DefaultRuntimeExecutor(){
         this.serviceVersionsHandler = new DefaultServiceVersionsHandler();
-        this.prepareServiceHandler = new DefaultPrepareServiceHandler();
+        this.prepareServiceHandler = new DefaultPrepareAndStartServiceHandler();
     }
 
     @Override
@@ -65,9 +76,31 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
 
     private void compileService(Configuration configuration, RuntimeExecutorHandler runtimeExecutorHandler){
         try {
-            this.prepareServiceHandler.prepare(configuration);
+            this.prepareServiceHandler.prepareAndStart(configuration, (runtimeContext) -> {
+                //add service to dockerStatus
+                updateService(configuration, (DefaultRuntimeContext) runtimeContext);
+            });
         } catch (Throwable t) {
             runtimeExecutorHandler.handleFailed(t, configuration.getService(), configuration.getVersion());
         }
+    }
+
+    private void updateService(Configuration configuration, DefaultRuntimeContext runtimeContext) throws CoreException {
+        DockerStatusService dockerStatusService = (DockerStatusService) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
+        Service service = new Service();
+        service.setService(configuration.getService());
+        service.setVersion(configuration.getVersion());
+        service.setUploadTime(configuration.getDeployVersion());
+        if(configuration.getConfig().get(Service.FIELD_MAXUSERNUMBER) != null){
+            service.setMaxUserNumber(Long.parseLong((String) configuration.getConfig().get(Service.FIELD_MAXUSERNUMBER)));
+        }
+        Collection<AbstractClassAnnotationHandler> handlers = runtimeContext.getAnnotationHandlerMap().values();
+        for (AbstractClassAnnotationHandler handler : handlers) {
+            if (handler instanceof ClassAnnotationHandlerEx)
+                ((ClassAnnotationHandlerEx) handler).configService(service);
+        }
+        service.setType(Service.FIELD_SERVER_TYPE_NORMAL);
+        dockerStatusService.deleteService(configuration.getBaseConfiguration().getServer(), service.getService(), service.getVersion());
+        dockerStatusService.addService(configuration.getBaseConfiguration().getServer(), service);
     }
 }
