@@ -7,5 +7,5 @@ import chat.config.Configuration;
  * Description：
  */
 public interface PrepareAndStartServiceHandler {
-    void prepareAndStart(Configuration configuration, PrepareAndStartServiceProcessHandler prepareAndStartServiceProcessHandler) throws Throwable;
+    void prepareAndStart(Configuration configuration, PrepareAndStartServiceProcessListener prepareAndStartServiceProcessHandler) throws Throwable;
 }

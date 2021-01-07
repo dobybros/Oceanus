@@ -3,9 +3,8 @@ package com.container.runtime.executor.prepare;
 import chat.config.Configuration;
 import chat.logs.LoggerEx;
 import com.container.runtime.DefaultRuntimeContext;
-import com.docker.script.BaseRuntimeContext;
 import com.docker.script.executor.prepare.PrepareAndStartServiceHandler;
-import com.docker.script.executor.prepare.PrepareAndStartServiceProcessHandler;
+import com.docker.script.executor.prepare.PrepareAndStartServiceProcessListener;
 import com.docker.script.executor.prepare.config.ConfigHandler;
 import com.docker.script.executor.prepare.dependency.DependencyDownloadHandler;
 import com.docker.script.executor.prepare.source.ServiceDownloadHandler;
@@ -34,7 +33,7 @@ public class DefaultPrepareAndStartServiceHandler implements PrepareAndStartServ
     }
 
     @Override
-    public void prepareAndStart(Configuration configuration, PrepareAndStartServiceProcessHandler prepareAndStartServiceProcessHandler) throws Throwable {
+    public void prepareAndStart(Configuration configuration, PrepareAndStartServiceProcessListener prepareAndStartServiceProcessHandler) throws Throwable {
         //下载service,以及判断是否需要热加载
         if(this.serviceDownloadHandler.prepare(configuration)){
             //解析config.properties到configuration

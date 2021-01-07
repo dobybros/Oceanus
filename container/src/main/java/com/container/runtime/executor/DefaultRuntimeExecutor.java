@@ -10,17 +10,14 @@ import com.docker.data.Service;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.script.ClassAnnotationHandlerEx;
 import com.docker.script.executor.RuntimeExecutor;
-import com.docker.script.executor.RuntimeExecutorHandler;
+import com.docker.script.executor.RuntimeExecutorListener;
 import com.docker.script.executor.prepare.PrepareAndStartServiceHandler;
 import com.container.runtime.executor.prepare.DefaultPrepareAndStartServiceHandler;
-import com.docker.script.executor.prepare.PrepareAndStartServiceProcessHandler;
 import com.docker.script.executor.serviceversion.ServiceVersionsHandler;
 import com.container.runtime.executor.serviceversion.DefaultServiceVersionsHandler;
 import com.docker.storage.adapters.DockerStatusService;
 import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
-import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.handler.AbstractClassAnnotationHandler;
-import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,7 +37,7 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
     }
 
     @Override
-    public void execute(BaseConfiguration baseConfiguration, RuntimeExecutorHandler runtimeExecutorHandler) {
+    public void execute(BaseConfiguration baseConfiguration, RuntimeExecutorListener runtimeExecutorHandler) {
         try {
             this.serviceVersionsHandler.generateConfigurations(baseConfiguration).values().forEach(configuration -> compileService(configuration, runtimeExecutorHandler));
         }catch (Throwable t){
@@ -51,7 +48,7 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
     }
 
     @Override
-    public void executeAsync(BaseConfiguration baseConfiguration, RuntimeExecutorHandler runtimeExecutorHandler) {
+    public void executeAsync(BaseConfiguration baseConfiguration, RuntimeExecutorListener runtimeExecutorHandler) {
         Map<String, Configuration> configurationMap = null;
         try {
             configurationMap = this.serviceVersionsHandler.generateConfigurations(baseConfiguration);
@@ -74,14 +71,14 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
         runtimeExecutorHandler.handleSuccess();
     }
 
-    private void compileService(Configuration configuration, RuntimeExecutorHandler runtimeExecutorHandler){
+    private void compileService(Configuration configuration, RuntimeExecutorListener runtimeExecutorListener){
         try {
             this.prepareServiceHandler.prepareAndStart(configuration, (runtimeContext) -> {
                 //add service to dockerStatus
                 updateService(configuration, (DefaultRuntimeContext) runtimeContext);
             });
         } catch (Throwable t) {
-            runtimeExecutorHandler.handleFailed(t, configuration.getService(), configuration.getVersion());
+            runtimeExecutorListener.handleFailed(t, configuration.getService(), configuration.getVersion());
         }
     }
 

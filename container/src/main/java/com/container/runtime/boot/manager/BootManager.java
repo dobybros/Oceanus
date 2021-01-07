@@ -10,13 +10,12 @@ import com.docker.data.DockerStatus;
 import com.docker.data.ServiceVersion;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.script.executor.RuntimeExecutor;
-import com.docker.script.executor.RuntimeExecutorHandler;
+import com.docker.script.executor.RuntimeExecutorListener;
 import com.docker.storage.adapters.impl.DeployServiceVersionServiceImpl;
 import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
 import com.docker.storage.adapters.impl.ServiceVersionServiceImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import script.utils.ShutdownListener;
 
 import java.io.*;
@@ -25,11 +24,10 @@ import java.util.List;
 
 public class BootManager implements ShutdownListener {
     private static final String TAG = BootManager.class.getSimpleName();
-
     private RuntimeExecutor runtimeExecutor;
     private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
-    boolean isShutdown = false;
-    boolean isLoaded = false;
+    private boolean isShutdown = false;
+    private boolean isLoaded = false;
     private ServiceVersionServiceImpl serviceVersionService;
     private DockerStatusServiceImpl dockerStatusService;
     private DeployServiceVersionServiceImpl deployServiceVersionService;
@@ -66,7 +64,7 @@ public class BootManager implements ShutdownListener {
     }
     private void reload(){
         isLoaded = true;
-        this.runtimeExecutor.executeAsync(baseConfiguration, new RuntimeExecutorHandler() {
+        this.runtimeExecutor.executeAsync(baseConfiguration, new RuntimeExecutorListener() {
             @Override
             public void handleSuccess() {
                 isLoaded = false;
