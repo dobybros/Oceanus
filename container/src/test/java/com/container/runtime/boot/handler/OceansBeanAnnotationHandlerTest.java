@@ -13,6 +13,6 @@ class OceansBeanAnnotationHandlerTest {
     @Test
     void handle() throws CoreException {
         OceanusBeanAnnotationHandler oceansBeanAnnotationHandler = new OceanusBeanAnnotationHandler(new DefaultOceansBeanManager());
-        oceansBeanAnnotationHandler.handle();
+        oceansBeanAnnotationHandler.handle(null);
     }
 }

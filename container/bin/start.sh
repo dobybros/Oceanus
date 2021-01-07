@@ -28,10 +28,10 @@ if [ ! -d $LOGS_DIR ]; then
   mkdir $LOGS_DIR
 fi
 mvn -s "$CONFIG_DIR/mvnsettings.xml" clean install -Dmaven.test.skip=true -f "$DEPLOY_DIR/bin/pom.xml"
-rm -rf "$LIBS_DIR/groovycloud"
+rm -rf "$LIBS_DIR/oceanus"
 mvn -s "$CONFIG_DIR/mvnsettings.xml" clean install -Dmaven.test.skip=true -f "$CONFIG_DIR/basepom.xml"
 echo "Maven install finish!!!"
-cp "$LIBS_DIR/groovycloud/$JAR_NAME/$JAR_VERSION/$JAR_NAME-$JAR_VERSION.jar" "$DEPLOY_DIR"
+cp "$LIBS_DIR/oceanus/$JAR_NAME/$JAR_VERSION/$JAR_NAME-$JAR_VERSION.jar" "$DEPLOY_DIR"
 JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Duser.timezone=Asia/Shanghai -Dfile.encoding=utf-8"
 JAVA_DEBUG_OPTS=""
 if [ "-x$1" = "-x--debug" ]; then

@@ -57,7 +57,16 @@ public class ScriptUtils {
                 "import script.core.runtime.groovy.GroovyRuntime;\n" +
                 "\n" +
                 "public class LoggerEx {\n" +
-                "    private static Logger logger = LoggerFactory.getLogger(\"\");\n" +
+                "     private static ch.qos.logback.classic.Logger logger;\n" +
+                "    static {\n" +
+                "        ch.qos.logback.core.rolling.RollingFileAppender logAppender = chat.logs.GetTheAppender.getAppender(\"\");\n" +
+                "        ch.qos.logback.classic.LoggerContext context = (ch.qos.logback.classic.LoggerContext) org.slf4j.LoggerFactory.getILoggerFactory();\n" +
+                "        logger = context.getLogger(\"\");\n" +
+                "        logger.setAdditive(false);\n" +
+                "        logger.setLevel(ch.qos.logback.classic.Level.INFO);\n" +
+                "        logger.addAppender(logAppender);\n" +
+                "        logger.addAppender(chat.logs.GetTheAppender.getConsoleAppender());\n" +
+                "    }\n" +
                 "    private static String LEVEL_FATAL = \"FATAL\";\n" +
                 "    private static LogListenerEx logListener;\n" +
                 "    private LoggerEx() {\n" +

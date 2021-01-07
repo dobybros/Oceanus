@@ -9,4 +9,6 @@ import com.docker.rpc.remote.stub.ServiceStubManager;
  */
 public interface ServiceStubManagerFactory {
     ServiceStubManager get(String lanId) throws CoreException;
+
+    ServiceStubManager get() throws CoreException;
 }

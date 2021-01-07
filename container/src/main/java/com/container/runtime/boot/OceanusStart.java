@@ -64,7 +64,7 @@ public class OceanusStart {
     private static void buildOceanusBeanManager() throws CoreException {
         OceanusBeanManager oceanusBeanManager = new DefaultOceansBeanManager();
         BeanFactory.setOceanusBeanManager(oceanusBeanManager);
-        new OceanusBeanAnnotationHandler(oceanusBeanManager).handle();
+        new OceanusBeanAnnotationHandler(oceanusBeanManager).handle(null);
     }
 
     private static void init() throws IOException {

@@ -9,6 +9,7 @@ import script.core.runtime.classloader.MyGroovyClassLoader;
 import script.core.runtime.classloader.MyJavaClassLoader;
 
 import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * Created by lick on 2020/12/21.
@@ -18,7 +19,8 @@ public class DefaultClassLoaderFactory implements ClassLoaderFactory {
     @Override
     public ClassLoader create(URL[] urls, ClassLoader parentClassLoader, boolean isDependency,  AbstractRuntimeContext runtimeContext) {
         if(isDependency){
-            return new DependencyURLClassLoader(urls);
+//            return new DependencyURLClassLoader(urls);
+            return new URLClassLoader(urls, this.getClass().getClassLoader().getParent());
         }else {
             switch (runtimeContext.getConfiguration().getLanguageType()){
                 case Configuration.LANGEUAGE_GROOVY:

@@ -7,7 +7,7 @@ import chat.errors.CoreException;
  * Description：
  */
 public interface BaseAnnotationHandler {
-    public void handle() throws CoreException;
+    public void handle(String packageName) throws CoreException;
 
     public Class getAnnotationClass();
 }

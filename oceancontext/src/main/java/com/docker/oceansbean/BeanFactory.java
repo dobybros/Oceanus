@@ -18,12 +18,18 @@ public class BeanFactory {
     private static OceanusBeanManager oceanusBeanManager;
 
     public static Object getBean(String classPath) throws BeansException {
+        if(oceanusBeanManager == null){
+            return null;
+        }
         if(classPath.equals(BaseConfiguration.class.getName())){
             return baseConfiguration;
         }
         return oceanusBeanManager.getBeanByClassName(classPath);
     }
     public static Object getBeanByName(String beanName) throws BeansException {
+        if(oceanusBeanManager == null){
+            return null;
+        }
         return oceanusBeanManager.getBeanByBeanName(beanName);
     }
 

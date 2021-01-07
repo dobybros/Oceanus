@@ -5,6 +5,7 @@ import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import com.docker.oceansbean.AbstractOceansAnnotationHandler;
 import com.docker.oceansbean.OceanusBeanManager;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.FieldAnnotationsScanner;
@@ -26,10 +27,13 @@ public class OceanusBeanAnnotationHandler extends AbstractOceansAnnotationHandle
         super(oceanusBeanManager);
     }
     @Override
-    public void handle() throws CoreException {
+    public void handle(String packageName) throws CoreException {
+        if(StringUtils.isBlank(packageName)){
+            packageName = "com.container.runtime.boot.bean";
+        }
         // 扫包
         Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .forPackages("com.container.runtime.boot.bean") // 指定路径URL
+                .forPackages(packageName) // 指定路径URL
                 .addScanners(new SubTypesScanner()) // 添加子类扫描工具
                 .addScanners(new FieldAnnotationsScanner()) // 添加 属性注解扫描工具
                 .addScanners(new MethodAnnotationsScanner() ) // 添加 方法注解扫描工具

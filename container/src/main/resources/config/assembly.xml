@@ -42,10 +42,4 @@
             <destName>pom.xml</destName>
         </file>
     </files>
-<!--    <dependencySets>-->
-<!--        <dependencySet>-->
-<!--            &lt;!&ndash; 将工程的依赖包打包到lib目录下。 &ndash;&gt;-->
-<!--            <outputDirectory>lib</outputDirectory>-->
-<!--        </dependencySet>-->
-<!--    </dependencySets>-->
 </assembly>

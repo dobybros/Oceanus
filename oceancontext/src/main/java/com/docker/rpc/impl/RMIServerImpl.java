@@ -305,7 +305,7 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
     private RPCClientAdapter getClientAdapter(RPCRequest request) throws CoreException {
         if (((MethodRequest) request).getSourceIp() != null && ((MethodRequest) request).getSourcePort() != null && ((MethodRequest) request).getFromServerName() != null) {
             BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(((MethodRequest)request).getFromService());
-            ServiceStubManager serviceStubManager = runtimeContext.getServiceStubManagerFactory().get(null);
+            ServiceStubManager serviceStubManager = runtimeContext.getServiceStubManagerFactory().get();
             if (serviceStubManager != null) {
                 RPCClientAdapterMap clientAdapterMap = null;
                 if (serviceStubManager.getUsePublicDomain()) {

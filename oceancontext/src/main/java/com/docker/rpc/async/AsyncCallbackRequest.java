@@ -60,7 +60,7 @@ public class AsyncCallbackRequest extends RPCRequest {
                             if(runtimeContext == null){
                                 throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + fromService + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
                             }
-                            ServiceStubManager serviceStubManager = runtimeContext.getServiceStubManagerFactory().get(null);
+                            ServiceStubManager serviceStubManager = runtimeContext.getServiceStubManagerFactory().get();
                             methodMapping = serviceStubManager.getMethodMapping(crc);
                             int returnLength = dis.readInt();
                             if (returnLength > 0) {
