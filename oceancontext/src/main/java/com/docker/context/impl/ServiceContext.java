@@ -5,6 +5,7 @@ import com.docker.context.Context;
 import com.docker.context.config.ServerConfig;
 import com.docker.script.BaseRuntimeContext;
 
+import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
@@ -62,5 +63,10 @@ public class ServiceContext implements Context {
     @Override
     public void injectBean(Object obj) throws CoreException {
         this.runtimeContext.getRuntimeBeanFactory().fillObject(obj);
+    }
+
+    @Override
+    public Collection<Class<?>> getClasses() {
+        return this.runtimeContext.getAllClasses().values();
     }
 }

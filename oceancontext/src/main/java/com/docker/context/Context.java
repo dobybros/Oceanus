@@ -3,6 +3,7 @@ package com.docker.context;
 import chat.errors.CoreException;
 import com.docker.context.config.ServerConfig;
 
+import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
@@ -27,5 +28,7 @@ public interface Context {
 
     public CompletableFuture<?> callAsync(String lanId, String service, String className, String method, Object... args) throws CoreException;
 
-    public void injectBean(Object obj) throws CoreException ;
+    public void injectBean(Object obj) throws CoreException;
+
+    public Collection<Class<?>> getClasses();
 }
