@@ -61,11 +61,14 @@ public class ScriptUtils {
                 "    static {\n" +
                 "        ch.qos.logback.core.rolling.RollingFileAppender logAppender = chat.logs.GetTheAppender.getAppender(\"\");\n" +
                 "        ch.qos.logback.classic.LoggerContext context = (ch.qos.logback.classic.LoggerContext) org.slf4j.LoggerFactory.getILoggerFactory();\n" +
-                "        logger = context.getLogger(\"\");\n" +
-                "        logger.setAdditive(false);\n" +
-                "        logger.setLevel(ch.qos.logback.classic.Level.INFO);\n" +
-                "        logger.addAppender(logAppender);\n" +
-                "        logger.addAppender(chat.logs.GetTheAppender.getConsoleAppender());\n" +
+                "        logger = context.exists(\"\");\n" +
+                "        if(logger == null){\n" +
+                "           logger = context.getLogger(\"\");\n" +
+                "           logger.setAdditive(false);\n" +
+                "           logger.setLevel(ch.qos.logback.classic.Level.INFO);\n" +
+                "           logger.addAppender(logAppender);\n" +
+                "           logger.addAppender(chat.logs.GetTheAppender.getConsoleAppender());\n" +
+                "        }\n" +
                 "    }\n" +
                 "    private static String LEVEL_FATAL = \"FATAL\";\n" +
                 "    private static LogListenerEx logListener;\n" +
@@ -136,7 +139,7 @@ public class ScriptUtils {
                 "    }\n" +
                 "    private static String getLogMsg(String tag, String msg) {\n" +
                 "        StringBuilder builder = new StringBuilder();\n" +
-                "        script.core.runtime.AbstractRuntimeContext runtimeContext = (script.core.runtime.AbstractRuntimeContext) ((script.core.runtime.classloader.MyGroovyClassLoader)chat.logs.LoggerEx.class.getClassLoader()).getRuntimeContext();\n" +
+                "        script.core.runtime.AbstractRuntimeContext runtimeContext = (script.core.runtime.AbstractRuntimeContext) ((script.core.runtime.classloader.MyGroovyClassLoader)chat.logs.LoggerEx.class.getClassLoader().getParent()).getRuntimeContext();\n" +
                 "        String serviceName = null;\n" +
                 "        if (runtimeContext != null) {\n" +
                 "            serviceName = runtimeContext.getConfiguration().getService();\n" +
@@ -153,7 +156,7 @@ public class ScriptUtils {
                 "    }\n" +
                 "   private static String getLogMsgFatal(String tag, String msg) {\n" +
                 "        StringBuilder builder = new StringBuilder();\n" +
-                "        script.core.runtime.AbstractRuntimeContext runtimeContext = (script.core.runtime.AbstractRuntimeContext) ((script.core.runtime.classloader.MyGroovyClassLoader)chat.logs.LoggerEx.class.getClassLoader()).getRuntimeContext();\n" +
+                "        script.core.runtime.AbstractRuntimeContext runtimeContext = (script.core.runtime.AbstractRuntimeContext) ((script.core.runtime.classloader.MyGroovyClassLoader)chat.logs.LoggerEx.class.getClassLoader().getParent()).getRuntimeContext();\n" +
                 "        String serviceName = null;\n" +
                 "        if (runtimeContext != null) {\n" +
                 "            serviceName = runtimeContext.getConfiguration().getService();\n" +
@@ -171,7 +174,7 @@ public class ScriptUtils {
                 "       }\n" +
                 "    private static String getLogMsg(String tag, String msg, Long spendTime) {\n" +
                 "        StringBuilder builder = new StringBuilder();\n" +
-                "        script.core.runtime.AbstractRuntimeContext runtimeContext = (script.core.runtime.AbstractRuntimeContext) ((script.core.runtime.classloader.MyGroovyClassLoader)chat.logs.LoggerEx.class.getClassLoader()).getRuntimeContext();\n" +
+                "        script.core.runtime.AbstractRuntimeContext runtimeContext = (script.core.runtime.AbstractRuntimeContext) ((script.core.runtime.classloader.MyGroovyClassLoader)chat.logs.LoggerEx.class.getClassLoader().getParent()).getRuntimeContext();\n" +
                 "        String serviceName = null;\n" +
                 "        if (runtimeContext != null) {\n" +
                 "            serviceName = runtimeContext.getConfiguration().getService();\n" +

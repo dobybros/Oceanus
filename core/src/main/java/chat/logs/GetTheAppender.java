@@ -42,6 +42,7 @@ public class GetTheAppender {
         //这里是可以用来设置appender的，在xml配置文件里面，是这种形式：
         // <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
         RollingFileAppender appender = new RollingFileAppender();
+
 //        //这里设置级别过滤器
 //        LevelController levelController = new LevelController();
 //        LevelFilter levelFilter = levelController.getLevelFilter(level);

@@ -41,6 +41,8 @@ public class MongoDatabaseAnnotationHolder extends ClassAnnotationHandler {
 				newDbClassMap.put(groovyClass, mongoDatabase);
 			}
 			dbClassMap = newDbClassMap;
+			MongoDBHandler mongoDBHandler = (MongoDBHandler) runtimeContext.getClassAnnotationHandler(MongoDBHandler.class);
+			mongoDBHandler.handleAnnotatedClasses(null);
 		}
 	}
 

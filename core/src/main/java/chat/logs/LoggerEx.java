@@ -13,12 +13,15 @@ public class LoggerEx {
     static {
         RollingFileAppender logAppender = GetTheAppender.getAppender("");
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        logger = context.getLogger("");
-        //设置不向上级打印信息
-        logger.setAdditive(false);
-        logger.setLevel(Level.INFO);
-        logger.addAppender(logAppender);
-        logger.addAppender(GetTheAppender.getConsoleAppender());
+        logger = context.exists("");
+        if(logger == null){
+            logger = context.getLogger("");
+            //设置不向上级打印信息
+            logger.setAdditive(false);
+            logger.setLevel(Level.INFO);
+            logger.addAppender(logAppender);
+            logger.addAppender(GetTheAppender.getConsoleAppender());
+        }
     }
     private static final String LEVEL_FATAL = "FATAL";
 

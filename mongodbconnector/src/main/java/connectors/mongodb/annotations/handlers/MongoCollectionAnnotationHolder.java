@@ -40,6 +40,8 @@ public class MongoCollectionAnnotationHolder extends ClassAnnotationHandler {
 				}
 			}
 			collectionClassMap = newCollectionClassMap;
+			MongoDBHandler mongoDBHandler = (MongoDBHandler) runtimeContext.getClassAnnotationHandler(MongoDBHandler.class);
+			mongoDBHandler.handleAnnotatedClasses(null);
 		}
 	}
 

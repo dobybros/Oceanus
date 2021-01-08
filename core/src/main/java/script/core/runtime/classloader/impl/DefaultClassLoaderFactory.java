@@ -19,8 +19,7 @@ public class DefaultClassLoaderFactory implements ClassLoaderFactory {
     @Override
     public ClassLoader create(URL[] urls, ClassLoader parentClassLoader, boolean isDependency,  AbstractRuntimeContext runtimeContext) {
         if(isDependency){
-//            return new DependencyURLClassLoader(urls);
-            return new URLClassLoader(urls, this.getClass().getClassLoader().getParent());
+            return new DependencyURLClassLoader(urls);
         }else {
             switch (runtimeContext.getConfiguration().getLanguageType()){
                 case Configuration.LANGEUAGE_GROOVY:

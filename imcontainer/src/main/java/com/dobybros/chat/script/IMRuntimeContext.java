@@ -40,7 +40,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Description：
  */
 public class IMRuntimeContext extends BaseRuntimeContext {
-    private final String TAG = IMRuntimeContext.class.getSimpleName();
     public IMRuntimeContext(Configuration configuration) throws CoreException {
         super(configuration);
     }

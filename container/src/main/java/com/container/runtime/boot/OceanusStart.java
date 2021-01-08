@@ -22,6 +22,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import script.core.servlets.GroovyServletDispatcher;
@@ -41,6 +42,7 @@ public class OceanusStart {
             BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
             Server server = new Server(new QueuedThreadPool(500));
             ServerConnector serverConnector = new ServerConnector(server);
+            Assert.assertNotNull(baseConfiguration);
             serverConnector.setPort(baseConfiguration.getServerPort());
             server.addConnector(serverConnector);
             ServletHandler servletHandler = new ServletHandler();
@@ -49,6 +51,7 @@ public class OceanusStart {
             servletHandler.addServletWithMapping(GroovyServletScriptDispatcher.class, "/base/*");
             server.start();
             init();
+            LoggerEx.info(TAG, "Server started on port " + baseConfiguration.getServerPort());
             server.join();
         }catch (Exception e){
             LoggerEx.error(TAG, "Start server failed, errMsg: " + ExceptionUtils.getFullStackTrace(e));
@@ -58,7 +61,6 @@ public class OceanusStart {
     private static void prepareLog(){
         Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         ((ch.qos.logback.classic.Logger) logger).setLevel(Level.INFO);
-
     }
 
     private static void buildOceanusBeanManager() throws CoreException {

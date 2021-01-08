@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Description：
  */
 public abstract class AbstractRuntimeContext implements RuntimeContext {
-    private final String TAG = AbstractRuntimeContext.class.getSimpleName();
+    protected final String TAG = AbstractRuntimeContext.class.getSimpleName();
     public AbstractRuntimeContext(Configuration configuration) throws CoreException {
         try {
             this.configuration = configuration;
