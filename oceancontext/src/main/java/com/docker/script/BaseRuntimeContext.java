@@ -15,7 +15,7 @@ public class BaseRuntimeContext extends AbstractRuntimeContext {
     public BaseRuntimeContext(Configuration configuration) throws CoreException {
         super(configuration);
         this.serviceStubManagerFactory = new RuntimeServiceStubManagerFactory(this);
-        this.serverConfig = new ServerConfig(getConfiguration().getBaseConfiguration());
+        this.serverConfig = new ServerConfig(getConfiguration());
     }
     private ServiceStubManagerFactory serviceStubManagerFactory;
 

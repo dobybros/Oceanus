@@ -2,6 +2,7 @@ package com.docker.server.remote;
 
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
+import com.docker.context.impl.ServiceContext;
 import com.docker.data.Lan;
 import com.docker.errors.CoreErrorCodes;
 import com.docker.script.BaseRuntimeContext;
@@ -49,7 +50,7 @@ public class RuntimeServiceStubManagerFactory implements ServiceStubManagerFacto
                 parseClass = classHolder.getParsedClass();
             }
         }
-        if(StringUtils.isBlank(lanId)){
+        if(StringUtils.isBlank(lanId) || lanId.equals(ServiceContext.LAN_ID_DEFAULT)){
             lanId = baseLanId;
             if(StringUtils.isBlank(lanId)){
                 lanId = OUTSIDE_LOCAL_IDC_LANID;

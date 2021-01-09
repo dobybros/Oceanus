@@ -176,6 +176,7 @@ public class GroovyServletScriptDispatcher extends HttpServlet {
                     String serviceName = params.getString("service");
                     String className = params.getString("className");
                     String methodName = params.getString("methodName");
+                    String toServer = params.getString("toServer");
                     JSONArray args = params.getJSONArray("args");
                     if (StringUtils.isNotBlank(serviceName) && StringUtils.isNotBlank(className) && StringUtils.isNotBlank(methodName)) {
                         Object[] objects = null;
@@ -191,7 +192,7 @@ public class GroovyServletScriptDispatcher extends HttpServlet {
                             if (serviceStubManager == null) {
                                 serviceStubManager = new ServiceStubManager();
                             }
-                            Object o = serviceStubManager.call(serviceName, className, methodName, objects);
+                            Object o = serviceStubManager.call(serviceName, className, methodName, toServer, objects);
                             if (o != null) {
                                 result.setData(o);
                             }

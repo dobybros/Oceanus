@@ -1,5 +1,6 @@
 package chat.utils;
 
+import chat.config.BaseConfiguration;
 import org.springframework.core.io.ClassPathResource;
 
 import java.util.Properties;
@@ -11,7 +12,7 @@ public class PropertiesContainer {
     public static synchronized PropertiesContainer getInstance() {
         if (instance == null) {
             instance = new PropertiesContainer();
-            ClassPathResource configResource = new ClassPathResource("oceanus.properties");
+            ClassPathResource configResource = new ClassPathResource(BaseConfiguration.getOceanusConfigPath());
             if (properties == null)
                 properties = new Properties();
             try {

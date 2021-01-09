@@ -35,7 +35,7 @@ public class ServerStart {
             synchronized (ServerStart.class) {
                 if (instance == null) {
                     ClassPathResource configResource;
-                    configResource = new ClassPathResource("oceanus.properties");
+                    configResource = new ClassPathResource(BaseConfiguration.getOceanusConfigPath());
                     Properties properties = new Properties();
                     try {
                         properties.load(configResource.getInputStream());

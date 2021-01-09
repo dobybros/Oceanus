@@ -18,7 +18,7 @@ public class BaseConfigurationBuilder {
     private final String TAG = BaseConfigurationBuilder.class.getName();
     public BaseConfiguration build(){
         try {
-            try (InputStream inStream = BaseConfiguration.class.getClassLoader().getResourceAsStream("oceanus.properties");
+            try (InputStream inStream = BaseConfiguration.class.getClassLoader().getResourceAsStream(BaseConfiguration.getOceanusConfigPath());
                  InputStream kafkaProducerInStream = BaseConfiguration.class.getClassLoader().getResourceAsStream("config/kafka/producer.properties");){
                 Properties prop = new Properties();
                 Properties kafkaProducerProp = new Properties();

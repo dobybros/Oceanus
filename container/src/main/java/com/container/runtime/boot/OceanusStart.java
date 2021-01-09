@@ -16,6 +16,7 @@ import com.docker.oceansbean.OceanusBeanManager;
 import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.impl.RMIServerHandler;
 import com.docker.script.GroovyServletScriptDispatcher;
+import org.apache.commons.cli.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptorEx;
 import org.eclipse.jetty.server.Server;
@@ -28,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import script.core.servlets.GroovyServletDispatcher;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by lick on 2021/1/2.
@@ -37,10 +40,12 @@ public class OceanusStart {
     private static String TAG = OceanusStart.class.getSimpleName();
     public static void main(String[] args){
         try {
+            handleArgs(args);
+
             prepareLog();
             buildOceanusBeanManager();
             BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
-            Server server = new Server(new QueuedThreadPool(500));
+            Server server = new Server(new QueuedThreadPool(baseConfiguration.getHttpThreadPoolSize()));
             ServerConnector serverConnector = new ServerConnector(server);
             Assert.assertNotNull(baseConfiguration);
             serverConnector.setPort(baseConfiguration.getServerPort());
@@ -58,6 +63,39 @@ public class OceanusStart {
             System.exit(1);
         }
     }
+
+    private static void handleArgs(String[] args) throws ParseException {
+        CommandLineParser parser = new PosixParser();
+        Options opt = new Options();
+        opt.addOption("h", "help", false, "help")
+                .addOption("p", true, "Oceanus properties path")
+//			.addOption("a",true, "async servlet map")
+                .addOption("t", true, "Http Server thread pool size")
+                ;
+
+        org.apache.commons.cli.CommandLine line = parser.parse(opt, args);
+        System.out.println("commandLine " + Arrays.toString(args));
+        List<String> argList = line.getArgList();
+        if (line.hasOption('h') || line.hasOption("help")) {
+            HelpFormatter hf = new HelpFormatter();
+            hf.printHelp("OceanusStart[options:]", opt, false);
+            return;
+        }
+
+        if (line.hasOption('p')) {
+            String oceanusConfigPath = line.getOptionValue('p');
+            BaseConfiguration.setOceanusConfigPath(oceanusConfigPath);
+        }
+        if (line.hasOption('t')) {
+            String threadCountStr = line.getOptionValue('t');
+            try {
+                Integer threadPoolSize = Integer.valueOf(threadCountStr);
+                BaseConfiguration.setHttpThreadPoolSize(threadPoolSize);
+            } catch (Exception e) {
+            }
+        }
+    }
+
     private static void prepareLog(){
         Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         ((ch.qos.logback.classic.Logger) logger).setLevel(Level.INFO);

@@ -11,6 +11,7 @@ public class Proxy {
     private ServiceStubManager serviceStubManager;
     private RemoteInvocationHandler invocationHandler;
     protected RemoteServerHandler remoteServerHandler;
+    protected String onlyCallOneServer;
 
     public Proxy(ServiceStubManager serviceStubManager, RemoteServerHandler remoteServerHandler) {
         this.serviceStubManager = serviceStubManager;
