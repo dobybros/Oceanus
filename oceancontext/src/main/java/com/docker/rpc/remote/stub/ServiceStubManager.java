@@ -194,6 +194,7 @@ public class ServiceStubManager {
         T adapterService = (T) serviceClassProxyCacheMap.get(key);
         if(adapterService == null) {
             synchronized (this) {
+                adapterService = (T) serviceClassProxyCacheMap.get(key);
                 if(adapterService == null) {
                     //TODO should cache adapterService. class as Key, value is adapterService,every class -> adaService
                     scanClass(adapterClass, service);
@@ -220,10 +221,10 @@ public class ServiceStubManager {
                             LoggerEx.warn(TAG, "Initiate moduleClass " + adapterClass + " failed, " + ExceptionUtils.getFullStackTrace(e));
                         }
                     }
-                }
-                Object old = serviceClassProxyCacheMap.putIfAbsent(key, adapterService);
-                if(old != null) {
-                    adapterService = (T) old;
+                    Object old = serviceClassProxyCacheMap.putIfAbsent(key, adapterService);
+                    if(old != null) {
+                        adapterService = (T) old;
+                    }
                 }
             }
         }

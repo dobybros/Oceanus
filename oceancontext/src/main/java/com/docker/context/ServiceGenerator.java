@@ -10,4 +10,8 @@ public abstract class ServiceGenerator {
     public abstract <T>T getService(String service, Class<T> clazz) throws CoreException;
 
     public abstract <T>T getService(String service, Class<T> clazz, String onlyCallOneServer) throws CoreException;
+
+    public abstract Object call(String service, String className, String method, Object... args) throws CoreException;
+
+    public abstract Object callOneServer(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException;
 }

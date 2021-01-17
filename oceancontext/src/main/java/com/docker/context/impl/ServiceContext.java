@@ -96,6 +96,16 @@ public class ServiceContext implements Context {
                 public <T> T getService(String service, Class<T> clazz, String onlyCallOneServer) throws CoreException {
                     return runtimeContext.getServiceStubManagerFactory().get(this.lanId).getService(service, clazz, onlyCallOneServer);
                 }
+
+                @Override
+                public Object call(String service, String className, String method, Object... args) throws CoreException {
+                    return callOneServer(service, className, method, null, args);
+                }
+
+                @Override
+                public Object callOneServer(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException {
+                    return runtimeContext.getServiceStubManagerFactory().get(this.lanId).call(service, className, method, onlyCallOneServer, args);
+                }
             };
             lanServiceGeneratorCacheMap.putIfAbsent(lanId, serviceGenerator);
         }

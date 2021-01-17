@@ -197,9 +197,12 @@ public class RemoteServerHandler {
         touch();
         if(checkTime + IDLE_TIME < System.currentTimeMillis() && !checking.get()) {
             if(checking.compareAndSet(false, true)) {
-                setSortedServers(request);
-                checkTime = System.currentTimeMillis();
-                checking.set(false);
+                try {
+                    setSortedServers(request);
+                } finally {
+                    checkTime = System.currentTimeMillis();
+                    checking.set(false);
+                }
             }
         }
         if(remoteServers.getServers().isEmpty())
