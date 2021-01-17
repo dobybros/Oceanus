@@ -1,6 +1,7 @@
 package com.docker.rpc;
 
 
+import chat.config.BaseConfiguration;
 import chat.logs.LoggerEx;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -20,25 +21,33 @@ public class RPCClientAdapterMapFactory {
 
     public RPCClientAdapterMap getRpcClientAdapterMap() {
         if(rpcClientAdapterMap == null){
-            rpcClientAdapterMap = new RPCClientAdapterMap();
+            synchronized (RPCClientAdapterMapFactory.class) {
+                if(rpcClientAdapterMap == null){
+                    rpcClientAdapterMap = new RPCClientAdapterMap();
+                }
+            }
         }
         return rpcClientAdapterMap;
     }
 
     public RPCClientAdapterMap getRpcClientAdapterMapSsl() {
         if(rpcClientAdapterMapSsl == null){
-            rpcClientAdapterMapSsl = new RPCClientAdapterMap();
-            rpcClientAdapterMapSsl.setEnableSsl(true);
-            ClassPathResource resource = new ClassPathResource("oceanus.properties");
-            Properties pro = new Properties();
-            try {
-                pro.load(resource.getInputStream());
-                rpcClientAdapterMapSsl.setRpcSslClientTrustJksPath(pro.getProperty("rpc.ssl.clientTrust.jks.path"));
-                rpcClientAdapterMapSsl.setRpcSslServerJksPath(pro.getProperty("rpc.ssl.server.jks.path"));
-                rpcClientAdapterMapSsl.setRpcSslJksPwd(pro.getProperty("rpc.ssl.jks.pwd"));
-            } catch (IOException e) {
-                e.printStackTrace();
-                LoggerEx.error(TAG, "Prepare lan.properties is failed, " + ExceptionUtils.getFullStackTrace(e));
+            synchronized (RPCClientAdapterMapFactory.class) {
+                if(rpcClientAdapterMapSsl == null){
+                    rpcClientAdapterMapSsl = new RPCClientAdapterMap();
+                    rpcClientAdapterMapSsl.setEnableSsl(true);
+                    ClassPathResource resource = new ClassPathResource(BaseConfiguration.getOceanusConfigPath());
+                    Properties pro = new Properties();
+                    try {
+                        pro.load(resource.getInputStream());
+                        rpcClientAdapterMapSsl.setRpcSslClientTrustJksPath(pro.getProperty("rpc.ssl.clientTrust.jks.path"));
+                        rpcClientAdapterMapSsl.setRpcSslServerJksPath(pro.getProperty("rpc.ssl.server.jks.path"));
+                        rpcClientAdapterMapSsl.setRpcSslJksPwd(pro.getProperty("rpc.ssl.jks.pwd"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        LoggerEx.error(TAG, "Prepare lan.properties is failed, " + ExceptionUtils.getFullStackTrace(e));
+                    }
+                }
             }
         }
         return rpcClientAdapterMapSsl;

@@ -5,7 +5,7 @@ import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import com.docker.rpc.remote.skeleton.ServiceSkeletonAnnotationHandler;
 import com.docker.script.BaseRuntimeContext;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 /**
  * Created by aplomb on 17-5-16.

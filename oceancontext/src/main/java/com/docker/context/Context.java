@@ -1,7 +1,9 @@
 package com.docker.context;
 
 import chat.errors.CoreException;
+import com.docker.context.config.ServerConfig;
 
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -9,11 +11,17 @@ import java.util.Properties;
  * Description：
  */
 public interface Context {
-    public Properties getConfig() ;
+    Properties getConfig();
 
-    public <T>T getService(String service, Class<T> clazz) throws CoreException;
+    ServerConfig getServerConfig();
 
-    public <T>T getService(String lanId, String service, Class<T> clazz) throws CoreException;
+    RPCCaller getRPCCaller();
+    RPCCaller getRPCCaller(String lanId);
 
-    public void injectBean(Object obj) throws CoreException ;
+    ServiceGenerator getServiceGenerator();
+    ServiceGenerator getServiceGenerator(String lanId);
+
+    void injectBean(Object obj) throws CoreException;
+
+    Collection<Class<?>> getClasses();
 }

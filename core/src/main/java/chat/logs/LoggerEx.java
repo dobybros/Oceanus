@@ -1,12 +1,28 @@
 package chat.logs;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.rolling.RollingFileAppender;
 import chat.utils.ChatUtils;
 import chat.utils.PropertiesContainer;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LoggerEx {
-    private static Logger logger = LoggerFactory.getLogger("");
+    private static Logger logger;
+    static {
+        RollingFileAppender logAppender = GetTheAppender.getAppender("");
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        logger = context.exists("");
+        if(logger == null){
+            logger = context.getLogger("");
+            //设置不向上级打印信息
+            logger.setAdditive(false);
+            logger.setLevel(Level.INFO);
+            logger.addAppender(logAppender);
+            logger.addAppender(GetTheAppender.getConsoleAppender());
+        }
+    }
     private static final String LEVEL_FATAL = "FATAL";
 
     private static LogListener logListener;

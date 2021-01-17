@@ -6,17 +6,16 @@ import com.alibaba.fastjson.JSON;
 import com.docker.storage.DBException;
 import com.docker.storage.adapters.ServersService;
 import com.docker.storage.mongodb.daos.ServersDAO;
+import com.docker.oceansbean.BeanFactory;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServersServiceImpl implements ServersService {
-    @Resource
     private ServersDAO serversDAO;
     @Override
     public Document getServerConfig(String service) throws CoreException {
@@ -66,5 +65,9 @@ public class ServersServiceImpl implements ServersService {
             e.printStackTrace();
             throw new CoreException(ChatErrorCodes.ERROR_ONLINESERVER_QUERY_FAILED, "Query server config failed, " + e.getMessage());
         }
+    }
+
+    public void setServersDAO(ServersDAO serversDAO) {
+        this.serversDAO = serversDAO;
     }
 }

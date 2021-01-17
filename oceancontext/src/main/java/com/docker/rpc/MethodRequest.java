@@ -194,7 +194,7 @@ public class MethodRequest extends RPCRequest {
                     if(runtimeContext == null){
                         throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + fromService + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
                     }
-                    serviceStubManager = runtimeContext.getServiceStubManagerFactory().get(null);
+                    serviceStubManager = runtimeContext.getServiceStubManagerFactory().get();
                 }
 
                 MethodMapping methodMapping = serviceStubManager.getMethodMapping(crc);

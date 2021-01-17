@@ -1,5 +1,6 @@
 package com.docker.rpc.remote.stub;
 
+import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ReflectionUtil;
@@ -14,7 +15,7 @@ import com.docker.storage.adapters.impl.ServiceVersionServiceImpl;
 import com.docker.storage.mongodb.MongoHelper;
 import com.docker.storage.mongodb.daos.DockerStatusDAO;
 import com.docker.storage.mongodb.daos.ServiceVersionDAO;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.core.io.ClassPathResource;
 import script.core.servlets.Tracker;
@@ -30,8 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ServiceStubManager {
     private static final String TAG = ServiceStubManager.class.getSimpleName();
-    private ConcurrentHashMap<String, Boolean> classScanedMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Boolean> classScannedMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Long, MethodMapping> methodMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Object> serviceClassProxyCacheMap = new ConcurrentHashMap<>();
     private String host;
     private Class<?> serviceStubProxyClass;
     //sure is ssl
@@ -83,7 +85,7 @@ public class ServiceStubManager {
 //                service = paths[paths.length - 2];
 //            }
 //        }
-        if (!classScanedMap.containsKey(clazz.getName() + "_" + service)) {
+        if (!classScannedMap.containsKey(clazz.getName() + "_" + service)) {
             try {
                 Field field = clazz.getField("SERVICE");
                 field.get(clazz);
@@ -97,7 +99,7 @@ public class ServiceStubManager {
                     return;
                 }
             }
-            classScanedMap.put(clazz.getName() + "_" + service, true);
+            classScannedMap.put(clazz.getName() + "_" + service, true);
         } else {
             return;
         }
@@ -164,60 +166,72 @@ public class ServiceStubManager {
         return request;
     }
 
-    public CompletableFuture<?> callAsync(String service, String className, String method, Object... args) throws CoreException {
+    public CompletableFuture<?> callAsync(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException {
         MethodRequest request = getMethodRequest(service, className, method, args);
         AsyncRpcFuture asyncRpcFuture = new AsyncRpcFuture(ReflectionUtil.getCrc(className, method, service), null);
-        RemoteServerHandler remoteServerHandler = getRemoteServerHandler(service);
+        RemoteServerHandler remoteServerHandler = getRemoteServerHandler(service, onlyCallOneServer);
         remoteServerHandler.setCallbackFutureId(asyncRpcFuture.getCallbackFutureId());
         RpcCacheManager.getInstance().pushToAsyncRpcMap(asyncRpcFuture.getCallbackFutureId(), asyncRpcFuture);
         LoggerEx.info(TAG, "pushToAsyncRpcMap success, callbackFutureId: " + asyncRpcFuture.getCallbackFutureId() + ",CurrentThread: " + Thread.currentThread() + ",asyncFuture:" + RpcCacheManager.getInstance().getAsyncRpcFuture(asyncRpcFuture.getCallbackFutureId()));
         return remoteServerHandler.callAsync(request);
     }
 
-    public Object call(String service, String className, String method, Object... args) throws CoreException {
+    public Object call(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException {
         MethodRequest request = getMethodRequest(service, className, method, args);
-        MethodResponse response = getRemoteServerHandler(service).call(request);
+        MethodResponse response = getRemoteServerHandler(service, onlyCallOneServer).call(request);
         return Proxy.getReturnObject(request, response);
     }
 
     public <T> T getService(String service, Class<T> adapterClass) {
-
-        return getService(service, adapterClass, 1);
+        return getService(service, adapterClass, null);
     }
 
-    public <T> T getService(String service, Class<T> adapterClass, Integer version) {
-        if (service == null)
-            throw new NullPointerException("Service can not be nulll");
-        T adapterService = null;
-        //TODO should cache adapterService. class as Key, value is adapterService,every class -> adaService
-        scanClass(adapterClass, service);
-        if (serviceStubProxyClass != null) {
-            try {
-                Method getProxyMethod = serviceStubProxyClass.getMethod("getProxy", Class.class, ServiceStubManager.class, RemoteServerHandler.class);
-                if (getProxyMethod != null) {
-                    //远程service
-                    adapterService = (T) getProxyMethod.invoke(null, adapterClass, this, getRemoteServerHandler(service));
-                } else {
-                    LoggerEx.error(TAG, "getProxy method doesn't be found for " + adapterClass + " in service " + service);
-                }
-            } catch (Throwable t) {
-                t.printStackTrace();
-                LoggerEx.error(TAG, "Generate proxy object for " + adapterClass + " in service " + service + " failed, " + ExceptionUtils.getFullStackTrace(t));
-            }
+    public <T> T getService(String service, Class<T> adapterClass, String onlyCallOneServer) {
+        if (service == null || adapterClass == null)
+            throw new NullPointerException("Service or adapterClass can not be null, service " + service + " class " + adapterClass);
 
-        } else {
-            try {
-                RemoteProxy proxy = new RemoteProxy(this, getRemoteServerHandler(service));
-                adapterService = (T) proxy.getProxy(adapterClass);
-            } catch (Throwable e) {
-                e.printStackTrace();
-                LoggerEx.warn(TAG, "Initiate moduleClass " + adapterClass + " failed, " + ExceptionUtils.getFullStackTrace(e));
+        String key = service + "_" + adapterClass.getName();
+        T adapterService = (T) serviceClassProxyCacheMap.get(key);
+        if(adapterService == null) {
+            synchronized (this) {
+                adapterService = (T) serviceClassProxyCacheMap.get(key);
+                if(adapterService == null) {
+                    //TODO should cache adapterService. class as Key, value is adapterService,every class -> adaService
+                    scanClass(adapterClass, service);
+                    if (serviceStubProxyClass != null) {
+                        try {
+                            Method getProxyMethod = serviceStubProxyClass.getMethod("getProxy", Class.class, ServiceStubManager.class, RemoteServerHandler.class);
+                            if (getProxyMethod != null) {
+                                //远程service
+                                adapterService = (T) getProxyMethod.invoke(null, adapterClass, this, getRemoteServerHandler(service, onlyCallOneServer));
+                            } else {
+                                LoggerEx.error(TAG, "getProxy method doesn't be found for " + adapterClass + " in service " + service);
+                            }
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                            LoggerEx.error(TAG, "Generate proxy object for " + adapterClass + " in service " + service + " failed, " + ExceptionUtils.getFullStackTrace(t));
+                        }
+
+                    } else {
+                        try {
+                            RemoteProxy proxy = new RemoteProxy(this, getRemoteServerHandler(service, onlyCallOneServer));
+                            adapterService = (T) proxy.getProxy(adapterClass);
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            LoggerEx.warn(TAG, "Initiate moduleClass " + adapterClass + " failed, " + ExceptionUtils.getFullStackTrace(e));
+                        }
+                    }
+                    Object old = serviceClassProxyCacheMap.putIfAbsent(key, adapterService);
+                    if(old != null) {
+                        adapterService = (T) old;
+                    }
+                }
             }
         }
         return adapterService;
     }
-    private RemoteServerHandler getRemoteServerHandler(String service){
-        RemoteServerHandler remoteServerHandler = new RemoteServerHandler(service, this);
+    private RemoteServerHandler getRemoteServerHandler(String service, String onlyCallOneServer){
+        RemoteServerHandler remoteServerHandler = new RemoteServerHandler(service, this, onlyCallOneServer);
         return remoteServerHandler;
     }
     public String getHost() {
@@ -264,7 +278,7 @@ public class ServiceStubManager {
             ServiceVersionServiceImpl serviceVersionService = (ServiceVersionServiceImpl) BeanFactory.getBean(ServiceVersionServiceImpl.class.getName());
             DockerStatusServiceImpl dockerStatusService = (DockerStatusServiceImpl) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
             if(serviceVersionService == null || dockerStatusService == null){
-                ClassPathResource configResource = new ClassPathResource("oceanus.properties");
+                ClassPathResource configResource = new ClassPathResource(BaseConfiguration.getOceanusConfigPath());
                 Properties properties = new Properties();
                 try {
                     properties.load(configResource.getInputStream());

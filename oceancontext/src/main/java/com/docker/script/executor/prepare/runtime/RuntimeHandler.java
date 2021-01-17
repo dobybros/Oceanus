@@ -2,6 +2,7 @@ package com.docker.script.executor.prepare.runtime;
 
 import chat.config.Configuration;
 import chat.errors.CoreException;
+import com.docker.script.BaseRuntimeContext;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -10,5 +11,5 @@ import java.lang.reflect.InvocationTargetException;
  * Description：
  */
 public interface RuntimeHandler {
-    void prepare(Configuration configuration) throws CoreException;
+    BaseRuntimeContext prepare(Configuration configuration) throws CoreException;
 }

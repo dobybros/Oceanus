@@ -1,7 +1,7 @@
 package com.docker.storage.redis;
 
 import chat.main.ServerStart;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.models.partitions.RedisClusterNode;

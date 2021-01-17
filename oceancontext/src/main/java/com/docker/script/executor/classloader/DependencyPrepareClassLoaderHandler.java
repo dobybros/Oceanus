@@ -1,7 +1,7 @@
 package com.docker.script.executor.classloader;
 
 import chat.logs.LoggerEx;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import script.core.runtime.AbstractRuntimeContext;

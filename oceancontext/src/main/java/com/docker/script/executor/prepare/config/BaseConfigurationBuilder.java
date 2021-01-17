@@ -18,16 +18,12 @@ public class BaseConfigurationBuilder {
     private final String TAG = BaseConfigurationBuilder.class.getName();
     public BaseConfiguration build(){
         try {
-            try (InputStream inStream = BaseConfiguration.class.getClassLoader().getResourceAsStream("oceanus.properties");
-                 InputStream appInStream = BaseConfiguration.class.getClassLoader().getResourceAsStream("application.properties");
+            try (InputStream inStream = BaseConfiguration.class.getClassLoader().getResourceAsStream(BaseConfiguration.getOceanusConfigPath());
                  InputStream kafkaProducerInStream = BaseConfiguration.class.getClassLoader().getResourceAsStream("config/kafka/producer.properties");){
                 Properties prop = new Properties();
-                Properties appProp = new Properties();
                 Properties kafkaProducerProp = new Properties();
                 Assert.assertNotNull(inStream);
                 prop.load(inStream);
-                Assert.assertNotNull(appInStream);
-                appProp.load(appInStream);
                 if(kafkaProducerInStream != null){
                     kafkaProducerProp.load(kafkaProducerInStream);
                     BaseKafkaConfCenter.getInstance().setKafkaConfCenter(kafkaProducerProp, null);
@@ -95,7 +91,7 @@ public class BaseConfigurationBuilder {
                     baseConfiguration.setLibsPath(libsPath);
                 }
                 baseConfiguration.setMavenSettingsPath((String) prop.remove("maven.settings.path"));
-                String serverPort = (String) appProp.remove("server.port");
+                String serverPort = (String) prop.remove("server.port");
                 if(StringUtils.isNotBlank(serverPort)){
                     baseConfiguration.setServerPort(Integer.parseInt(serverPort));
                 }
@@ -126,7 +122,6 @@ public class BaseConfigurationBuilder {
                 if(StringUtils.isNotBlank(maxUserNumber)){
                     baseConfiguration.setMaxUserNumber(Long.parseLong(maxUserNumber));
                 }
-                prop.putAll(appProp);
                 baseConfiguration.setExtraProperties(prop);
                 return baseConfiguration;
             }

@@ -27,7 +27,7 @@ public class ServiceBeanHandler extends AbstractFieldAnnotationHandler<ServiceBe
         if (!StringUtils.isBlank(serviceName)) {
             Object serviceStub;
             if (StringUtils.isBlank(lanId)) {
-                serviceStub = ((BaseRuntimeContext)runtimeContext).getServiceStubManagerFactory().get(null).getService(serviceName, field.getType());
+                serviceStub = ((BaseRuntimeContext)runtimeContext).getServiceStubManagerFactory().get().getService(serviceName, field.getType());
             } else {
                 serviceStub = ((BaseRuntimeContext)runtimeContext).getServiceStubManagerFactory().get(lanId).getService(serviceName, field.getType());
             }

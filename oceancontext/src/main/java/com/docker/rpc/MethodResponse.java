@@ -74,7 +74,7 @@ public class MethodResponse extends RPCResponse {
                                 BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(methodRequest.getFromService());
                                 if (runtimeContext == null)
                                     throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + methodRequest.getFromService() + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                                serviceStubManager = runtimeContext.getServiceStubManagerFactory().get(null);
+                                serviceStubManager = runtimeContext.getServiceStubManagerFactory().get();
                             }
 
                             MethodMapping methodMapping = serviceStubManager.getMethodMapping(crc);

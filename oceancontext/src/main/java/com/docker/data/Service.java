@@ -3,7 +3,7 @@ package com.docker.data;
 import chat.config.BaseConfiguration;
 import com.docker.storage.mongodb.CleanDocument;
 import org.bson.Document;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 import java.util.ArrayList;
 import java.util.List;

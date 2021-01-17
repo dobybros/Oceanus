@@ -9,6 +9,7 @@ import script.core.runtime.ParseServiceHandler;
 import script.core.runtime.classloader.MyJavaClassLoader;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -45,8 +46,11 @@ public class JavaParseServiceHandler implements ParseServiceHandler {
             Properties properties = manifestReaderFromJar(jarFile);
             Class<?> aClass = javaClassLoader.loadClass(properties.getProperty(MANIFEST_MAIN_CLASS));
             Method main = aClass.getDeclaredMethod(MAIN_METHOD, String[].class);
-            main.invoke(null, (Object) new String[]{});
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            synchronized (runtimeContext.getConfiguration().getBaseConfiguration()){
+                resetURLFactory();
+                main.invoke(null, (Object) new String[]{});
+            }
+        } catch (Throwable e) {
             throw new CoreException(ChatErrorCodes.ERROR_BOOT, "Start java failed, configuration: " + runtimeContext.getConfiguration() + "errMsg: " + ExceptionUtils.getFullStackTrace(e));
         }
     }
@@ -64,5 +68,9 @@ public class JavaParseServiceHandler implements ParseServiceHandler {
         }
         throw new RuntimeException("Cannot read "+ MANIFEST_DIRECTORY_LOCATION + " from jar " + file.getAbsolutePath());
     }
-
+    private void resetURLFactory() throws NoSuchFieldException, IllegalAccessException {
+        final Field factoryField = URL.class.getDeclaredField("factory");
+        factoryField.setAccessible(true);
+        factoryField.set(null, null);
+    }
 }

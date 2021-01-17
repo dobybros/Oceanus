@@ -9,6 +9,7 @@ import script.core.runtime.classloader.MyGroovyClassLoader;
 import script.core.runtime.classloader.MyJavaClassLoader;
 
 import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * Created by lick on 2020/12/21.

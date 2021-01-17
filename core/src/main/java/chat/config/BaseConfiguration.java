@@ -14,6 +14,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class BaseConfiguration {
     private final String TAG = BaseConfiguration.class.getName();
+    private static String oceanusConfigPath = "oceanus.properties";
+    private static int httpThreadPoolSize = 500;
+
     private String server = ChatUtils.generateFixedRandomString();
     private String mongoHost;
     private String mongoConnectionsPerHost;
@@ -508,6 +511,22 @@ public class BaseConfiguration {
         this.extraProperties = extraProperties;
     }
 
+    public static String getOceanusConfigPath() {
+        return oceanusConfigPath;
+    }
+
+    public static void setOceanusConfigPath(String oceanusConfigPath) {
+        BaseConfiguration.oceanusConfigPath = oceanusConfigPath;
+    }
+
+    public static int getHttpThreadPoolSize() {
+        return httpThreadPoolSize;
+    }
+
+    public static void setHttpThreadPoolSize(int httpThreadPoolSize) {
+        BaseConfiguration.httpThreadPoolSize = httpThreadPoolSize;
+    }
+
     @Override
     public String toString() {
         return "BaseConfiguration{" +
@@ -560,6 +579,8 @@ public class BaseConfiguration {
                 ", useProxy=" + useProxy +
                 ", maxUserNumber=" + maxUserNumber +
                 ", extraProperties=" + extraProperties +
+                ", oceanusConfigPath=" + BaseConfiguration.oceanusConfigPath +
+                ", httpThreadPoolSize=" + BaseConfiguration.httpThreadPoolSize +
                 '}';
     }
 }

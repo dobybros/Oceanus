@@ -11,7 +11,7 @@ import com.docker.server.OnlineServer;
 import com.docker.storage.kafka.BaseKafkaConfCenter;
 import com.docker.storage.kafka.KafkaProducerHandler;
 import com.docker.utils.ScriptHttpUtils;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;

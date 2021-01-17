@@ -7,7 +7,7 @@ import com.docker.server.OnlineServer;
 import com.docker.storage.adapters.impl.RepairServiceImpl;
 import com.docker.tasks.annotations.RepairTaskListener;
 import script.core.runtime.AbstractRuntimeContext;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationGlobalHandler;
 

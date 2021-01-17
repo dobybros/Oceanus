@@ -7,6 +7,7 @@ import chat.utils.ChatUtils;
 import chat.utils.IPHolder;
 import chat.config.BaseConfiguration;
 import com.docker.data.DockerStatus;
+import com.docker.oceansbean.BeanFactory;
 import com.docker.storage.adapters.DockerStatusService;
 import com.docker.storage.adapters.SDockersService;
 import com.docker.storage.cache.CacheStorageFactory;
@@ -33,8 +34,7 @@ public class OnlineServer {
     private DockerStatus dockerStatus;
 
     private OnlineServerStartHandler startHandler;
-    @Autowired
-    protected BaseConfiguration baseConfiguration;
+    protected BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
 
     public static interface OnlineServerStartHandler {
         public void serverWillStart(OnlineServer onlineServer) throws CoreException;

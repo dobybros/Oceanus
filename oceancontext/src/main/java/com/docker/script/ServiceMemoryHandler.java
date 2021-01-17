@@ -4,6 +4,7 @@ import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.docker.script.annotations.ServiceMemory;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import script.core.runtime.groovy.object.AbstractObject;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 public class ServiceMemoryHandler extends ClassAnnotationHandler {
     private final String TAG = ServiceMemory.class.getSimpleName();
-    private List<GroovyObjectEx<?>> serviceMemoryList = new ArrayList();
+    private List<AbstractObject<?>> serviceMemoryList = new ArrayList<>();
     @Override
     public Class<? extends Annotation> handleAnnotationClass() {
         return ServiceMemory.class;
@@ -29,7 +30,7 @@ public class ServiceMemoryHandler extends ClassAnnotationHandler {
         if(annotatedClassMap != null){
             Collection<Class<?>> values = annotatedClassMap.values();
             for (Class<?> groovyClass : values){
-                GroovyObjectEx<?> groovyObj = (GroovyObjectEx<?>) getObject(null, groovyClass, runtimeContext);
+                AbstractObject<?> groovyObj = (AbstractObject<?>) getObject(null, groovyClass, runtimeContext);
                 serviceMemoryList.add(groovyObj);
             }
         }
@@ -37,9 +38,9 @@ public class ServiceMemoryHandler extends ClassAnnotationHandler {
     public List<Object> getMemory(){
         if(!serviceMemoryList.isEmpty()){
             List<Object> list = new ArrayList<>();
-            for (GroovyObjectEx<?> groovyObjectEx : serviceMemoryList){
+            for (AbstractObject<?> abstractObject : serviceMemoryList){
                 try {
-                    Object jsonObject = groovyObjectEx.invokeRootMethod("memory");
+                    Object jsonObject = abstractObject.invokeRootMethod("memory");
                     list.add(jsonObject);
                 } catch (Throwable e) {
                     LoggerEx.error(TAG, "Get service memory error, err: " + ExceptionUtils.getFullStackTrace(e));

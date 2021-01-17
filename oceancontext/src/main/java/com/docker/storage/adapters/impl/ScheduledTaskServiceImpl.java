@@ -2,21 +2,18 @@ package com.docker.storage.adapters.impl;
 
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
-import com.docker.data.SDocker;
 import com.docker.data.ScheduleTask;
 import com.docker.storage.DBException;
 import com.docker.storage.adapters.ScheduledTaskService;
 import com.docker.storage.mongodb.daos.ScheduledTaskDAO;
+import com.docker.oceansbean.BeanFactory;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bson.Document;
 
-import javax.annotation.Resource;
-
 public class ScheduledTaskServiceImpl implements ScheduledTaskService {
-    @Resource
-    ScheduledTaskDAO scheduledTaskDAO;
+    private ScheduledTaskDAO scheduledTaskDAO;
 
     @Override
     public ScheduleTask getSchedeuleTask(String id) throws CoreException{

@@ -23,7 +23,7 @@ import com.docker.script.BaseRuntimeContext;
 import com.docker.server.OnlineServer;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.servlets.Tracker;
 import script.memodb.ObjectId;
@@ -305,7 +305,7 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
     private RPCClientAdapter getClientAdapter(RPCRequest request) throws CoreException {
         if (((MethodRequest) request).getSourceIp() != null && ((MethodRequest) request).getSourcePort() != null && ((MethodRequest) request).getFromServerName() != null) {
             BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(((MethodRequest)request).getFromService());
-            ServiceStubManager serviceStubManager = runtimeContext.getServiceStubManagerFactory().get(null);
+            ServiceStubManager serviceStubManager = runtimeContext.getServiceStubManagerFactory().get();
             if (serviceStubManager != null) {
                 RPCClientAdapterMap clientAdapterMap = null;
                 if (serviceStubManager.getUsePublicDomain()) {
