@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class RpcBean {
-    private IMBeanApp instance;
+    private ContextBeanApp instance;
 
     RpcBean() {
-        instance = IMBeanApp.getInstance();
+        instance = ContextBeanApp.getInstance();
     }
 
     @Bean

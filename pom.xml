@@ -23,7 +23,6 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<mina.version>2.1.2</mina.version>
 	</properties>
 	<!--<dependencyManagement>-->
 	<dependencies>
@@ -406,59 +405,6 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 <!--			<scope>test</scope>-->
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.mina/mina-core -->
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-core</artifactId>
-			<version>${mina.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-filter-compression</artifactId>
-			<version>${mina.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.mina/mina-http -->
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-http</artifactId>
-			<version>${mina.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.mina/mina-integration-beans -->
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-integration-beans</artifactId>
-			<version>${mina.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.mina/mina-integration-jmx -->
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-integration-jmx</artifactId>
-			<version>${mina.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.mina/mina-integration-ognl -->
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-integration-ognl</artifactId>
-			<version>${mina.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.mina/mina-statemachine -->
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-statemachine</artifactId>
-			<version>${mina.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.mina/mina-statemachine -->
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-transport-apr</artifactId>
-			<version>${mina.version}</version>
-		</dependency>
-		<!--soures-->
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-integration-xbean</artifactId>
-			<version>${mina.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.xml.bind</groupId>

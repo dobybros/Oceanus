@@ -17,10 +17,10 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class DatabaseBean {
-    private IMBeanApp instance;
+    private ContextBeanApp instance;
 
     DatabaseBean() {
-        instance = IMBeanApp.getInstance();
+        instance = ContextBeanApp.getInstance();
     }
 
     @Bean

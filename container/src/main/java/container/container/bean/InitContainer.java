@@ -2,16 +2,12 @@ package container.container.bean;
 
 import chat.utils.IPHolder;
 import com.alibaba.fastjson.util.TypeUtils;
-import com.dobybros.chat.handlers.ProxyContainerDuplexSender;
-import com.dobybros.chat.handlers.imextention.IMExtensionCache;
-import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import com.docker.file.adapters.GridFSFileHandler;
 import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.impl.RMIServerHandler;
 import com.docker.storage.mongodb.MongoHelper;
 import com.docker.storage.mongodb.daos.*;
 import com.proxy.runtime.ScriptManager;
-import org.apache.mina.transport.socket.nio.NioSocketAcceptorEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -54,10 +50,6 @@ public class InitContainer implements CommandLineRunner{
     @Autowired
     GridFSFileHandler fileAdapter;
     @Autowired
-    NioSocketAcceptorEx tcpIoAcceptor;
-    @Autowired
-    NioSocketAcceptorEx wsIoAcceptor;
-    @Autowired
     IPHolder ipHolder;
     @Autowired
     ScriptManager scriptManager;
@@ -67,12 +59,6 @@ public class InitContainer implements CommandLineRunner{
     RMIServerHandler dockerRpcServerAdapterSsl;
     @Autowired
     OnlineServerWithStatus onlineServer;
-    @Autowired
-    OnlineUserManagerImpl onlineUserManager;
-    @Autowired
-    ProxyContainerDuplexSender proxyContainerDuplexSender;
-    @Autowired
-    IMExtensionCache imExtensionCache;
 
     @Override
     public void run(String... args) throws Exception {
@@ -94,15 +80,10 @@ public class InitContainer implements CommandLineRunner{
         logsHelper.init();
         gridfsHelper.init();
         fileAdapter.init();
-        tcpIoAcceptor.bind();
-        wsIoAcceptor.bind();
         ipHolder.init();
         onlineServer.start();
-        onlineUserManager.init();
         scriptManager.init();
         dockerRpcServerAdapter.serverStart();
         dockerRpcServerAdapterSsl.serverStart();
-        proxyContainerDuplexSender.init();
-        imExtensionCache.init();
     }
 }

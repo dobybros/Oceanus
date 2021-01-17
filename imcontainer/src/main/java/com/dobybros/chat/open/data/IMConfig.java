@@ -7,8 +7,20 @@ import java.util.concurrent.TimeUnit;
  * @date 2019/11/19
  */
 public class IMConfig {
+
+    /**
+     * The interval that client should ping server.
+     */
     private Long pingInterval = TimeUnit.SECONDS.toMillis(8);  //ms
+
+    /**
+     * Will kick the client when clientActiveTime + maxInactiveInterval > serverCurrentTime.
+     */
     private Long maxInactiveInterval = TimeUnit.SECONDS.toMillis(60);//ms
+
+    /**
+     * if all device disconnected, will disconnect user after this time.
+     */
     private Long noChannelSessionTimeOut = TimeUnit.MINUTES.toMillis(5);//ms
 
     public Long getPingInterval() {

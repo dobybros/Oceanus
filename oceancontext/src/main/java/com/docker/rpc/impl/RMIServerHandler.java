@@ -124,6 +124,8 @@ public class RMIServerHandler {
             LoggerEx.error(TAG, "RMI port " + rmiPort + " server " + serverName + " server destroy failed, " + ExceptionUtils.getFullStackTrace(e));
         }
     }
+
+    // todo 需要修改
     public RPCEntity getRPCEntityForServer(String requestType, Class<RPCServerAdapter> serverAdapterClass) throws CoreException {
         if(StringUtils.isBlank(requestType)) return null;
 

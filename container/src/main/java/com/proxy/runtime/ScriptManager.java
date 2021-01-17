@@ -10,7 +10,6 @@ import com.docker.data.DockerStatus;
 import com.docker.data.ServiceVersion;
 import com.docker.script.executor.RuntimeExecutor;
 import com.docker.script.executor.RuntimeExecutorHandler;
-import com.docker.server.OnlineServer;
 import com.docker.storage.adapters.impl.DeployServiceVersionServiceImpl;
 import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
 import com.docker.storage.adapters.impl.ServiceVersionServiceImpl;

@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class HttpBean{
-    private IMBeanApp instance;
+    private ContextBeanApp instance;
     HttpBean(){
-        instance = IMBeanApp.getInstance();
+        instance = ContextBeanApp.getInstance();
     }
 //    @Bean(initMethod = "init")
     @Bean
