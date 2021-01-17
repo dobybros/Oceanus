@@ -55,7 +55,12 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
     @Override
     protected void fillObjectGroovy() throws CoreException {
         for (AbstractObject object : beanMap.values()){
-            fillObject(object);
+            try {
+                fillObject(object);
+            } catch(Throwable throwable) {
+                throwable.printStackTrace();
+                LoggerEx.error(TAG, "Fill object " + object + " failed, " + throwable.getMessage());
+            }
         }
     }
 
@@ -96,7 +101,12 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
                         AbstractObject<?> beanValue = null;
                         if (StringUtils.isBlank(beanName)) {
                             if(gClass != null){
-                                gClass = runtimeContext.getClass(gClass.getName());
+                                Class<?> theClass = runtimeContext.getClass(gClass.getName());
+                                if(theClass == null) {
+                                    LoggerEx.error(TAG, "Class " + gClass + " doesn't be found in your runtime, perhaps you want to use JavaBean instead");
+                                } else {
+                                    gClass = theClass;
+                                }
                                 beanValue = (AbstractObject<?>) get(null, runtimeContext.getRuntime().path(gClass));
                             }
                         } else {

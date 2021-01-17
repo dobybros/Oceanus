@@ -17,10 +17,12 @@ public class ServerConfig {
     private String ip;
     private String service;
     private Integer version;
+    private Integer rpcPort;
 
     public ServerConfig(Configuration configuration) {
         BaseConfiguration baseConfiguration = configuration.getBaseConfiguration();
         this.serverPort = baseConfiguration.getServerPort();
+        this.rpcPort = baseConfiguration.getRpcPort();
         this.server = baseConfiguration.getServer();
         this.lanId = baseConfiguration.getLanId();
         IPHolder ipHolder = (IPHolder) BeanFactory.getBean(IPHolder.class.getName());
@@ -51,5 +53,9 @@ public class ServerConfig {
 
     public Integer getVersion() {
         return version;
+    }
+
+    public Integer getRpcPort() {
+        return rpcPort;
     }
 }

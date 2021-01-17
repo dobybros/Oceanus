@@ -288,6 +288,7 @@ public class RequestHolder {
 //            builder.append(" $$returnobj:: " + (returnObj != null ? JSON.toJSONString(returnObj) : returnObj));
             return returnObj;
         } catch (Throwable t) {
+            t.printStackTrace();
             error = true;
             if(t.getCause() instanceof CoreException){
                 ((CoreException) t.getCause()).log(TAG, "servletObj " + servletObj + " invoke method " + groovyMethod + " failed, " + t.getMessage());
