@@ -6,6 +6,7 @@ import script.core.runtime.AbstractRuntimeContext;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -84,6 +85,17 @@ public class BaseConfiguration {
 
     private Map<String, AbstractRuntimeContext> serviceConfiguration = new ConcurrentHashMap<>();
     private ReentrantReadWriteLock runtimeLock = new ReentrantReadWriteLock();
+
+    public BaseConfiguration() {
+        /*
+            sun.rmi.transport.tcp.handshakeTimeout (1.4 and later)
+                The value of this property represents the length of time (in milliseconds) that the client-side Java RMI runtime will use as a socket read timeout when reading initial handshake data (protocol acknowledgment) when establishing a new JRMP connection. This property is used to configure how long the Java RMI runtime will wait before deciding that a TCP connection accepted by a remote server cannot actually be used, either because the entity listening on the remote host's port is not actually a Java RMI server, or because the server is somehow not functioning correctly. The maximum value is Integer.MAX_VALUE, and a value of zero indicates an infinite timeout. The default value is 60000 (one minute).
+            sun.rmi.transport.tcp.responseTimeout (1.4 and later)
+                The value of this property represents the length of time (in milliseconds) that the client-side Java RMI runtime will use as a socket read timeout on an established JRMP connection when reading response data for a remote method invocation. Therefore, this property can be used to impose a timeout on waiting for the results of remote invocations; if this timeout expires, the associated invocation will fail with a java.rmi.RemoteException. Setting this property should be done with due consideration, however, because it effectively places an upper bound on the allowed duration of any successful outgoing remote invocation. The maximum value is Integer.MAX_VALUE, and a value of zero indicates an infinite timeout. The default value is zero (no timeout).
+         */
+        System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", String.valueOf(30000));
+//        System.setProperty("sun.rmi.transport.tcp.responseTimeout", String.valueOf(TimeUnit.MINUTES.toMillis(10)));
+    }
     public void addRuntimeContext(String service, AbstractRuntimeContext runtimeContext){
         try {
             runtimeLock.writeLock().lock();

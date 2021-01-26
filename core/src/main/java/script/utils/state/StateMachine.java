@@ -28,6 +28,11 @@ public class StateMachine<K, T> {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "StateMachine: " + this.name + "@state " + this.currentState;
+    }
+
     public StateMachine<K, T> addStateListener(StateListener<K, T> stateListener) {
         if(stateListeners == null) {
             synchronized (this) {

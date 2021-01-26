@@ -104,51 +104,47 @@ public class ServiceStubManager {
             return;
         }
         Method[] methods = ReflectionUtil.getMethods(clazz);
-        if (methods != null) {
-            for (Method method : methods) {
-                MethodMapping mm = new MethodMapping(method);
-                long value = ReflectionUtil.getCrc(method, service);
-                if (methodMap.containsKey(value)) {
-                    LoggerEx.warn(TAG, "Don't support override methods, please rename your method " + method + " for crc " + value + " and existing method " + methodMap.get(value).getMethod());
-                    continue;
-                }
-                Class<?>[] parameterTypes = method.getParameterTypes();
-                Type[] genericParamterTypes = method.getGenericParameterTypes();
-                if (parameterTypes != null) {
-                    boolean failed = false;
-                    for (int i = 0; i < parameterTypes.length; i++) {
-                        parameterTypes[i] = ReflectionUtil.getInitiatableClass(parameterTypes[i]);
-                        Class<?> parameterType = parameterTypes[i];
-                        if (!ReflectionUtil.canBeInitiated(parameterType)) {
-                            failed = true;
-                            LoggerEx.fatal(TAG, "Parameter " + parameterType + " in method " + method + " couldn't be initialized. ");
-                            break;
-                        }
-                    }
-                    if (failed)
-                        continue;
-                }
-                mm.setParameterTypes(parameterTypes);
-                mm.setGenericParameterTypes(genericParamterTypes);
-
-                Class<?> returnType = method.getReturnType();
-                returnType = ReflectionUtil.getInitiatableClass(returnType);
-                mm.setReturnClass(returnType);
-                mm.setGenericReturnClass(method.getGenericReturnType());
-                if (method.getGenericReturnType() instanceof ParameterizedType) {
-                    Type[] tArgs = ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments();
-                    mm.setGenericReturnActualTypeArguments(tArgs);
-                }
-
-                if (method.getGenericReturnType().getTypeName().contains(CompletableFuture.class.getTypeName())) {
-                    mm.setAsync(true);
-                } else {
-                    mm.setAsync(false);
-                }
-                methodMap.put(value, mm);
-//                RemoteProxy.cacheMethodCrc(method, value);
-                LoggerEx.info("SCAN", "Mapping crc " + value + " for class " + clazz.getName() + " method " + method.getName() + " for service " + service);
+        for (Method method : methods) {
+            MethodMapping mm = new MethodMapping(method);
+            long value = ReflectionUtil.getCrc(method, service);
+            if (methodMap.containsKey(value)) {
+                LoggerEx.warn(TAG, "Don't support override methods, please rename your method " + method + " for crc " + value + " and existing method " + methodMap.get(value).getMethod());
+                continue;
             }
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            Type[] genericParamterTypes = method.getGenericParameterTypes();
+            boolean failed = false;
+            for (int i = 0; i < parameterTypes.length; i++) {
+                parameterTypes[i] = ReflectionUtil.getInitiatableClass(parameterTypes[i]);
+                Class<?> parameterType = parameterTypes[i];
+                if (!ReflectionUtil.canBeInitiated(parameterType)) {
+                    failed = true;
+                    LoggerEx.fatal(TAG, "Parameter " + parameterType + " in method " + method + " couldn't be initialized. ");
+                    break;
+                }
+            }
+            if (failed)
+                continue;
+            mm.setParameterTypes(parameterTypes);
+            mm.setGenericParameterTypes(genericParamterTypes);
+
+            Class<?> returnType = method.getReturnType();
+            returnType = ReflectionUtil.getInitiatableClass(returnType);
+            mm.setReturnClass(returnType);
+            mm.setGenericReturnClass(method.getGenericReturnType());
+            if (method.getGenericReturnType() instanceof ParameterizedType) {
+                Type[] tArgs = ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments();
+                mm.setGenericReturnActualTypeArguments(tArgs);
+            }
+
+            if (method.getGenericReturnType().getTypeName().contains(CompletableFuture.class.getTypeName())) {
+                mm.setAsync(true);
+            } else {
+                mm.setAsync(false);
+            }
+            methodMap.put(value, mm);
+//                RemoteProxy.cacheMethodCrc(method, value);
+            LoggerEx.info("SCAN", "Mapping crc " + value + " for class " + clazz.getName() + " method " + method.getName() + " for service " + service);
         }
     }
 

@@ -10,6 +10,7 @@ import com.docker.rpc.*;
 import com.docker.rpc.async.AsyncRpcFuture;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.server.OnlineServer;
+import com.docker.utils.RandomDraw;
 import com.docker.utils.ScriptHttpUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import com.docker.oceansbean.BeanFactory;
@@ -77,34 +78,6 @@ public class RemoteServerHandler {
         this.remoteServers.setSortedServers(newSortedServers);
     }
 
-    public class RandomDraw {
-        private int[] array;
-
-        public RandomDraw(int count) {
-            array = new int[count];
-            for (int i = 0; i < count; i++)
-                array[i] = i;
-        }
-
-        public int next() {
-            if (array.length <= 0)
-                return -1;
-            int index = random.nextInt(array.length);
-            int value = array[index];
-            int[] newArray = new int[array.length - 1];
-            if (index == 0) {
-                System.arraycopy(array, 1, newArray, 0, newArray.length);
-            } else if (index == array.length - 1) {
-                System.arraycopy(array, 0, newArray, 0, newArray.length);
-            } else {
-                System.arraycopy(array, 0, newArray, 0, index);
-                System.arraycopy(array, index + 1, newArray, index, newArray.length - index);
-            }
-            array = newArray;
-            return value;
-        }
-    }
-
     public void touch() {
         touch = System.currentTimeMillis();
     }
@@ -117,7 +90,7 @@ public class RemoteServerHandler {
             if(server == null) {
                 throw new CoreException(ChatErrorCodes.ERROR_SERVER_NOT_FOUND, "onlyCallOneServer " + onlyCallOneServer + " is not found for request " + request);
             }
-            CompletableFuture<?> future = sendAsyncMethodRequest(request, server, Arrays.asList(server));
+            CompletableFuture<?> future = sendAsyncMethodRequest(request, server, Collections.singletonList(server));
             if(future != null)
                 return future;
         } else {
@@ -173,7 +146,7 @@ public class RemoteServerHandler {
         if (OnlineServer.getInstance() != null) {
             request.setFromServerName(baseConfiguration.getServer());
             request.setSourceIp(OnlineServer.getInstance().getIp());
-            request.setSourcePort(Integer.valueOf(baseConfiguration.getRpcPort()));
+            request.setSourcePort(baseConfiguration.getRpcPort());
         }
         if (ip != null && port != null) {
             RPCClientAdapter clientAdapter = thisRpcClientAdapterMap.registerServer(ip, port, server.getServer());
@@ -182,11 +155,11 @@ public class RemoteServerHandler {
             asyncRpcFuture.setRemoteServers(server.getServer(), keptSortedServers, thisRpcClientAdapterMap, request);
             clientAdapter.callAsync(request);
             LoggerEx.info(TAG, "Successfully callAsync Method " + request.getCrc() + "#" + request.getService() + " args " + Arrays.toString(request.getArgs()) + " on server " + server);
-            if (asyncRpcFuture != null) {
-                return asyncRpcFuture.getFuture();
-            } else {
-                LoggerEx.error(TAG, "Call async method err,asyncRpcFuture is null, callbackFutureId" + callbackFutureId + ",CurrentThread: " + Thread.currentThread());
-            }
+//            if (asyncRpcFuture != null) {
+            return asyncRpcFuture.getFuture();
+//            } else {
+//                LoggerEx.error(TAG, "Call async method err,asyncRpcFuture is null, callbackFutureId" + callbackFutureId + ",CurrentThread: " + Thread.currentThread());
+//            }
         } else {
             LoggerEx.info(TAG, "No ip " + ip + " or port " + port + ", fail to callSync Method " + request.getCrc() + "#" + request.getService() + " args " + Arrays.toString(request.getArgs()) + " on server " + server);
         }
@@ -229,7 +202,7 @@ public class RemoteServerHandler {
         if (OnlineServer.getInstance() != null) {
             request.setFromServerName(baseConfiguration.getServer());
             request.setSourceIp(OnlineServer.getInstance().getIp());
-            request.setSourcePort(Integer.valueOf(baseConfiguration.getRpcPort()));
+            request.setSourcePort(baseConfiguration.getRpcPort());
         }
         if (ip != null && port != null) {
             long time = System.currentTimeMillis();
