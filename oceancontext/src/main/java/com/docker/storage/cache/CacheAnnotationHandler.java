@@ -73,7 +73,7 @@ public class CacheAnnotationHandler extends ClassAnnotationHandler {
             Field field = clazz.getField("SERVICE");
             serviceName = (String) field.get(clazz);
         } catch (Exception e) {
-            LoggerEx.error(TAG, "Get field failed");
+            LoggerEx.error(TAG, "CacheClass annotation can only work with a static SERVICE field specified which service this interface is targeting, but this class " + clazz + " don't have such SERVICE field, ignored...");
             return;
         }
         Method[] methods = ReflectionUtil.getMethods(clazz);

@@ -86,19 +86,20 @@ public class ServiceStubManager {
 //            }
 //        }
         if (!classScannedMap.containsKey(clazz.getName() + "_" + service)) {
-            try {
-                Field field = clazz.getField("SERVICE");
-                field.get(clazz);
-            } catch (Throwable t) {
-                try {
-                    Field field = clazz.getField("service");
-                    field.get(clazz);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                    LoggerEx.error(TAG, "The service has no field: SERVICE, please check!!!" + "class: " + clazz.getSimpleName());
-                    return;
-                }
-            }
+            //Aplomb 去掉这个检测， 强制要求SERVICE属性的存在不是太好。 在通过接口定向调用到不同服务以及不同服务器的时候就会有问题。
+//            try {
+//                Field field = clazz.getField("SERVICE");
+//                field.get(clazz);
+//            } catch (Throwable t) {
+//                try {
+//                    Field field = clazz.getField("service");
+//                    field.get(clazz);
+//                } catch (Throwable throwable) {
+//                    throwable.printStackTrace();
+//                    LoggerEx.error(TAG, "The service has no field: SERVICE, please check!!!" + "class: " + clazz.getSimpleName());
+//                    return;
+//                }
+//            }
             classScannedMap.put(clazz.getName() + "_" + service, true);
         } else {
             return;
@@ -187,6 +188,9 @@ public class ServiceStubManager {
             throw new NullPointerException("Service or adapterClass can not be null, service " + service + " class " + adapterClass);
 
         String key = service + "_" + adapterClass.getName();
+        if(onlyCallOneServer != null) {
+            key = key + "_" + onlyCallOneServer;
+        }
         T adapterService = (T) serviceClassProxyCacheMap.get(key);
         if(adapterService == null) {
             synchronized (this) {
