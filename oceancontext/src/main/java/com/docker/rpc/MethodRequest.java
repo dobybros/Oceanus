@@ -155,7 +155,7 @@ public class MethodRequest extends RPCRequest {
 						if(e instanceof CoreException) {
 						    throw (CoreException)e;
                         }
-						throw new CoreException(ChatErrorCodes.ERROR_RPC_DECODE_FAILED, "PB parse data failed, " + ExceptionUtils.getFullStackTrace(e)+ ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+						throw new CoreException(ChatErrorCodes.ERROR_RPC_DECODE_FAILED, "PB parse data failed, " + e.getMessage() + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
 					} finally {
 					    IOUtils.closeQuietly(bais);
 					    IOUtils.closeQuietly(dis.original());
@@ -242,7 +242,7 @@ public class MethodRequest extends RPCRequest {
                 setType(RPCTYPE);
             } catch(Throwable t) {
 		        t.printStackTrace();
-                throw new CoreException(ChatErrorCodes.ERROR_RPC_ENCODE_FAILED, "PB parse data failed, " + ExceptionUtils.getFullStackTrace(t)+ ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+                throw new CoreException(ChatErrorCodes.ERROR_RPC_ENCODE_FAILED, "PB parse data failed, " + t.getMessage()+ ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
             } finally {
                 IOUtils.closeQuietly(baos);
                 IOUtils.closeQuietly(dis.original());
