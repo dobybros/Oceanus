@@ -7,6 +7,9 @@ import chat.utils.DataInputStreamEx;
 import chat.utils.DataOutputStreamEx;
 import chat.utils.GZipUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.DefaultJSONParser;
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.skeleton.ServiceSkeletonAnnotationHandler;
@@ -20,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 public class MethodRequest extends RPCRequest {
@@ -134,7 +138,7 @@ public class MethodRequest extends RPCRequest {
                                         byte[] data = GZipUtils.decompress(rawData);
                                         String json = new String(data, "utf8");
                                         argsTmpStr = json;
-                                        List<Object> array = JSON.parseArray(json, parameterTypes);
+                                        List<Object> array = parseArray(json, parameterTypes, ParserConfig.global);
                                         if(array != null)
                                             args = array.toArray();
                                     }
@@ -357,5 +361,27 @@ public class MethodRequest extends RPCRequest {
 
     public void setCallbackFutureId(String callbackFutureId) {
         this.callbackFutureId = callbackFutureId;
+    }
+    private List<Object> parseArray(String text, Type[] types, ParserConfig config) {
+        if (text == null) {
+            return null;
+        }
+
+        List<Object> list;
+
+        DefaultJSONParser parser = new DefaultJSONParser(text, config);
+        parser.lexer.setFeatures(JSON.DEFAULT_PARSER_FEATURE & ~Feature.UseBigDecimal.getMask());
+        Object[] objectArray = parser.parseArray(types);
+        if (objectArray == null) {
+            list = null;
+        } else {
+            list = Arrays.asList(objectArray);
+        }
+
+        parser.handleResovleTask(list);
+
+        parser.close();
+
+        return list;
     }
 }
