@@ -27,6 +27,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="core" />
     <orderEntry type="module" module-name="MongodbConnector" />
+    <orderEntry type="library" name="Maven: org.springframework:spring:2.5.6.SEC03" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:10.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.toolchain:jetty-servlet-api:4.0.5" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:10.0.0" level="project" />
@@ -213,9 +214,7 @@
     <orderEntry type="library" name="Maven: com.google.apis:google-api-services-gmail:v1-rev103-1.25.0" level="project" />
     <orderEntry type="library" name="Maven: commons-httpclient:commons-httpclient:3.0.1" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.12" level="project" />
-    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:2.2" level="project" />
-    <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.1" level="project" />
-    <orderEntry type="library" name="Maven: javax.activation:javax.activation-api:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="library" name="Maven: com.sun.xml.bind:jaxb-impl:2.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jaxb:jaxb-runtime:2.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jaxb:jaxb-core:2.3.0" level="project" />

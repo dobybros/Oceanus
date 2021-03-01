@@ -11,7 +11,6 @@ import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;

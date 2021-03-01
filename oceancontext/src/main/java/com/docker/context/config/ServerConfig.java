@@ -17,6 +17,8 @@ public class ServerConfig {
     private String ip;
     private String service;
     private Integer version;
+    private Integer rpcPort;
+    private String scaleInstanceId;
 
     public ServerConfig(Configuration configuration) {
         BaseConfiguration baseConfiguration = configuration.getBaseConfiguration();
@@ -27,6 +29,8 @@ public class ServerConfig {
         this.ip = ipHolder.getIp();
         this.service = configuration.getService();
         this.version = configuration.getVersion();
+        this.rpcPort = baseConfiguration.getRpcPort();
+        this.scaleInstanceId = baseConfiguration.getScaleInstanceId();
     }
 
     public Integer getServerPort() {
@@ -51,5 +55,9 @@ public class ServerConfig {
 
     public Integer getVersion() {
         return version;
+    }
+
+    public String getScaleInstanceId() {
+        return scaleInstanceId;
     }
 }

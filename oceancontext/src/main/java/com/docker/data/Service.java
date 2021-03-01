@@ -2,6 +2,7 @@ package com.docker.data;
 
 import chat.config.BaseConfiguration;
 import com.docker.storage.mongodb.CleanDocument;
+import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 import com.docker.oceansbean.BeanFactory;
 
@@ -120,7 +121,7 @@ public class Service {
         if (maxUserNumber != null) {
             dbObj.put(FIELD_MAXUSERNUMBER, maxUserNumber);
         }
-        if (baseConfiguration.getScaleInstanceId() != null) {
+        if (StringUtils.isNotBlank(baseConfiguration.getScaleInstanceId())) {
             scaleEnable = false;
         } else {
             scaleEnable = true;

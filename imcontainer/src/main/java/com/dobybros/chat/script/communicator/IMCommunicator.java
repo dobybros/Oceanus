@@ -7,7 +7,7 @@ import com.dobybros.chat.open.data.Message;
 import com.dobybros.chat.open.data.MsgResult;
 import com.dobybros.chat.script.IMRuntimeContext;
 import com.dobybros.chat.script.listeners.ServiceUserListener;
-import com.docker.utils.BeanFactory;
+import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.List;

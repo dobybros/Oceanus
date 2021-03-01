@@ -24,8 +24,6 @@ import com.docker.storage.cache.CacheAnnotationHandler;
 import com.docker.storage.redis.RedisListenerHandler;
 import com.docker.storage.redis.RedisSubscribeHandler;
 import com.docker.tasks.RepairTaskHandler;
-import com.container.im.ProxyAnnotationHandler;
-import com.container.im.ProxyUpStreamAnnotationHandler;
 import com.container.runtime.DefaultRuntimeContext;
 import connectors.mongodb.MongoClientHelper;
 import connectors.mongodb.annotations.handlers.MongoCollectionAnnotationHolder;
