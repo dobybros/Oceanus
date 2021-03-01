@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>oceanus</groupId>
-	<artifactId>Oceanus</artifactId>
-	<version>1.0</version>
+		<artifactId>Oceanus</artifactId>
+		<version>1.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -21,6 +21,12 @@
 			<groupId>oceanus</groupId>
 			<artifactId>core</artifactId>
 			<version>1.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
 		</dependency>
 	</dependencies>
 

@@ -2,10 +2,11 @@ package chat.main;
 
 import chat.config.BaseConfiguration;
 import chat.thread.CloudThreadFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -34,11 +35,10 @@ public class ServerStart {
         if (instance == null) {
             synchronized (ServerStart.class) {
                 if (instance == null) {
-                    ClassPathResource configResource;
-                    configResource = new ClassPathResource(BaseConfiguration.getOceanusConfigPath());
                     Properties properties = new Properties();
+                    InputStream resourceAsStream = ServerStart.class.getClassLoader().getResourceAsStream(BaseConfiguration.getOceanusConfigPath());
                     try {
-                        properties.load(configResource.getInputStream());
+                        properties.load(Objects.requireNonNull(resourceAsStream));
                         coreSize = properties.getProperty("thread.coreSize");
                         maximumPoolSize = properties.getProperty("thread.maximumPoolSize");
                         gatewayCoreSize = properties.getProperty("thread.gateway.coreSize");
@@ -53,7 +53,7 @@ public class ServerStart {
                         e.printStackTrace();
                     } finally {
                         try {
-                            configResource.getInputStream().close();
+                            resourceAsStream.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
