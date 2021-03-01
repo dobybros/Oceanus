@@ -7,6 +7,9 @@ import chat.utils.DataInputStreamEx;
 import chat.utils.DataOutputStreamEx;
 import chat.utils.GZipUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.DefaultJSONParser;
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.skeleton.ServiceSkeletonAnnotationHandler;
@@ -20,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 public class MethodRequest extends RPCRequest {
@@ -134,7 +138,7 @@ public class MethodRequest extends RPCRequest {
                                         byte[] data = GZipUtils.decompress(rawData);
                                         String json = new String(data, "utf8");
                                         argsTmpStr = json;
-                                        List<Object> array = JSON.parseArray(json, parameterTypes);
+                                        List<Object> array = parseArray(json, parameterTypes, ParserConfig.global);
                                         if(array != null)
                                             args = array.toArray();
                                     }
@@ -155,7 +159,7 @@ public class MethodRequest extends RPCRequest {
 						if(e instanceof CoreException) {
 						    throw (CoreException)e;
                         }
-						throw new CoreException(ChatErrorCodes.ERROR_RPC_DECODE_FAILED, "PB parse data failed, " + ExceptionUtils.getFullStackTrace(e)+ ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+						throw new CoreException(ChatErrorCodes.ERROR_RPC_DECODE_FAILED, "PB parse data failed, " + e.getMessage() + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
 					} finally {
 					    IOUtils.closeQuietly(bais);
 					    IOUtils.closeQuietly(dis.original());
@@ -242,7 +246,7 @@ public class MethodRequest extends RPCRequest {
                 setType(RPCTYPE);
             } catch(Throwable t) {
 		        t.printStackTrace();
-                throw new CoreException(ChatErrorCodes.ERROR_RPC_ENCODE_FAILED, "PB parse data failed, " + ExceptionUtils.getFullStackTrace(t)+ ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+                throw new CoreException(ChatErrorCodes.ERROR_RPC_ENCODE_FAILED, "PB parse data failed, " + t.getMessage()+ ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
             } finally {
                 IOUtils.closeQuietly(baos);
                 IOUtils.closeQuietly(dis.original());
@@ -357,5 +361,27 @@ public class MethodRequest extends RPCRequest {
 
     public void setCallbackFutureId(String callbackFutureId) {
         this.callbackFutureId = callbackFutureId;
+    }
+    private List<Object> parseArray(String text, Type[] types, ParserConfig config) {
+        if (text == null) {
+            return null;
+        }
+
+        List<Object> list;
+
+        DefaultJSONParser parser = new DefaultJSONParser(text, config);
+        parser.lexer.setFeatures(JSON.DEFAULT_PARSER_FEATURE & ~Feature.UseBigDecimal.getMask());
+        Object[] objectArray = parser.parseArray(types);
+        if (objectArray == null) {
+            list = null;
+        } else {
+            list = Arrays.asList(objectArray);
+        }
+
+        parser.handleResovleTask(list);
+
+        parser.close();
+
+        return list;
     }
 }

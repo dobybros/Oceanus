@@ -96,10 +96,10 @@ public class Service {
         type = dbObj.getInteger(FIELD_SERVICE_TYPE);
         try {
             maxUserNumber = dbObj.getLong(FIELD_MAXUSERNUMBER);
-        }catch (Throwable t){}
+        }catch (Throwable ignored){}
         try {
             scaleEnable = dbObj.getBoolean(FIELD_SCALEENABLE);
-        }catch (Throwable t){}
+        }catch (Throwable ignored){}
         List<Document> anDocs = (List<Document>) dbObj.get(FIELD_SERVICE_SERVICEANNOTATION);
         if (anDocs != null) {
             serviceAnnotations = new ArrayList<>();

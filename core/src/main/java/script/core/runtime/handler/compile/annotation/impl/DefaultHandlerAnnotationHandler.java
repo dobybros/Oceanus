@@ -46,9 +46,9 @@ public class DefaultHandlerAnnotationHandler implements HandlerAnnotationHandler
                     ((ClassAnnotationGlobalHandler)handler).handleAnnotatedClasses(handlerMap.get(handler), runtimeContext);
                 }
             }catch (Throwable t) {
-                        t.printStackTrace();
-                        LoggerEx.fatal(TAG, "Handle annotated classes failed, " + handlerMap.get(handler) + " the handler " + handler
-                                        + " is ignored!errMsg: " + ExceptionUtils.getFullStackTrace(t));
+                t.printStackTrace();
+                LoggerEx.fatal(TAG, "Handle annotated classes failed, " + handlerMap.get(handler) + " the handler " + handler
+                                + " is ignored!errMsg: " + ExceptionUtils.getFullStackTrace(t));
             }
         }
     }

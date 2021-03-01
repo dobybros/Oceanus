@@ -28,6 +28,11 @@ public class StateMachine<K, T> {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "StateMachine: " + this.name + "@state " + this.currentState;
+    }
+
     public StateMachine<K, T> addStateListener(StateListener<K, T> stateListener) {
         if(stateListeners == null) {
             synchronized (this) {
@@ -64,8 +69,8 @@ public class StateMachine<K, T> {
 
     public synchronized void restart() {
         stateMachineStated = false;
-//        currentState = null;
-        changeState(null, "restarted");
+        currentState = null;
+//        changeState(null, "restarted");
     }
 
     public synchronized void reset() {
@@ -88,31 +93,31 @@ public class StateMachine<K, T> {
         return this;
     }
 
-    private void changeState(K toState, String message) {
-        LoggerEx.info(TAG, name + ": [changeState] " + message);
-        State<K, T> currentStateObj = stateMap.get(currentState);
-        StateExecutor<K, T> leaveStateExecutor = null;
-        if (currentStateObj != null)
-            leaveStateExecutor = currentStateObj.getLeaveStateExecutor();
-        K old = currentState;
-        currentState = toState;
-        if(leaveStateExecutor != null) {
-            try {
-                leaveStateExecutor.execute(t, this);
-            } catch(Throwable t) {
-                LoggerEx.error(TAG, name + ": Leave state from " + old + " to " + toState + " failed, " + t.getMessage() + " for leaveStateExecutor " + leaveStateExecutor);
-            }
-        }
-        if(stateListeners != null) {
-            stateListeners.forEach(stateListener -> {
-                try {
-                    stateListener.stateChanged(old, toState, t);
-                } catch(Throwable t) {
-                    LoggerEx.error(TAG, name + ": State changed callback failed, " + t.getMessage() + " for listener " + stateListener);
-                }
-            });
-        }
-    }
+//    private void changeState(K toState, String message) {
+//        LoggerEx.info(TAG, name + ": [changeState] " + message);
+//        State<K, T> currentStateObj = stateMap.get(currentState);
+//        StateExecutor<K, T> leaveStateExecutor = null;
+//        if (currentStateObj != null)
+//            leaveStateExecutor = currentStateObj.getLeaveStateExecutor();
+//        K old = currentState;
+//        currentState = toState;
+//        if(leaveStateExecutor != null) {
+//            try {
+//                leaveStateExecutor.execute(t, this);
+//            } catch(Throwable t) {
+//                LoggerEx.error(TAG, name + ": Leave state from " + old + " to " + toState + " failed, " + t.getMessage() + " for leaveStateExecutor " + leaveStateExecutor);
+//            }
+//        }
+//        if(stateListeners != null) {
+//            stateListeners.forEach(stateListener -> {
+//                try {
+//                    stateListener.stateChanged(old, toState, t);
+//                } catch(Throwable t) {
+//                    LoggerEx.error(TAG, name + ": State changed callback failed, " + t.getMessage() + " for listener " + stateListener);
+//                }
+//            });
+//        }
+//    }
     public synchronized void gotoState(K state, String reason) {
         gotoState(state, reason, null);
     }
@@ -176,13 +181,43 @@ public class StateMachine<K, T> {
 
         StateExecutor<K, T> executor = stateObj.getStateExecutor();
         K lastState = currentState;
-        changeState(state, "StateMachine currentState " + currentState + " goes to " + state + " successfully. reason " + reason + " obj " + t);
+//        changeState(state, "StateMachine currentState " + currentState + " goes to " + state + " successfully. reason " + reason + " obj " + t);
+        LoggerEx.info(TAG, name + ": [changeState] " + "StateMachine currentState " + currentState + " goes to " + state + " successfully. reason " + reason + " obj " + t);
+        currentState = state;
+        if(stateBeforeExecutor != null) {
+            try {
+                stateBeforeExecutor.execute(this.t, this);
+            } catch(Throwable t) {
+                t.printStackTrace();
+                LoggerEx.error(TAG, name + ": State before executor from " + lastState + " to " + currentState + " failed, " + t.getMessage() + " for stateBeforeExecutor " + stateBeforeExecutor);
+            }
+        }
         if(executor != null) {
             try {
-                if(stateBeforeExecutor != null) {
-                    stateBeforeExecutor.execute(this.t, this);
+                State<K, T> currentStateObj = stateMap.get(lastState);
+                StateExecutor<K, T> leaveStateExecutor = null;
+                if (currentStateObj != null)
+                    leaveStateExecutor = currentStateObj.getLeaveStateExecutor();
+                if(leaveStateExecutor != null) {
+                    try {
+                        leaveStateExecutor.execute(t, this);
+                    } catch(Throwable t) {
+                        t.printStackTrace();
+                        LoggerEx.error(TAG, name + ": Leave state from " + lastState + " to " + currentState + " failed, " + t.getMessage() + " for leaveStateExecutor " + leaveStateExecutor);
+                    }
                 }
                 executor.execute(this.t, this);
+
+                if(stateListeners != null) {
+                    stateListeners.forEach(stateListener -> {
+                        try {
+                            stateListener.stateChanged(lastState, currentState, t);
+                        } catch(Throwable t) {
+                            t.printStackTrace();
+                            LoggerEx.error(TAG, name + ": State changed callback failed, " + t.getMessage() + " for listener " + stateListener);
+                        }
+                    });
+                }
             } catch(Throwable t) {
                 t.printStackTrace();
                 if(stateErrorOccurredExecutor != null) {
@@ -190,11 +225,12 @@ public class StateMachine<K, T> {
                     try {
                         stateErrorOccurredExecutor.onError(t, lastState, state, this.t, this);
                     } catch (Throwable t1) {
-//                        currentState = lastState;
-                        changeState(lastState, "Execute state occurred error executor failed, [" + t1.getMessage() + "] state " + state + " from state " + lastState + " obj " + t + " reason " + reason + " will change back to last state " + lastState);
+                        currentState = lastState;
+                        LoggerEx.error(TAG, "Execute state occurred error executor failed, [" + t1.getMessage() + "] state " + state + " from state " + lastState + " obj " + t + " reason " + reason + " will change back to last state " + lastState);
                     }
                 } else {
-                    changeState(lastState, "Execute state executor failed, [" + t.getMessage() + "] state " + state + " from state " + lastState + " obj " + t + " reason " + reason + " will change back to last state " + lastState + " because no stateErrorOccurredExecutor");
+                    currentState = lastState;
+                    LoggerEx.error(TAG, "Execute state executor failed, [" + t.getMessage() + "] state " + state + " from state " + lastState + " obj " + t + " reason " + reason + " will change back to last state " + lastState + " because no stateErrorOccurredExecutor");
                 }
             }
         }

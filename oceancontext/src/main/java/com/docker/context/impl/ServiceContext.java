@@ -5,9 +5,13 @@ import com.docker.context.Context;
 import com.docker.context.RPCCaller;
 import com.docker.context.ServiceGenerator;
 import com.docker.context.config.ServerConfig;
+import com.docker.oceansbean.BeanFactory;
 import com.docker.script.BaseRuntimeContext;
+import com.docker.storage.adapters.DockerStatusService;
+import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +27,7 @@ public class ServiceContext implements Context {
 
     private ConcurrentHashMap<String, RPCCaller> lanRpcCallCacheMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, ServiceGenerator> lanServiceGeneratorCacheMap = new ConcurrentHashMap<>();
+    private DockerStatusService dockerStatusService = (DockerStatusService) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
 
     public ServiceContext(BaseRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
@@ -120,5 +125,10 @@ public class ServiceContext implements Context {
     @Override
     public Collection<Class<?>> getClasses() {
         return this.runtimeContext.getAllClasses().values();
+    }
+
+    @Override
+    public List<String> getServersByService(String service) throws CoreException {
+        return dockerStatusService.getServersByService(service);
     }
 }

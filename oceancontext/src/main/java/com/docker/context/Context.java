@@ -4,6 +4,7 @@ import chat.errors.CoreException;
 import com.docker.context.config.ServerConfig;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -24,4 +25,6 @@ public interface Context {
     void injectBean(Object obj) throws CoreException;
 
     Collection<Class<?>> getClasses();
+
+    List<String> getServersByService(String service) throws CoreException;
 }

@@ -19,6 +19,7 @@ public class ServerConfig {
     private Integer version;
     private Integer rpcPort;
     private String scaleInstanceId;
+    private String publicDomain;
 
     public ServerConfig(Configuration configuration) {
         BaseConfiguration baseConfiguration = configuration.getBaseConfiguration();
@@ -31,6 +32,7 @@ public class ServerConfig {
         this.version = configuration.getVersion();
         this.rpcPort = baseConfiguration.getRpcPort();
         this.scaleInstanceId = baseConfiguration.getScaleInstanceId();
+        this.publicDomain = baseConfiguration.getPublicDomain();
     }
 
     public Integer getServerPort() {
@@ -59,5 +61,13 @@ public class ServerConfig {
 
     public String getScaleInstanceId() {
         return scaleInstanceId;
+    }
+
+    public Integer getRpcPort() {
+        return rpcPort;
+    }
+
+    public String getPublicDomain() {
+        return publicDomain;
     }
 }

@@ -86,69 +86,66 @@ public class ServiceStubManager {
 //            }
 //        }
         if (!classScannedMap.containsKey(clazz.getName() + "_" + service)) {
-            try {
-                Field field = clazz.getField("SERVICE");
-                field.get(clazz);
-            } catch (Throwable t) {
-                try {
-                    Field field = clazz.getField("service");
-                    field.get(clazz);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                    LoggerEx.error(TAG, "The service has no field: SERVICE, please check!!!" + "class: " + clazz.getSimpleName());
-                    return;
-                }
-            }
+            //Aplomb 去掉这个检测， 强制要求SERVICE属性的存在不是太好。 在通过接口定向调用到不同服务以及不同服务器的时候就会有问题。
+//            try {
+//                Field field = clazz.getField("SERVICE");
+//                field.get(clazz);
+//            } catch (Throwable t) {
+//                try {
+//                    Field field = clazz.getField("service");
+//                    field.get(clazz);
+//                } catch (Throwable throwable) {
+//                    throwable.printStackTrace();
+//                    LoggerEx.error(TAG, "The service has no field: SERVICE, please check!!!" + "class: " + clazz.getSimpleName());
+//                    return;
+//                }
+//            }
             classScannedMap.put(clazz.getName() + "_" + service, true);
         } else {
             return;
         }
         Method[] methods = ReflectionUtil.getMethods(clazz);
-        if (methods != null) {
-            for (Method method : methods) {
-                MethodMapping mm = new MethodMapping(method);
-                long value = ReflectionUtil.getCrc(method, service);
-                if (methodMap.containsKey(value)) {
-                    LoggerEx.warn(TAG, "Don't support override methods, please rename your method " + method + " for crc " + value + " and existing method " + methodMap.get(value).getMethod());
-                    continue;
-                }
-                Class<?>[] parameterTypes = method.getParameterTypes();
-                Type[] genericParamterTypes = method.getGenericParameterTypes();
-                if (parameterTypes != null) {
-                    boolean failed = false;
-                    for (int i = 0; i < parameterTypes.length; i++) {
-                        parameterTypes[i] = ReflectionUtil.getInitiatableClass(parameterTypes[i]);
-                        Class<?> parameterType = parameterTypes[i];
-                        if (!ReflectionUtil.canBeInitiated(parameterType)) {
-                            failed = true;
-                            LoggerEx.fatal(TAG, "Parameter " + parameterType + " in method " + method + " couldn't be initialized. ");
-                            break;
-                        }
-                    }
-                    if (failed)
-                        continue;
-                }
-                mm.setParameterTypes(parameterTypes);
-                mm.setGenericParameterTypes(genericParamterTypes);
-
-                Class<?> returnType = method.getReturnType();
-                returnType = ReflectionUtil.getInitiatableClass(returnType);
-                mm.setReturnClass(returnType);
-                mm.setGenericReturnClass(method.getGenericReturnType());
-                if (method.getGenericReturnType() instanceof ParameterizedType) {
-                    Type[] tArgs = ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments();
-                    mm.setGenericReturnActualTypeArguments(tArgs);
-                }
-
-                if (method.getGenericReturnType().getTypeName().contains(CompletableFuture.class.getTypeName())) {
-                    mm.setAsync(true);
-                } else {
-                    mm.setAsync(false);
-                }
-                methodMap.put(value, mm);
-//                RemoteProxy.cacheMethodCrc(method, value);
-                LoggerEx.info("SCAN", "Mapping crc " + value + " for class " + clazz.getName() + " method " + method.getName() + " for service " + service);
+        for (Method method : methods) {
+            MethodMapping mm = new MethodMapping(method);
+            long value = ReflectionUtil.getCrc(method, service);
+            if (methodMap.containsKey(value)) {
+                LoggerEx.warn(TAG, "Don't support override methods, please rename your method " + method + " for crc " + value + " and existing method " + methodMap.get(value).getMethod());
+                continue;
             }
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            Type[] genericParamterTypes = method.getGenericParameterTypes();
+            boolean failed = false;
+            for (int i = 0; i < parameterTypes.length; i++) {
+                parameterTypes[i] = ReflectionUtil.getInitiatableClass(parameterTypes[i]);
+                Class<?> parameterType = parameterTypes[i];
+                if (!ReflectionUtil.canBeInitiated(parameterType)) {
+                    failed = true;
+                    LoggerEx.fatal(TAG, "Parameter " + parameterType + " in method " + method + " couldn't be initialized. ");
+                    break;
+                }
+            }
+            if (failed)
+                continue;
+            mm.setParameterTypes(parameterTypes);
+            mm.setGenericParameterTypes(genericParamterTypes);
+
+            Class<?> returnType = method.getReturnType();
+            returnType = ReflectionUtil.getInitiatableClass(returnType);
+            mm.setReturnClass(returnType);
+            mm.setGenericReturnClass(method.getGenericReturnType());
+            if (method.getGenericReturnType() instanceof ParameterizedType) {
+                Type[] tArgs = ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments();
+                mm.setGenericReturnActualTypeArguments(tArgs);
+            }
+
+            if (method.getGenericReturnType().getTypeName().contains(CompletableFuture.class.getTypeName())) {
+                mm.setAsync(true);
+            } else {
+                mm.setAsync(false);
+            }
+            methodMap.put(value, mm);
+//                RemoteProxy.cacheMethodCrc(method, value);
+            LoggerEx.info("SCAN", "Mapping crc " + value + " for class " + clazz.getName() + " method " + method.getName() + " for service " + service);
         }
     }
 
@@ -191,6 +188,9 @@ public class ServiceStubManager {
             throw new NullPointerException("Service or adapterClass can not be null, service " + service + " class " + adapterClass);
 
         String key = service + "_" + adapterClass.getName();
+        if(onlyCallOneServer != null) {
+            key = key + "_" + onlyCallOneServer;
+        }
         T adapterService = (T) serviceClassProxyCacheMap.get(key);
         if(adapterService == null) {
             synchronized (this) {
