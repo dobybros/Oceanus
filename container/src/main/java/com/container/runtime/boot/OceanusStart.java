@@ -8,9 +8,6 @@ import chat.utils.IPHolder;
 import com.container.runtime.boot.handler.OceanusBeanAnnotationHandler;
 import com.container.runtime.boot.manager.BootManager;
 import com.container.runtime.boot.manager.DefaultOceansBeanManager;
-import com.dobybros.chat.handlers.ProxyContainerDuplexSender;
-import com.dobybros.chat.handlers.imextention.IMExtensionCache;
-import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.oceansbean.OceanusBeanManager;
 import com.docker.onlineserver.OnlineServerWithStatus;
@@ -18,7 +15,6 @@ import com.docker.rpc.impl.RMIServerHandler;
 import com.docker.script.GroovyServletScriptDispatcher;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.mina.transport.socket.nio.NioSocketAcceptorEx;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
@@ -108,25 +104,15 @@ public class OceanusStart {
     }
 
     private static void init() throws IOException {
-        NioSocketAcceptorEx tcpIoAcceptor = (NioSocketAcceptorEx) BeanFactory.getBeanByName("tcpIoAcceptor");
-        tcpIoAcceptor.bind();
-        NioSocketAcceptorEx wsIoAcceptor = (NioSocketAcceptorEx) BeanFactory.getBeanByName("wsIoAcceptor");
-        wsIoAcceptor.bind();
         IPHolder ipHolder = (IPHolder) BeanFactory.getBeanByName("ipHolder");
         ipHolder.init();
         OnlineServerWithStatus onlineServer = (OnlineServerWithStatus) BeanFactory.getBeanByName("onlineServer");
         onlineServer.start();
-        OnlineUserManagerImpl onlineUserManager = (OnlineUserManagerImpl) BeanFactory.getBeanByName("onlineUserManager");
-        onlineUserManager.init();
         BootManager bootManager = (BootManager) BeanFactory.getBeanByName("bootManager");
         bootManager.init();
         RMIServerHandler dockerRpcServerAdapter = (RMIServerHandler) BeanFactory.getBeanByName("dockerRpcServerAdapter");
         dockerRpcServerAdapter.serverStart();
         RMIServerHandler dockerRpcServerAdapterSsl = (RMIServerHandler) BeanFactory.getBeanByName("dockerRpcServerAdapterSsl");
         dockerRpcServerAdapterSsl.serverStart();
-        ProxyContainerDuplexSender proxyContainerDuplexSender = (ProxyContainerDuplexSender) BeanFactory.getBeanByName("proxyContainerDuplexSender");
-        proxyContainerDuplexSender.init();
-        IMExtensionCache imExtensionCache = (IMExtensionCache) BeanFactory.getBeanByName("imExtensionCache");
-        imExtensionCache.init();
     }
 }

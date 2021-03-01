@@ -5,11 +5,10 @@ import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.dobybros.chat.script.IMRuntimeContext;
-import com.dobybros.chat.script.annotations.gateway.MessageNotReceived;
-import com.dobybros.chat.script.annotations.gateway.MessageNotReceivedListener;
-import com.dobybros.chat.script.annotations.gateway.SessionHandler;
-import com.dobybros.chat.script.annotations.gateway.SessionListener;
-import com.dobybros.chat.script.annotations.handler.ServiceUserSessionAnnotationHandler;
+import com.dobybros.chat.open.annotations.SessionHandler;
+import com.dobybros.chat.open.listeners.SessionListener;
+import com.dobybros.chat.script.handlers.annotation.RoomStatusAnnotationHandler;
+import com.dobybros.chat.script.handlers.annotation.UserStatusAnnotationHandler;
 import com.docker.annotations.*;
 import com.docker.handler.annotation.field.ConfigPropertyHandler;
 import com.docker.handler.annotation.field.JavaBeanHandler;
@@ -25,8 +24,6 @@ import com.docker.storage.cache.CacheAnnotationHandler;
 import com.docker.storage.redis.RedisListenerHandler;
 import com.docker.storage.redis.RedisSubscribeHandler;
 import com.docker.tasks.RepairTaskHandler;
-import com.container.im.ProxyAnnotationHandler;
-import com.container.im.ProxyUpStreamAnnotationHandler;
 import com.container.runtime.DefaultRuntimeContext;
 import connectors.mongodb.MongoClientHelper;
 import connectors.mongodb.annotations.handlers.MongoCollectionAnnotationHolder;
@@ -140,8 +137,6 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
         runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(RedisSubscribeHandler.class.getName()));
         runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(RedisListenerHandler.class.getName()));
         runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(RepairTaskHandler.class.getName()));
-        runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(ProxyUpStreamAnnotationHandler.class.getName()));
-        runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(ProxyAnnotationHandler.class.getName()));
         runtimeContext.addClassAnnotationHandler(new ClassAnnotationHandler() {
             @Override
             public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
@@ -175,41 +170,8 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
             }
 
         });
-
-        runtimeContext.addClassAnnotationHandler(new ClassAnnotationHandler() {
-            @Override
-            public Class<? extends Annotation> handleAnnotationClass() {
-                return MessageNotReceived.class;
-            }
-
-            @Override
-            public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
-                if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
-                    StringBuilder uriLogs = new StringBuilder(
-                            "\r\n---------------------------------------\r\n");
-
-                    List<GroovyObjectEx<MessageNotReceivedListener>> newMessageNotReceivedMap = new ArrayList<>();
-                    Set<String> keys = annotatedClassMap.keySet();
-                    for (String key : keys) {
-                        Class<?> groovyClass = annotatedClassMap.get(key);
-                        if (groovyClass != null) {
-                            MessageNotReceived messageNotReceivedAnnotation = groovyClass.getAnnotation(MessageNotReceived.class);
-                            if (messageNotReceivedAnnotation != null) {
-                                GroovyObjectEx<MessageNotReceivedListener> messageNotReceivedObj = (GroovyObjectEx<MessageNotReceivedListener>) getObject(null, groovyClass, runtimeContext);
-                                if (messageNotReceivedObj != null) {
-                                    uriLogs.append("MessageNotReceivedListener #" + groovyClass + "\r\n");
-                                    newMessageNotReceivedMap.add(messageNotReceivedObj);
-                                }
-                            }
-                        }
-                    }
-                    ((IMRuntimeContext)runtimeContext).setMessageNotReceivedListeners(newMessageNotReceivedMap);
-                    uriLogs.append("---------------------------------------");
-                    LoggerEx.info(TAG, uriLogs.toString());
-                }
-            }
-        });
-        runtimeContext.addClassAnnotationHandler(new ServiceUserSessionAnnotationHandler());
+        runtimeContext.addClassAnnotationHandler(new UserStatusAnnotationHandler());
+        runtimeContext.addClassAnnotationHandler(new RoomStatusAnnotationHandler());
 
         /**
          * field annotations

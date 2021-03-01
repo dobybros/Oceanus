@@ -68,4 +68,6 @@ public interface DockerStatusService {
     List<DockerStatus> getDockerStatusesByIp(String ip) throws CoreException;
 
     List<DockerStatus> getDockerStatusByCondition(String ip, String dockerName, String serverType, Integer status, String deployId) throws CoreException;
+
+    List<DockerStatus> getDockerStatusesByService(String service) throws CoreException;
 }

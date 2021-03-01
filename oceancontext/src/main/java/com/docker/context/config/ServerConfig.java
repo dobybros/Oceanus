@@ -18,18 +18,20 @@ public class ServerConfig {
     private String service;
     private Integer version;
     private Integer rpcPort;
+    private String scaleInstanceId;
     private String publicDomain;
 
     public ServerConfig(Configuration configuration) {
         BaseConfiguration baseConfiguration = configuration.getBaseConfiguration();
         this.serverPort = baseConfiguration.getServerPort();
-        this.rpcPort = baseConfiguration.getRpcPort();
         this.server = baseConfiguration.getServer();
         this.lanId = baseConfiguration.getLanId();
         IPHolder ipHolder = (IPHolder) BeanFactory.getBean(IPHolder.class.getName());
         this.ip = ipHolder.getIp();
         this.service = configuration.getService();
         this.version = configuration.getVersion();
+        this.rpcPort = baseConfiguration.getRpcPort();
+        this.scaleInstanceId = baseConfiguration.getScaleInstanceId();
         this.publicDomain = baseConfiguration.getPublicDomain();
     }
 
@@ -57,43 +59,15 @@ public class ServerConfig {
         return version;
     }
 
+    public String getScaleInstanceId() {
+        return scaleInstanceId;
+    }
+
     public Integer getRpcPort() {
         return rpcPort;
     }
 
     public String getPublicDomain() {
         return publicDomain;
-    }
-
-    public void setPublicDomain(String publicDomain) {
-        this.publicDomain = publicDomain;
-    }
-
-    public void setServerPort(Integer serverPort) {
-        this.serverPort = serverPort;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
-    }
-
-    public void setLanId(String lanId) {
-        this.lanId = lanId;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public void setService(String service) {
-        this.service = service;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    public void setRpcPort(Integer rpcPort) {
-        this.rpcPort = rpcPort;
     }
 }
