@@ -3,12 +3,6 @@ package com.container.runtime.boot.bean;
 import chat.config.BaseConfiguration;
 import chat.utils.IPHolder;
 import chat.base.bean.annotation.OceanusBean;
-import com.dobybros.chat.handlers.ConsumeOfflineMessageHandler;
-import com.dobybros.chat.handlers.PingHandler;
-import com.dobybros.chat.handlers.imextention.IMExtensionCache;
-import com.dobybros.chat.tasks.OfflineMessageSavingTask;
-import com.dobybros.chat.tasks.RPCMessageSendingTask;
-import com.dobybros.gateway.onlineusers.impl.OnlineUserManagerImpl;
 import com.docker.context.ContextFactory;
 import com.docker.context.impl.DefaultContextFactory;
 import com.docker.onlineserver.OnlineServerWithStatus;
@@ -30,28 +24,15 @@ import script.filter.JsonFilterFactory;
  */
 @OceanusBean
 public class CommonBean {
+
     private BeanApp instance;
     public CommonBean(){
         instance = BeanApp.getInstance();
     }
+
     @OceanusBean
     public IPHolder ipHolder() {
         return instance.getIpHolder();
-    }
-
-    @OceanusBean
-    public ConsumeOfflineMessageHandler consumeOfflineMessageHandler() {
-        return instance.getConsumeOfflineMessageHandler();
-    }
-
-    @OceanusBean
-    public OfflineMessageSavingTask offlineMessageSavingTask() {
-        return instance.getOfflineMessageSavingTask();
-    }
-
-    @OceanusBean
-    public RPCMessageSendingTask messageSendingTask() {
-        return instance.getMessageSendingTask();
     }
 
     @OceanusBean
@@ -70,24 +51,13 @@ public class CommonBean {
     }
 
     @OceanusBean
-    public OnlineUserManagerImpl onlineUserManager() {
-        return instance.getOnlineUserManager();
-    }
-
-    @OceanusBean
     public OnlineServerWithStatus onlineServer() {
         return instance.getOnlineServer();
     }
-    @OceanusBean
-    public PingHandler pingHandler(){
-        return instance.getPingHandler();
-    }
-    @OceanusBean
-    public IMExtensionCache imExtensionCache(){
-        return instance.getIMExtensionCache();
-    }
+
     @OceanusBean
     public RepairTaskHandler repairTaskHandler(){return instance.getRepairTaskHandler();}
+
     @OceanusBean
     public QueueSimplexListener queueSimplexListener(){
         return instance.getQueueSimplexListener();
