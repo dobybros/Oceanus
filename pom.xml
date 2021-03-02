@@ -37,14 +37,14 @@
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
-			<version>3.0.0-beta-3</version>
+			<version>3.0.7</version>
 			<type>pom</type>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy -->
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy</artifactId>
-			<version>3.0.0-beta-3</version>
+			<version>3.0.7</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 		<dependency>
