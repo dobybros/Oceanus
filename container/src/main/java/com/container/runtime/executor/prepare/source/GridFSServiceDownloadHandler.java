@@ -31,7 +31,7 @@ public class GridFSServiceDownloadHandler implements ServiceDownloadHandler {
         FileAdapter fileAdapter = (FileAdapter) BeanFactory.getBean(GridFSFileHandler.class.getName());
         //读取fileEntity
         FileAdapter.FileEntity fileEntity
-                = fileAdapter.getFileEntity(new FileAdapter.PathEx(getPath(configuration)));
+                = fileAdapter.getFileEntity(new FileAdapter.PathEx(getPath(configuration).replace("\\", "/")));
         if(fileEntity == null){
             throw new CoreException(ChatErrorCodes.ERROR_NO_SOURCEFILE, "Failed get source, serviceVersion is " + configuration.getServiceVersion());
         }

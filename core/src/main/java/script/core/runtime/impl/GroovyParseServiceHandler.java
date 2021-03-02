@@ -44,6 +44,7 @@ public class GroovyParseServiceHandler implements ParseServiceHandler {
         if (runtimeContext == null)
             throw new NullPointerException("runtime is empty while redeploy for Booter " + this);
         String path = runtimeContext.getConfiguration().getLocalPath() + File.separator;
+        path = path.replace("\\", "/");
         try {
             beforeDeploy(runtimeContext);
         } catch (Throwable t) {
