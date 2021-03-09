@@ -70,8 +70,6 @@ public class OceanusStart {
                 ;
 
         org.apache.commons.cli.CommandLine line = parser.parse(opt, args);
-        System.out.println("commandLine " + Arrays.toString(args));
-        List<String> argList = line.getArgList();
         if (line.hasOption('h') || line.hasOption("help")) {
             HelpFormatter hf = new HelpFormatter();
             hf.printHelp("OceanusStart[options:]", opt, false);
