@@ -8,28 +8,23 @@
 		<version>1.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>container</artifactId>
+	<artifactId>oceanuscontainer</artifactId>
 	<version>1.0</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>oceanus</groupId>
-			<artifactId>MongodbConnector</artifactId>
+			<artifactId>oceanuscontext</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>oceanus</groupId>
-			<artifactId>oceancontext</artifactId>
+			<artifactId>oceanusimcontainer</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>oceanus</groupId>
-			<artifactId>imcontainer</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>oceanus</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>oceanuscore</artifactId>
 			<version>1.0</version>
 		</dependency>
 	</dependencies>

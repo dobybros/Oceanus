@@ -9,8 +9,7 @@
 	<name>Oceanus</name>
 	<modules>
 		<module>core</module>
-		<module>mongodbconnector</module>
-		<module>oceancontext</module>
+		<module>context</module>
 		<module>imcontainer</module>
 		<module>container</module>
 	</modules>

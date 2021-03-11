@@ -7,8 +7,8 @@
 		<artifactId>Oceanus</artifactId>
 		<version>1.0</version>
 	</parent>
-	<artifactId>core</artifactId>
+	<artifactId>oceanuscore</artifactId>
 	<version>1.0</version>
-	<name>core</name>
+	<name>OceanusCore</name>
 
 </project>

@@ -25,11 +25,6 @@ import com.docker.storage.redis.RedisListenerHandler;
 import com.docker.storage.redis.RedisSubscribeHandler;
 import com.docker.tasks.RepairTaskHandler;
 import com.container.runtime.DefaultRuntimeContext;
-import connectors.mongodb.MongoClientHelper;
-import connectors.mongodb.annotations.handlers.MongoCollectionAnnotationHolder;
-import connectors.mongodb.annotations.handlers.MongoDBHandler;
-import connectors.mongodb.annotations.handlers.MongoDatabaseAnnotationHolder;
-import connectors.mongodb.annotations.handlers.MongoDocumentAnnotationHolder;
 import script.Runtime;
 import com.docker.oceansbean.BeanFactory;
 import script.core.runtime.AbstractRuntimeContext;
@@ -85,17 +80,17 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
         String enableGroovyMVC = null;
         runtimeContext.addClassAnnotationHandler(new BeanHandler());
         enableGroovyMVC = runtimeContext.getConfiguration().getConfig().getProperty("web.groovymvc.enable");
-        String mongodbHost = runtimeContext.getConfiguration().getConfig().getProperty("db.mongodb.uri");
-        if (mongodbHost != null) {
-            runtimeContext.addClassAnnotationHandler(new MongoDatabaseAnnotationHolder());
-            runtimeContext.addClassAnnotationHandler(new MongoCollectionAnnotationHolder());
-            runtimeContext.addClassAnnotationHandler(new MongoDocumentAnnotationHolder());
-            MongoDBHandler mongoDBHandler = new MongoDBHandler();
-            MongoClientHelper helper = new MongoClientHelper();
-            helper.setHosts(mongodbHost);
-            mongoDBHandler.setMongoClientHelper(helper);
-            runtimeContext.addClassAnnotationHandler(mongoDBHandler);
-        }
+//        String mongodbHost = runtimeContext.getConfiguration().getConfig().getProperty("db.mongodb.uri");
+//        if (mongodbHost != null) {
+//            runtimeContext.addClassAnnotationHandler(new MongoDatabaseAnnotationHolder());
+//            runtimeContext.addClassAnnotationHandler(new MongoCollectionAnnotationHolder());
+//            runtimeContext.addClassAnnotationHandler(new MongoDocumentAnnotationHolder());
+//            MongoDBHandler mongoDBHandler = new MongoDBHandler();
+//            MongoClientHelper helper = new MongoClientHelper();
+//            helper.setHosts(mongodbHost);
+//            mongoDBHandler.setMongoClientHelper(helper);
+//            runtimeContext.addClassAnnotationHandler(mongoDBHandler);
+//        }
 
         if (enableGroovyMVC != null && enableGroovyMVC.trim().equals("true")) {
             GroovyServletManagerEx servletManagerEx = new GroovyServletManagerEx(runtimeContext.getConfiguration().getService(), runtimeContext.getConfiguration().getVersion());
