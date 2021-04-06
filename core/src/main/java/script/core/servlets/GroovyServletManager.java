@@ -31,7 +31,7 @@ public class GroovyServletManager extends ClassAnnotationHandler {
 	private static final String TAG = GroovyServletManager.class
 			.getSimpleName();
 	private HashTree<String, RequestURIWrapper> servletTree;
-	private HashMap<String, GroovyObjectEx<RequestIntercepter>> interceptorMap;
+	private HashMap<String, GroovyObjectEx<RequestInterceptor>> interceptorMap;
 
 //	private static GroovyServletManager instance;
 	
@@ -176,7 +176,7 @@ public class GroovyServletManager extends ClassAnnotationHandler {
 		if (theTree != null) {
 			RequestURIWrapper obj = theTree.get(method);
 			if(obj != null) {
-				GroovyObjectEx<RequestIntercepter> interceptor = null;
+				GroovyObjectEx<RequestInterceptor> interceptor = null;
 				if(interceptorMap != null) {
 					interceptor = interceptorMap.get(obj.getGroovyPath());
 				}
@@ -198,7 +198,7 @@ public class GroovyServletManager extends ClassAnnotationHandler {
 		return parseUri(request, response, uriStrs);
 	}
 
-	public HashMap<String, GroovyObjectEx<RequestIntercepter>> getInterceptorMap() {
+	public HashMap<String, GroovyObjectEx<RequestInterceptor>> getInterceptorMap() {
 		return interceptorMap;
 	}
 
@@ -212,7 +212,7 @@ public class GroovyServletManager extends ClassAnnotationHandler {
 		if(annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
 			StringBuilder uriLogs = new StringBuilder("\r\n---------------------------------------\r\n");
 			HashTree<String, RequestURIWrapper> tree = new HashTree<String, RequestURIWrapper>();
-			HashMap<String, GroovyObjectEx<RequestIntercepter>> iMap = new HashMap<String, GroovyObjectEx<RequestIntercepter>>();
+			HashMap<String, GroovyObjectEx<RequestInterceptor>> iMap = new HashMap<String, GroovyObjectEx<RequestInterceptor>>();
 			
 			Set<String> keys = annotatedClassMap.keySet();
 			for (String key : keys) {
@@ -223,15 +223,15 @@ public class GroovyServletManager extends ClassAnnotationHandler {
 					//Handle RequestIntercepting
 					ControllerMapping requestIntercepting = groovyClass.getAnnotation(ControllerMapping.class);
 					if(requestIntercepting != null) {
-						GroovyObjectEx<RequestIntercepter> groovyInterceptor = null;
+						GroovyObjectEx<RequestInterceptor> groovyInterceptor = null;
 						Class<?> clazz = requestIntercepting.intercept();
 						if(clazz == null || clazz.equals(Object.class)) {
 							String interceptClass = processAnnotationString(runtimeContext, requestIntercepting.interceptClass());
 							if(!StringUtils.isBlank(interceptClass)) {
-								groovyInterceptor = (GroovyObjectEx<RequestIntercepter>) getObject(null, interceptClass, runtimeContext);
+								groovyInterceptor = (GroovyObjectEx<RequestInterceptor>) getObject(null, interceptClass, runtimeContext);
 							}
 						} else {
-							groovyInterceptor = (GroovyObjectEx<RequestIntercepter>) getObject(null, clazz, runtimeContext);
+							groovyInterceptor = (GroovyObjectEx<RequestInterceptor>) getObject(null, clazz, runtimeContext);
 						}
 
 						if(groovyInterceptor != null) {

@@ -5,7 +5,7 @@ import script.core.runtime.groovy.object.GroovyObjectEx;
 
 import java.io.IOException;
 
-public abstract class RequestIntercepter {
+public abstract class RequestInterceptor {
 	protected Object proceed(RequestHolder holder) throws CoreException {
 		RequestURIWrapper requestUriWrapper = holder.getRequestUriWrapper();
 		GroovyObjectEx<GroovyServlet> servletObj = requestUriWrapper.getGroovyObject();

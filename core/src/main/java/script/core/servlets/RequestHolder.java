@@ -26,14 +26,14 @@ public class RequestHolder {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private HashMap<String, String> pathVariables;
-    private GroovyObjectEx<RequestIntercepter> interceptor;
+    private GroovyObjectEx<RequestInterceptor> interceptor;
     private GroovyServletManager groovyServletManager;
     private ParameterHandler parameterHandler;
     private AsyncContext asyncContext;
 
     RequestHolder(RequestURIWrapper requestUriWrapper,
                   HttpServletRequest request, HttpServletResponse response,
-                  HashMap<String, String> pathVariables, GroovyObjectEx<RequestIntercepter> interceptor, GroovyServletManager groovyServletManager) {
+                  HashMap<String, String> pathVariables, GroovyObjectEx<RequestInterceptor> interceptor, GroovyServletManager groovyServletManager) {
         this.requestUriWrapper = requestUriWrapper;
         this.request = request;
         this.response = response;
@@ -218,7 +218,7 @@ public class RequestHolder {
                         grayReleased.setType(GrayReleased.getCookieValue(request.getCookies()));
                     }
                     GrayReleased.grayReleasedThreadLocal.set(grayReleased);
-                    RequestIntercepter theInterceptor = interceptor.getObject();
+                    RequestInterceptor theInterceptor = interceptor.getObject();
                     if (theInterceptor != null) {
                         if (isAysnc()) {
                             this.asyncContext = request.startAsync();
@@ -252,7 +252,7 @@ public class RequestHolder {
         }
     }
 
-    public GroovyObjectEx<RequestIntercepter> getInterceptor() {
+    public GroovyObjectEx<RequestInterceptor> getInterceptor() {
         return interceptor;
     }
 

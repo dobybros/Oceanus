@@ -50,7 +50,7 @@ public abstract class BaseDAO implements DAO {
 			}
 			throw new DBException(DBException.ERRORTYPE_UNKNOWN, 0, getCollectionName() + " aggregate failed, " + Arrays.deepToString(ops) + ". Error " + t.getMessage());
 		}
-		if(output == null) 
+		if(output == null)
 			throw new DBException(DBException.ERRORTYPE_UNKNOWN, 0, getCollectionName() + " aggregate output is null, " + Arrays.deepToString(ops));
 //		CommandResult result = output.getCommandResult();
 //		MongoException me = result.getException();

@@ -176,18 +176,18 @@
 			<artifactId>kafka_2.13</artifactId>
 			<version>2.7.0</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>6.2.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.elasticsearch.client/transport -->
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>transport</artifactId>
-			<version>6.2.2</version>
-		</dependency>
+		<!--
+                <dependency>
+                    <groupId>org.elasticsearch</groupId>
+                    <artifactId>elasticsearch</artifactId>
+                    <version>6.2.2</version>
+                </dependency>
+                 https://mvnrepository.com/artifact/org.elasticsearch.client/transport
+                <dependency>
+                    <groupId>org.elasticsearch.client</groupId>
+                    <artifactId>transport</artifactId>
+                    <version>6.2.2</version>
+                </dependency>-->
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-exec -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -216,25 +216,25 @@
 			<version>0.1.50</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+		<!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
 			<version>3.1.0</version>
-		</dependency>
+		</dependency>-->
 
-		<!-- https://mvnrepository.com/artifact/com.relayrides/pushy -->
+		<!-- https://mvnrepository.com/artifact/com.relayrides/pushy
 		<dependency>
 			<groupId>com.relayrides</groupId>
 			<artifactId>pushy</artifactId>
 			<version>0.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.ivy/ivy -->
+		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/org.apache.ivy/ivy
 		<dependency>
 			<groupId>org.apache.ivy</groupId>
 			<artifactId>ivy</artifactId>
 			<version>2.4.0</version>
-		</dependency>
+		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/cglib/cglib -->
 		<dependency>
 			<groupId>cglib</groupId>
@@ -417,8 +417,24 @@
 			<artifactId>lettuce-core</artifactId>
 			<version>5.3.4.RELEASE</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.github.luben/zstd-jni -->
+		<dependency>
+			<groupId>com.github.luben</groupId>
+			<artifactId>zstd-jni</artifactId>
+			<version>1.4.9-2</version>
+			<classifier>${os.detected.classifier}</classifier>
+		</dependency>
+
 	</dependencies>
 	<build>
+		<extensions>
+			<extension>
+				<groupId>kr.motd.maven</groupId>
+				<artifactId>os-maven-plugin</artifactId>
+				<version>1.6.1</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
