@@ -40,20 +40,20 @@ public class GridFSServiceDownloadHandler implements ServiceDownloadHandler {
         if(runtimeContext != null){
             if(runtimeContext.getConfiguration().getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR)){
                 needRedeploy = false;
-            }else {
-                if(runtimeContext.getConfiguration().getDeployVersion() != null){
-                    if(runtimeContext.getConfiguration().getDeployVersion() >= fileEntity.getLastModificationTime()){
+            } else {
+                if(runtimeContext.getConfiguration().getDeployVersion() != null) {
+                    if(runtimeContext.getConfiguration().getDeployVersion() >= fileEntity.getLastModificationTime()) {
                         needRedeploy = false;
-                    }else {
+                    } else {
                         runtimeContext.close();
                         configuration.getBaseConfiguration().removeRuntimeContext(configuration.getService());
                     }
                 }
             }
         }
-        if(needRedeploy){
+        if(needRedeploy) {
             configuration.setDeployVersion(fileEntity.getLastModificationTime());
-            if(!configuration.getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR)){
+            if(!configuration.getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR)) {
                 File zipFile = new File(configuration.getLocalPath() + ".zip");
                 //删除旧的zip
                 FileUtils.deleteQuietly(zipFile);
@@ -76,7 +76,7 @@ public class GridFSServiceDownloadHandler implements ServiceDownloadHandler {
                 crc.update(configuration.getFileName().getBytes());
                 //解压
                 unzip(zipFile, localFile.getAbsolutePath(), String.valueOf(crc.getValue()));
-            }else {
+            } else {
                 File jarFile = new File(configuration.getLocalPath() + File.separator + configuration.getFileName());
                 //删除旧的jar
                 FileUtils.deleteQuietly(jarFile);

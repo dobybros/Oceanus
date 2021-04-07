@@ -64,7 +64,7 @@ public class BootManager implements ShutdownListener {
     }
     private void reload(){
         isLoaded = true;
-        this.runtimeExecutor.executeAsync(baseConfiguration, new RuntimeExecutorListener() {
+        this.runtimeExecutor.execute(baseConfiguration, new RuntimeExecutorListener() {
             @Override
             public void handleSuccess() {
                 isLoaded = false;

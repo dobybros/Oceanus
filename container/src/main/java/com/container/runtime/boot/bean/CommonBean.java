@@ -58,10 +58,10 @@ public class CommonBean {
     @OceanusBean
     public RepairTaskHandler repairTaskHandler(){return instance.getRepairTaskHandler();}
 
-    @OceanusBean
-    public QueueSimplexListener queueSimplexListener(){
-        return instance.getQueueSimplexListener();
-    }
+//    @OceanusBean
+//    public QueueSimplexListener queueSimplexListener(){
+//        return instance.getQueueSimplexListener();
+//    }
 
     @OceanusBean
     public DefaultRuntimeFactory runtimeFactory(){

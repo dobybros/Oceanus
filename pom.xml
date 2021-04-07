@@ -10,7 +10,6 @@
 	<modules>
 		<module>core</module>
 		<module>context</module>
-		<module>imcontainer</module>
 		<module>container</module>
 	</modules>
 

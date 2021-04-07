@@ -10,7 +10,7 @@ import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.QueueSimplexListener;
 import com.docker.rpc.impl.RMIServerHandler;
 import com.docker.rpc.impl.RMIServerImplWrapper;
-import com.docker.rpc.queue.KafkaSimplexListener;
+//import com.docker.rpc.queue.KafkaSimplexListener;
 import com.docker.storage.adapters.impl.*;
 import com.docker.storage.mongodb.MongoHelper;
 import com.docker.storage.mongodb.daos.*;
@@ -116,28 +116,28 @@ class ContextBeanApp {
         return redisSubscribeHandler;
     }
 
-    private KafkaSimplexListener queueSimplexListener;
-
-    synchronized QueueSimplexListener getQueueSimplexListener() {
-        if (queueSimplexListener == null) {
-            try {
-                queueSimplexListener = new KafkaSimplexListener();
-                Map<String, String> config = new HashMap<>();
-//                config.put("bootstrap.servers", getKafkaServers());
-//                config.put("producer.key.serializer", getKafkaProducerKeySerializer());
-//                config.put("producer.value.serializer", getKafkaProducerValueSerializer());
-//                config.put("retries", getKafkaProducerRetries());
-//                config.put("linger.ms", getKafkaProducerLingerMs());
-//                config.put("consumer.key.serializer", getKafkaConsumerKeySerializer());
-//                config.put("consumer.value.serializer", getKafkaConsumerValueSerializer());
-                queueSimplexListener.setConfig(config);
-                queueSimplexListener.setDockerRpcServer(getDockerRpcServer());
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-        }
-        return queueSimplexListener;
-    }
+//    private KafkaSimplexListener queueSimplexListener;
+//
+//    synchronized QueueSimplexListener getQueueSimplexListener() {
+//        if (queueSimplexListener == null) {
+//            try {
+//                queueSimplexListener = new KafkaSimplexListener();
+//                Map<String, String> config = new HashMap<>();
+////                config.put("bootstrap.servers", getKafkaServers());
+////                config.put("producer.key.serializer", getKafkaProducerKeySerializer());
+////                config.put("producer.value.serializer", getKafkaProducerValueSerializer());
+////                config.put("retries", getKafkaProducerRetries());
+////                config.put("linger.ms", getKafkaProducerLingerMs());
+////                config.put("consumer.key.serializer", getKafkaConsumerKeySerializer());
+////                config.put("consumer.value.serializer", getKafkaConsumerValueSerializer());
+//                queueSimplexListener.setConfig(config);
+//                queueSimplexListener.setDockerRpcServer(getDockerRpcServer());
+//            } catch (Throwable t) {
+//                t.printStackTrace();
+//            }
+//        }
+//        return queueSimplexListener;
+//    }
     synchronized LansServiceImpl getLansService(){
         if(lansService == null){
             lansService = new LansServiceImpl();
