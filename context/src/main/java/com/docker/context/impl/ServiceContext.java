@@ -118,6 +118,26 @@ public class ServiceContext implements Context {
     }
 
     @Override
+    public Object getAndCreateBean(Class<?> clazz) {
+        try {
+            return this.runtimeContext.getRuntimeBeanFactory().get(null, runtimeContext.getRuntime().path(clazz));
+        } catch (CoreException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Object getAndCreateBean(String beanName, Class<?> clazz) {
+        try {
+            return this.runtimeContext.getRuntimeBeanFactory().get(beanName, runtimeContext.getRuntime().path(clazz));
+        } catch (CoreException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public void injectBean(Object obj) throws CoreException {
         this.runtimeContext.getRuntimeBeanFactory().fillObject(obj);
     }

@@ -22,9 +22,14 @@ public interface Context {
     ServiceGenerator getServiceGenerator();
     ServiceGenerator getServiceGenerator(String lanId);
 
+    Object getAndCreateBean(Class<?> clazz);
+    Object getAndCreateBean(String beanName, Class<?> clazz);
+
     void injectBean(Object obj) throws CoreException;
 
     Collection<Class<?>> getClasses();
 
     List<String> getServersByService(String service) throws CoreException;
+
+
 }
