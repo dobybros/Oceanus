@@ -3,13 +3,7 @@ package com.container.runtime.executor.prepare.runtime;
 import chat.config.Configuration;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
-import chat.logs.LoggerEx;
-import com.dobybros.chat.script.IMRuntimeContext;
-import com.dobybros.chat.open.annotations.SessionHandler;
-import com.dobybros.chat.open.listeners.SessionListener;
-import com.dobybros.chat.script.handlers.annotation.RoomStatusAnnotationHandler;
-import com.dobybros.chat.script.handlers.annotation.UserStatusAnnotationHandler;
-import com.docker.annotations.*;
+
 import com.docker.handler.annotation.field.ConfigPropertyHandler;
 import com.docker.handler.annotation.field.JavaBeanHandler;
 import com.docker.handler.annotation.field.ServiceBeanHandler;
@@ -21,16 +15,12 @@ import com.docker.script.executor.prepare.runtime.RuntimeHandler;
 import com.docker.script.servlet.GroovyServletManagerEx;
 import com.docker.script.servlet.WebServiceAnnotationHandler;
 import com.docker.storage.cache.CacheAnnotationHandler;
-import com.docker.storage.redis.RedisListenerHandler;
-import com.docker.storage.redis.RedisSubscribeHandler;
-import com.docker.tasks.RepairTaskHandler;
 import com.container.runtime.DefaultRuntimeContext;
 import script.Runtime;
 import com.docker.oceansbean.BeanFactory;
 import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.RuntimeFactory;
 import script.core.runtime.ServerLifeCircleHandler;
-import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.runtime.handler.AbstractClassAnnotationHandler;
 import script.core.runtime.handler.annotation.clazz.*;
 import script.core.runtime.impl.DefaultRuntimeFactory;
@@ -38,12 +28,7 @@ import script.core.servlets.GroovyServletDispatcher;
 import script.core.servlets.RequestPermissionHandler;
 import script.filter.JsonFilterFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by lick on 2020/12/18.
@@ -116,57 +101,57 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
         /**
          * service's annotations
          */
-        serviceSkeletonAnnotationHandler.addExtraAnnotation(PeriodicTask.class);
-        serviceSkeletonAnnotationHandler.addExtraAnnotation(OneTimeTask.class);
-        serviceSkeletonAnnotationHandler.addExtraAnnotation(KafkaListener.class);
-        serviceSkeletonAnnotationHandler.addExtraAnnotation(Summaries.class);
-        serviceSkeletonAnnotationHandler.addExtraAnnotation(Summary.class);
-        serviceSkeletonAnnotationHandler.addExtraAnnotation(Transactions.class);
-        serviceSkeletonAnnotationHandler.addExtraAnnotation(Transaction.class);
-        serviceSkeletonAnnotationHandler.addExtraAnnotation(TransactionResultNotify.class);
-        serviceSkeletonAnnotationHandler.addExtraAnnotation(ProxyContainerTransportType.class);
+//        serviceSkeletonAnnotationHandler.addExtraAnnotation(PeriodicTask.class);
+//        serviceSkeletonAnnotationHandler.addExtraAnnotation(OneTimeTask.class);
+//        serviceSkeletonAnnotationHandler.addExtraAnnotation(KafkaListener.class);
+//        serviceSkeletonAnnotationHandler.addExtraAnnotation(Summaries.class);
+//        serviceSkeletonAnnotationHandler.addExtraAnnotation(Summary.class);
+//        serviceSkeletonAnnotationHandler.addExtraAnnotation(Transactions.class);
+//        serviceSkeletonAnnotationHandler.addExtraAnnotation(Transaction.class);
+//        serviceSkeletonAnnotationHandler.addExtraAnnotation(TransactionResultNotify.class);
+//        serviceSkeletonAnnotationHandler.addExtraAnnotation(ProxyContainerTransportType.class);
         runtimeContext.addClassAnnotationHandler(serviceSkeletonAnnotationHandler);
         runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBeanByName("dockerRpcServer"));
         runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBeanByName("dockerRpcServerSsl"));
 //        runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(UpStreamAnnotationHandler.class.getName()));
-        runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(RedisSubscribeHandler.class.getName()));
-        runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(RedisListenerHandler.class.getName()));
-        runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(RepairTaskHandler.class.getName()));
-        runtimeContext.addClassAnnotationHandler(new ClassAnnotationHandler() {
-            @Override
-            public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
-                if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
-                    StringBuilder uriLogs = new StringBuilder(
-                            "\r\n---------------------------------------\r\n");
-
-                    Set<String> keys = annotatedClassMap.keySet();
-                    for (String key : keys) {
-                        Class<?> groovyClass = annotatedClassMap.get(key);
-                        if (groovyClass != null) {
-                            SessionHandler messageReceivedAnnotation = groovyClass.getAnnotation(SessionHandler.class);
-                            if (messageReceivedAnnotation != null) {
-                                GroovyObjectEx<SessionListener> listeners = (GroovyObjectEx<SessionListener>) getObject(null, groovyClass, runtimeContext);
-                                if (listeners != null) {
-                                    uriLogs.append("ChannelListener #" + groovyClass + "\r\n");
-                                    ((IMRuntimeContext)runtimeContext).setSessionListener(listeners);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    uriLogs.append("---------------------------------------");
-                    LoggerEx.info(TAG, uriLogs.toString());
-                }
-            }
-
-            @Override
-            public Class<? extends Annotation> handleAnnotationClass() {
-                return SessionHandler.class;
-            }
-
-        });
-        runtimeContext.addClassAnnotationHandler(new UserStatusAnnotationHandler());
-        runtimeContext.addClassAnnotationHandler(new RoomStatusAnnotationHandler());
+//        runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(RedisSubscribeHandler.class.getName()));
+//        runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(RedisListenerHandler.class.getName()));
+//        runtimeContext.addClassAnnotationHandler((AbstractClassAnnotationHandler) BeanFactory.getBean(RepairTaskHandler.class.getName()));
+//        runtimeContext.addClassAnnotationHandler(new ClassAnnotationHandler() {
+//            @Override
+//            public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
+//                if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
+//                    StringBuilder uriLogs = new StringBuilder(
+//                            "\r\n---------------------------------------\r\n");
+//
+//                    Set<String> keys = annotatedClassMap.keySet();
+//                    for (String key : keys) {
+//                        Class<?> groovyClass = annotatedClassMap.get(key);
+//                        if (groovyClass != null) {
+//                            SessionHandler messageReceivedAnnotation = groovyClass.getAnnotation(SessionHandler.class);
+//                            if (messageReceivedAnnotation != null) {
+//                                GroovyObjectEx<SessionListener> listeners = (GroovyObjectEx<SessionListener>) getObject(null, groovyClass, runtimeContext);
+//                                if (listeners != null) {
+//                                    uriLogs.append("ChannelListener #" + groovyClass + "\r\n");
+//                                    ((IMRuntimeContext)runtimeContext).setSessionListener(listeners);
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                    uriLogs.append("---------------------------------------");
+//                    LoggerEx.info(TAG, uriLogs.toString());
+//                }
+//            }
+//
+//            @Override
+//            public Class<? extends Annotation> handleAnnotationClass() {
+//                return SessionHandler.class;
+//            }
+//
+//        });
+//        runtimeContext.addClassAnnotationHandler(new UserStatusAnnotationHandler());
+//        runtimeContext.addClassAnnotationHandler(new RoomStatusAnnotationHandler());
 
         /**
          * field annotations

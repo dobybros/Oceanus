@@ -24,11 +24,6 @@
             <artifactId>oceanuscontainer</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>oceanus</groupId>
-            <artifactId>oceanusimcontainer</artifactId>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
