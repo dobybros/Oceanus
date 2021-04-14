@@ -8,9 +8,9 @@
 	<packaging>pom</packaging>
 	<name>Oceanus</name>
 	<modules>
-		<module>core</module>
-		<module>context</module>
-		<module>container</module>
+		<module>oceanuscore</module>
+		<module>oceanuscontext</module>
+		<module>oceanuscontainer</module>
 	</modules>
 
 	<properties>
@@ -169,12 +169,12 @@
 			<version>4.2.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka -->
+		<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka_2.13</artifactId>
 			<version>2.7.0</version>
-		</dependency>
+		</dependency>-->
 		<!--
                 <dependency>
                     <groupId>org.elasticsearch</groupId>
@@ -383,11 +383,11 @@
 			<artifactId>ehcache</artifactId>
 			<version>3.8.0</version>
 		</dependency>
-		<!--system monitor-->
+		<!-- https://mvnrepository.com/artifact/com.github.oshi/oshi-core -->
 		<dependency>
 			<groupId>com.github.oshi</groupId>
 			<artifactId>oshi-core</artifactId>
-			<version>3.12.2</version>
+			<version>5.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>
@@ -424,7 +424,12 @@
 			<version>1.4.9-2</version>
 			<classifier>${os.detected.classifier}</classifier>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/org.rocksdb/rocksdbjni -->
+		<dependency>
+			<groupId>org.rocksdb</groupId>
+			<artifactId>rocksdbjni</artifactId>
+			<version>6.11.4</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<extensions>
