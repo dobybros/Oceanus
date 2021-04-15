@@ -13,8 +13,8 @@ public @interface RedeployMain {
     /**
      * 加载顺序,数字越小优先级越高
      * 1-100给系统(例：db)相关的顺序
-     * 其他自定义>100
+     * 其他自定义
      * @return
      */
-    int order() default 100;
+    int order() default 1000;
 }
