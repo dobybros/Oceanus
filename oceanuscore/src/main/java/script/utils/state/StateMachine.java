@@ -166,7 +166,7 @@ public class StateMachine<K, T> {
             if(!gotoStates.contains(state)) {
                 IllegalStateException throwable = new IllegalStateException(name + ": Current state is " + currentState + ", can NOT go to state " + state + " obj " + t + " reason " + reason);
                 if(stateErrorOccurredExecutor != null) {
-                    LoggerEx.error(TAG, name + ": go to state " + state + ", can gotoStates not contains state, gotoStates: " + gotoStates);
+                    LoggerEx.error(TAG, name + ": currentState " + currentState + " go to state " + state + ", not defined in nextStates: " + gotoStates);
                     try {
                         stateErrorOccurredExecutor.onError(throwable, currentState, state, this.t, this);
                     } catch (Throwable t1) {

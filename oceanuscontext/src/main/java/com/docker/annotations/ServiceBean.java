@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Documented
 public @interface ServiceBean {
-	public String name();
+	String name();
 	//集群名字 ，不写为本机集群
-	public String lanId() default "";
+	String lanId() default "";
 }

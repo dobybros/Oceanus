@@ -1,5 +1,8 @@
 package core.discovery.node;
 
+import chat.errors.ChatErrorCodes;
+import chat.errors.CoreException;
+
 import java.util.List;
 
 /**
@@ -8,6 +11,23 @@ import java.util.List;
  * Currently only support IPv4
  */
 public class Node {
+    public Node() {}
+    public Node(Long serverNameCRC) {
+        this.serverNameCRC = serverNameCRC;
+    }
+
+    @Override
+    public String toString() {
+        return "Node: " +
+                "serverName " + serverName +
+                "serverNameCRC " + serverNameCRC +
+                "ips " + ips +
+                "port " + port +
+                "rpcPort " + port;
+    }
+
+    private Long serverNameCRC;
+
     /**
      * Node's unique server name, generated from @NetworkCommunicatorFactory#getServerName
      */
@@ -71,5 +91,26 @@ public class Node {
 
     public void setRpcPort(int rpcPort) {
         this.rpcPort = rpcPort;
+    }
+
+    public Long getServerNameCRC() {
+        return serverNameCRC;
+    }
+
+    public String getServerNameCRCString() {
+        return String.valueOf(serverNameCRC);
+    }
+
+    public void setServerNameCRC(Long serverNameCRC) {
+        this.serverNameCRC = serverNameCRC;
+    }
+
+    public String getRpcIP() {
+//        List<String> ips = server.getIps();
+        String ip = null;
+        if(ips != null) {
+            ip = ips.get(ips.size() - 1);
+        }
+        return ip;
     }
 }

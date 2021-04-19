@@ -103,7 +103,10 @@ public class ServiceNodesHandler {
 //            throw new IllegalStateException("Node not connect to Aquaman");
 
         FindServiceRequest findServiceRequest = new FindServiceRequest();
-        findServiceRequest.setServiceKey(serviceKey);
+//        findServiceRequest.setServiceKey(serviceKey);
+        findServiceRequest.setServices(Arrays.asList(serviceKey));
+//        findServiceRequest.setCheckNodesAvailability(checkNodesAvailability);
+        findServiceRequest.setOnlyNodeServerCRC(true);
         NetworkCommunicator networkCommunicator = serviceNodesManager.getNetworkCommunicator();
 
         if(networkCommunicator != null) {
@@ -115,7 +118,7 @@ public class ServiceNodesHandler {
                 String errorMessage = null;
                 if(findServiceResponse != null) {
                     int count = 0;
-                    serviceNodes = findServiceResponse.getNodeServers();
+                    serviceNodes = findServiceResponse.getServiceNodeResult().getServiceNodeCRCIds().get(serviceKey);
                     if(serviceNodes != null) {
                         for(Long node : serviceNodes) {
                             if(count > PREPARE_NODE_CONNECTIVITY_HANDLER_COUNT) {

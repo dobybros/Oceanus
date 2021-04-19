@@ -5,7 +5,7 @@ import chat.logs.LoggerEx;
 import com.docker.data.Lan;
 import com.docker.rpc.MethodRequest;
 import com.docker.rpc.async.AsyncRpcFuture;
-import com.docker.rpc.method.HttpInvocation;
+//import com.docker.rpc.method.HttpInvocation;
 import com.docker.rpc.method.RPCMethodInvocation;
 import com.docker.rpc.remote.MethodMapping;
 import script.core.runtime.groovy.object.MethodInvocation;
@@ -37,8 +37,9 @@ public class RemoteInvocationHandlerImpl implements RemoteInvocationHandler {
         if(methodRequest.getServiceStubManager() != null){
             if(methodRequest.getServiceStubManager().getLanType() == null || methodRequest.getServiceStubManager().getLanType().equals(Lan.TYPE_RPC)){
                 methodInvocation = new RPCMethodInvocation(methodRequest, methodMapping, methodInterceptors, remoteServerHandler, methodKey);
-            }else {
-                methodInvocation = new HttpInvocation(methodRequest, methodMapping, methodInterceptors, remoteServerHandler, methodKey);
+            } else {
+                //TODO Aplomb should not enter here. No longer use http for cross lan invocation.
+//                methodInvocation = new HttpInvocation(methodRequest, methodMapping, methodInterceptors, remoteServerHandler, methodKey);
             }
             return methodInvocation.proceed();
         }

@@ -11,9 +11,9 @@ public final class DiscoveryRuntime extends CoreRuntime {
     private static DiscoveryManager discoveryManager;
 
     public static NodeRegistrationHandler getNodeRegistrationHandler() {
-        return getNodeRegistrationHandler(-1);
+        return nodeRegistrationHandler;
     }
-    public static NodeRegistrationHandler getNodeRegistrationHandler(int publicUdpPort) {
+    public static NodeRegistrationHandler getAndInitNodeRegistrationHandler(int publicUdpPort) {
         if(nodeRegistrationHandler == null) {
             synchronized (DiscoveryRuntime.class) {
                 if(nodeRegistrationHandler == null) {

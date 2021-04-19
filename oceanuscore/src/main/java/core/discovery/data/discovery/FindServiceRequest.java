@@ -3,56 +3,35 @@ package core.discovery.data.discovery;
 import core.log.LoggerHelper;
 import core.net.data.RequestTransport;
 
+import java.util.Collection;
+import java.util.List;
+
 public class FindServiceRequest extends RequestTransport<FindServiceResponse> {
-    private String owner;
-    private String project;
-    private String service;
-    private Integer version;
+    private boolean onlyNodeServerCRC;
+    private Collection<String> services;
+    private Collection<Long> checkNodesAvailability;
 
-    public void setServiceKey(String serviceKey) {
-        String[] parts = serviceKey.split("_");
-        if(parts.length == 3) {
-            owner = parts[0];
-            project = parts[1];
-            service = parts[2];
-        } else {
-            LoggerHelper.logger.warn("Illegal service key " + serviceKey);
-        }
+    public boolean isOnlyNodeServerCRC() {
+        return onlyNodeServerCRC;
     }
 
-    public String generateServiceKey() {
-        return owner + "_" + project + "_" + service;
+    public void setOnlyNodeServerCRC(boolean onlyNodeServerCRC) {
+        this.onlyNodeServerCRC = onlyNodeServerCRC;
     }
 
-    public String getService() {
-        return service;
+    public Collection<String> getServices() {
+        return services;
     }
 
-    public void setService(String service) {
-        this.service = service;
+    public void setServices(Collection<String> services) {
+        this.services = services;
     }
 
-    public Integer getVersion() {
-        return version;
+    public Collection<Long> getCheckNodesAvailability() {
+        return checkNodesAvailability;
     }
 
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
+    public void setCheckNodesAvailability(Collection<Long> checkNodesAvailability) {
+        this.checkNodesAvailability = checkNodesAvailability;
     }
 }

@@ -6,10 +6,12 @@ import com.docker.context.RPCCaller;
 import com.docker.context.ServiceGenerator;
 import com.docker.context.config.ServerConfig;
 import com.docker.oceansbean.BeanFactory;
+import com.docker.rpc.remote.stub.RemoteServersManager;
 import com.docker.script.BaseRuntimeContext;
 import com.docker.storage.adapters.DockerStatusService;
 import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -27,7 +29,7 @@ public class ServiceContext implements Context {
 
     private ConcurrentHashMap<String, RPCCaller> lanRpcCallCacheMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, ServiceGenerator> lanServiceGeneratorCacheMap = new ConcurrentHashMap<>();
-    private DockerStatusService dockerStatusService = (DockerStatusService) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
+//    private DockerStatusService dockerStatusService = (DockerStatusService) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
 
     public ServiceContext(BaseRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
@@ -149,6 +151,23 @@ public class ServiceContext implements Context {
 
     @Override
     public List<String> getServersByService(String service) throws CoreException {
-        return dockerStatusService.getServersByService(service);
+//        return dockerStatusService.getServersByService(service);
+        RemoteServersManager remoteServersManager = RemoteServersManager.getInstance();
+        RemoteServersManager.ServiceNodesMonitor serviceNodesMonitor = RemoteServersManager.getInstance().getServers(service);
+        if(serviceNodesMonitor == null) {
+            remoteServersManager.initService(service);
+            serviceNodesMonitor = RemoteServersManager.getInstance().getServers(service);
+        }
+        if(serviceNodesMonitor != null) {
+            List<Long> serverCRCIds = serviceNodesMonitor.getNodeServerCRCIds();
+            if(serverCRCIds != null) {
+                List<String> servers = new ArrayList<>();
+                for(Long serverCRCId : serverCRCIds) {
+                    servers.add(String.valueOf(serverCRCId));
+                }
+                return servers;
+            }
+        }
+        return null;
     }
 }

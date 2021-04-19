@@ -11,12 +11,12 @@ import java.util.List;
 
 public abstract class CoreRuntime {
     public static final long FIND_SERVICE_PING_TIMEOUT = 10000L;
-//    public static final long CONTENT_PACKET_TIMEOUT = 10000L;
-//    public static final long PERIOD_CLEAN_PING_TIMEOUT = 10000L;
-//    public static final long SEND_PACKET_TIMEOUT = 10000L;
-    public static final long CONTENT_PACKET_TIMEOUT = 1000000000L;
-    public static final long PERIOD_CLEAN_PING_TIMEOUT = 100000000L;
-    public static final long SEND_PACKET_TIMEOUT = 100000000L;
+    public static final long CONTENT_PACKET_TIMEOUT = 10000L;
+    public static final long PERIOD_CLEAN_PING_TIMEOUT = 10000L;
+    public static final long SEND_PACKET_TIMEOUT = 10000L;
+//    public static final long CONTENT_PACKET_TIMEOUT = 1000000000L;
+//    public static final long PERIOD_CLEAN_PING_TIMEOUT = 100000000L;
+//    public static final long SEND_PACKET_TIMEOUT = 100000000L;
     private static int cpuCores;
     private static InternalTools internalTools;
     private static HardwareAbstractionLayer hardwareAbstractionLayer;

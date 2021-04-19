@@ -7,7 +7,9 @@ import com.docker.rpc.RPCClientAdapter;
 import com.docker.rpc.RPCClientAdapterMap;
 import com.docker.rpc.RPCRequest;
 import com.docker.rpc.remote.stub.RemoteServers;
+import com.docker.rpc.remote.stub.RemoteServersManager;
 import com.docker.rpc.remote.stub.RpcCacheManager;
+import core.discovery.node.Node;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ public class AsyncRpcFuture {
     private List<AsyncCallbackHandler> asyncCallbackHandlers;
     private Integer timeout; //s
     private TimerTaskEx timerTaskEx;
-    private List<RemoteServers.Server> remoteServers = new ArrayList<>();
+    private List<Long> remoteServers = new ArrayList<>();
     private RPCClientAdapterMap rpcClientAdapterMap;
     private RPCRequest rpcRequest;
     private Random random = new Random();
@@ -94,11 +96,11 @@ public class AsyncRpcFuture {
         this.timeout = timeout;
     }
 
-    public List<RemoteServers.Server> getRemoteServers() {
+    public List<Long> getRemoteServers() {
         return remoteServers;
     }
 
-    public void setRemoteServers(String serverName, List<RemoteServers.Server> remoteServers, RPCClientAdapterMap rpcClientAdapterMap, RPCRequest rpcRequest) {
+    public void setRemoteServers(String serverName, List<Long> remoteServers, RPCClientAdapterMap rpcClientAdapterMap, RPCRequest rpcRequest) {
         this.remoteServers = remoteServers;
         this.rpcRequest = rpcRequest;
         this.rpcClientAdapterMap = rpcClientAdapterMap;
@@ -110,27 +112,30 @@ public class AsyncRpcFuture {
         boolean hasServer = false;
         if (count < maxCount) {
             this.failedServers.add(fromServerName);
-            for (RemoteServers.Server server : this.remoteServers) {
-                if(!this.failedServers.contains(server.getServer())){
+            for (Long serverCRC : this.remoteServers) {
+                Node server = RemoteServersManager.getInstance().getNodeByServerCRC(serverCRC);
+                if(server == null)
+                    continue;
+                if(!this.failedServers.contains(server.getServerName())){
                     hasServer = true;
                     String ip = null;
                     Integer port = null;
-                    if (rpcClientAdapterMap.isEnableSsl()) {
-                        ip = server.getPublicDomain();
-                        port = server.getSslRpcPort();
-                    } else {
-                        ip = server.getIp();
-                        port = server.getRpcPort();
-                    }
+                    ip = server.getRpcIP();
+                    port = server.getRpcPort();
+//                    if (rpcClientAdapterMap.isEnableSsl()) {
+//                    } else {
+//                        ip = server.getIp();
+//                        port = server.getRpcPort();
+//                    }
                     if (ip != null && port != null) {
-                        RPCClientAdapter clientAdapter = rpcClientAdapterMap.registerServer(ip, port, server.getServer());
+                        RPCClientAdapter clientAdapter = rpcClientAdapterMap.registerServer(ip, port, server.getServerNameCRCString());
                         if (clientAdapter != null) {
                             try {
                                 clientAdapter.callAsync(rpcRequest);
                                 count++;
                             } catch (CoreException e) {
                                 count++;
-                                callNextServer(server.getServer());
+                                callNextServer(server.getServerName());
                             }
                         }
                     }

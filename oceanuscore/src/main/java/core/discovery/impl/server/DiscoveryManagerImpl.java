@@ -47,7 +47,7 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
     @Override
     public Map<String, Object> memory() {
         Map<String, Object> memoryMap = new HashMap<>();
-        memoryMap.put("networkCommunicator", networkCommunicator);
+        memoryMap.put("networkCommunicator", networkCommunicator.memory());
         memoryMap.put("nodeMap", nodeMap);
         memoryMap.put("tentaclePingTimeMap", tentaclePingTimeMap);
         memoryMap.put("serviceMap", serviceMap);
@@ -135,8 +135,7 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
                                 /**
                                  * Remove node information after 1 hour if no ping received. Means the node is dead totally.
                                  */
-                                tentaclePingTimeMap.remove(key);
-                                nodeMap.remove(key);
+                                nodeDown(key);
                             }
                         }
                     }, CoreRuntime.PERIOD_CLEAN_PING_TIMEOUT, CoreRuntime.PERIOD_CLEAN_PING_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -165,6 +164,16 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    void nodeDown(Long key) {
+        tentaclePingTimeMap.remove(key);
+        nodeMap.remove(key);
+
+        Collection<ConcurrentSkipListSet<Long>> values = serviceNodesMap.values();
+        for(ConcurrentSkipListSet<Long> value : values) {
+            value.remove(key);
+        }
     }
 
     @Override

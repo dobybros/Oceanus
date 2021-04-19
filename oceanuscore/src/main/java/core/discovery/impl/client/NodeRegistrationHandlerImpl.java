@@ -1,5 +1,6 @@
 package core.discovery.impl.client;
 
+import chat.logs.LoggerEx;
 import core.common.CoreRuntime;
 import core.discovery.NodeRegistrationHandler;
 import core.discovery.data.FailedResponse;
@@ -7,6 +8,7 @@ import core.discovery.data.discovery.*;
 import core.discovery.errors.DiscoveryErrorCodes;
 import core.discovery.node.Node;
 import core.discovery.node.Service;
+import core.discovery.node.ServiceNodeResult;
 import core.log.LoggerHelper;
 import core.net.NetRuntime;
 import core.net.NetworkCommunicator;
@@ -19,16 +21,17 @@ import script.utils.state.StateMachine;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
 //    private NetworkCommunicatorFactory networkCommunicatorFactory = NetRuntime.getNetworkCommunicatorFactory();
+    private static final String TAG = NodeRegistrationHandlerImpl.class.getSimpleName();
 
     private int publicUdpPort;
     private NetworkCommunicator networkCommunicator;
@@ -42,13 +45,32 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
 
     private ConcurrentHashMap<Long, Long> aquamanPingTimeMap = new ConcurrentHashMap<>();
     private CompletableFuture<NodeRegistrationHandler> startNodeFuture;
-    private final int MAX_RETRIES_WHEN_START = 1, MAX_RETRIES_AFTER_CONNECTED = Integer.MAX_VALUE;
+    private final int MAX_RETRIES_WHEN_START = 10, MAX_RETRIES_AFTER_CONNECTED = Integer.MAX_VALUE;
 
     private int maxRetries = MAX_RETRIES_WHEN_START;
     private int retryTimes = 0;
 
+    /**
+     * RUDP适合DiscoveryService进行通信， 节点和节点之间仍然时候RMI通信， 确保稳定性。
+     *
+     * @Deprecated
+     */
     private ServiceNodesManager serviceNodesManager;
     private int rpcPort;
+    private ConcurrentHashMap<String, Service> serviceMap = new ConcurrentHashMap<>();
+
+    @Override
+    public Map<String, Object> memory() {
+        Map<String, Object> memoryMap = new HashMap<>();
+        memoryMap.put("discoveryHostManager", discoveryHostManager.memory());
+        memoryMap.put("node", node);
+        memoryMap.put("aquamanPingTimeMap", aquamanPingTimeMap);
+        memoryMap.put("serviceMap", serviceMap);
+        memoryMap.put("networkCommunicator", networkCommunicator.memory());
+        memoryMap.put("pingTask", pingTask);
+        memoryMap.put("errorPacket", errorPacket);
+        return memoryMap;
+    }
 
     public void init(int publicUdpPort) {
         retryTimes = 0;
@@ -113,6 +135,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
             }
         }
         node.setServerName(networkCommunicator.getServerName());
+        node.setServerNameCRC(networkCommunicator.getServerNameCRC());
 
         List<NetworkIF> networkIFS = CoreRuntime.getNetworkInterfaces();
         if(networkIFS == null || networkIFS.isEmpty()) {
@@ -194,7 +217,9 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
                     LoggerHelper.logger.error("Ping aquamanAddress " + discoveryHostManager.getUsingAddress() + " failed, " + e.getMessage());
                 }
             } else {
-                LoggerHelper.logger.warn("Ping will be ignored as current state is not connected, expected " + CONNECTIVITY_STATE_CONNECTED + " actual " + connectivityState.getCurrentState());
+                LoggerHelper.logger.warn("Ping will be canceled as current state is not connected, expected " + CONNECTIVITY_STATE_CONNECTED + " actual " + connectivityState.getCurrentState());
+                pingTask.cancel(true);
+                pingTask = null;
             }
         },0, 3000L, TimeUnit.MILLISECONDS);
 
@@ -202,7 +227,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
             Long pingTime = aquamanPingTimeMap.get(serverIdCRC);
             long time = System.currentTimeMillis();
             if(pingTime == null || time > pingTime) {
-                aquamanPingTimeMap.put(serverIdCRC, pingTime);
+                aquamanPingTimeMap.put(serverIdCRC, time);
             }
         });
         networkCommunicator.addContentPacketListener(LatencyCheckRequest.class, (contentPacket, serverIdCRC, address) -> {
@@ -230,6 +255,17 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         }
         retryTimes = 0;
         maxRetries = MAX_RETRIES_AFTER_CONNECTED;
+
+        Collection<Service> services = serviceMap.values();
+        for(Service service : services) {
+            registerService(service).thenAccept(serviceRuntime -> {
+                LoggerEx.info(TAG, "Register service " + service.generateServiceKey() + " after node connected");
+            }).exceptionally(throwable -> {
+                throwable.printStackTrace();
+                LoggerEx.error(TAG, "Register service " + service.generateServiceKey() + " failed after node connected, " + throwable.getMessage());
+                return null;
+            });
+        }
     }
     private void handleLeaveConnected(NodeRegistrationHandler nodeRegistrationHandler, StateMachine<Integer, NodeRegistrationHandler> stateMachine) {
         aquamanPingTimeMap.clear();
@@ -248,7 +284,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         }
         retryTimes++;
         long waitTime = (errorPacket != null && errorPacket.getWaitSeconds() != null && errorPacket.getWaitSeconds() > 0) ? errorPacket.getWaitSeconds() * 1000 : 5000L;
-        LoggerHelper.logger.info("Will wait " + waitTime / 1000 + " to reconnect. retryTimes " + retryTimes + " maxRetries " + maxRetries);
+        LoggerHelper.logger.info("Will wait " + waitTime / 1000 + " seconds to reconnect. retryTimes " + retryTimes + " maxRetries " + maxRetries);
         try {
             Thread.sleep(waitTime);
         } catch (InterruptedException e) {
@@ -294,6 +330,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         if(connectivityState.getCurrentState() != CONNECTIVITY_STATE_CONNECTED)
             throw new IllegalStateException("Not connected while register service " + service);
 
+        serviceMap.put(service.generateServiceKey(), service);
         CompletableFuture<ServiceRuntime> future = new CompletableFuture<>();
         ServiceRegistrationRequest serviceRegistrationRequest = new ServiceRegistrationRequest();
         serviceRegistrationRequest.setService(service);
@@ -322,6 +359,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
 
     @Override
     public NodeRegistrationHandler unregisterService(String service) {
+        serviceMap.remove(service);
         return this;
     }
 
@@ -330,22 +368,27 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         return serviceNodesManager.sendContentPacket(packet, responseClass, serviceKey);
     }
 
-    private CompletableFuture<List<Long>> getNodesWithPublicService(String owner, String project, String service, Integer version) throws IOException {
-        if(connectivityState.getCurrentState() != CONNECTIVITY_STATE_CONNECTED)
-            throw new IllegalStateException("Node not connect to Aquaman");
+    @Override
+    public CompletableFuture<ServiceNodeResult> getNodesWithServices(Collection<String> services, Collection<Long> checkNodesAvailability, boolean onlyNodeServerCRC) {
+        if(connectivityState.getCurrentState() != CONNECTIVITY_STATE_CONNECTED) {
+            return CompletableFuture.failedFuture(new IllegalStateException("Node not connect to discovery while getNodesWithPublicService services " + services));
+        }
+//            throw new IllegalStateException("Node not connect to Aquaman");
 
-        CompletableFuture<List<Long>> future = new CompletableFuture<>();
+        CompletableFuture<ServiceNodeResult> future = new CompletableFuture<>();
         FindServiceRequest findServiceRequest = new FindServiceRequest();
-        findServiceRequest.setOwner(owner);
-        findServiceRequest.setProject(project);
-        findServiceRequest.setService(service);
-        findServiceRequest.setVersion(version);
+//        findServiceRequest.setOwner(owner);
+//        findServiceRequest.setProject(project);
+        findServiceRequest.setServices(services);
+        findServiceRequest.setCheckNodesAvailability(checkNodesAvailability);
+        findServiceRequest.setOnlyNodeServerCRC(onlyNodeServerCRC);
+//        findServiceRequest.setVersion(version);
         discoveryHostManager.sendRequestTransport(networkCommunicator, ContentPacket.buildWithContent(findServiceRequest), FindServiceResponse.class, (response, failedResponse, serverIdCRC, address) -> {
             FindServiceResponse findServiceResponse = response.getContent();
             boolean completed = false;
             if(findServiceResponse != null) {
-                List<Long> nodes = findServiceResponse.getNodeServers();
-                future.complete(nodes);
+                ServiceNodeResult result = findServiceResponse.getServiceNodeResult();
+                future.complete(result);
                 completed = true;
             } else if(failedResponse != null) {
                 FailedResponse theFailedResponse = failedResponse.getContent();
@@ -362,7 +405,8 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         return future;
     }
 
-    private CompletableFuture<Node> getNodeByServerCRCId(Long serverCRCId) throws IOException {
+    @Override
+    public CompletableFuture<Node> getNodeByServerCRCId(Long serverCRCId) {
         if(connectivityState.getCurrentState() != CONNECTIVITY_STATE_CONNECTED)
             throw new IllegalStateException("Node not connect to Aquaman");
 

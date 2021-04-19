@@ -19,7 +19,7 @@ public class BaseConfiguration {
     private static String oceanusConfigPath = "oceanus.properties";
     private static int httpThreadPoolSize = 500;
 
-    private String server = NetRuntime.getServerName();
+    private String server = String.valueOf(NetRuntime.getServerNameCRC());
     private String mongoHost;
     private String mongoConnectionsPerHost;
     private String dbName;

@@ -18,6 +18,8 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 
 /**
@@ -59,6 +61,21 @@ public abstract class NetworkCommunicator {
     protected ConcurrentHashMap<Long, ConcurrentHashMap<Long, CopyOnWriteArrayList<ContentPacketListener>>> serviceContentPacketListeners = new ConcurrentHashMap<>();
 
     protected InternalTools internalTools;
+
+    public Map<String, Object> memory() {
+        Map<String, Object> memoryMap = new HashMap<>();
+        memoryMap.put("closedListeners", closedListeners);
+        memoryMap.put("connectedListeners", connectedListeners);
+        memoryMap.put("allPacketListeners", allPacketListeners);
+        memoryMap.put("pingListeners", pingListeners);
+        memoryMap.put("typePacketListeners", typePacketListeners);
+        memoryMap.put("classContentPacketListeners", classContentPacketListeners);
+        memoryMap.put("serviceContentPacketListeners", serviceContentPacketListeners);
+        memoryMap.put("connectStateMachine", connectStateMachine);
+        memoryMap.put("serverName", serverName);
+        memoryMap.put("serverNameCRC", serverNameCRC);
+        return memoryMap;
+    }
 
     public NetworkCommunicator() {
 
@@ -796,6 +813,10 @@ public abstract class NetworkCommunicator {
     }
     public String getServerName() {
         return serverName;
+    }
+
+    public Long getServerNameCRC() {
+        return serverNameCRC;
     }
 
     public int getConnectStateMachine() {

@@ -1,17 +1,19 @@
 package core.discovery.data.discovery;
 
+import core.discovery.node.Node;
+import core.discovery.node.ServiceNodeResult;
 import core.net.data.ResponseTransport;
 
 import java.util.List;
 
 public class FindServiceResponse extends ResponseTransport {
-    private List<Long> nodeServers;
+    private ServiceNodeResult serviceNodeResult;
 
-    public List<Long> getNodeServers() {
-        return nodeServers;
+    public ServiceNodeResult getServiceNodeResult() {
+        return serviceNodeResult;
     }
 
-    public void setNodeServers(List<Long> nodeServers) {
-        this.nodeServers = nodeServers;
+    public void setServiceNodeResult(ServiceNodeResult serviceNodeResult) {
+        this.serviceNodeResult = serviceNodeResult;
     }
 }

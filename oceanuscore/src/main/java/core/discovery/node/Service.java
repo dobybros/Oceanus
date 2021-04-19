@@ -1,5 +1,7 @@
 package core.discovery.node;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.List;
 
 /**
@@ -16,29 +18,34 @@ public class Service {
     //EXTERNAL >= 100, 10 <= EMBEDDED < 100
     public static final int TYPE_EXTERNAL_GO = 100;
     private String service; //Service id
+    private String serviceSuffix; //${service}_${serviceSuffix} combine as final service id
     private Integer version;
     private Integer minVersion;
     private Long uploadTime;
     private Integer type;
 //    private List<ServiceAnnotation> serviceAnnotationList;
-    private Long longitude, latitude;
-    private String country;
+//    private Long longitude, latitude;
+//    private String country;
 
-    private String owner; //Belongs to which whom, use owner's CA to register.
-    private String project; //Belongs to which project
+//    private String owner; //Belongs to which whom, use owner's CA to register.
+//    private String project; //Belongs to which project
 
     public String toString() {
         return "Service: service " + service + "; " +
                 "version " + version + "; " +
                 "minVersion " + minVersion + "; " +
                 "uploadTime " + uploadTime + "; " +
-                "type " + type  + "; " +
+                "serviceSuffix " + serviceSuffix + "; " +
+                "type " + type  + "; " /*+
                 "owner " + owner + "; " +
-                "project " + project + "; ";
+                "project " + project + "; "*/;
     }
 
     public String generateServiceKey() {
-        return owner + "_" + project + "_" + service;
+        if(StringUtils.isBlank(serviceSuffix)) {
+            return service;
+        }
+        return service + "_" + serviceSuffix;
     }
 
     public String getService() {
@@ -57,14 +64,6 @@ public class Service {
         this.version = version;
     }
 
-    public Integer getMinVersion() {
-        return minVersion;
-    }
-
-    public void setMinVersion(Integer minVersion) {
-        this.minVersion = minVersion;
-    }
-
     public Long getUploadTime() {
         return uploadTime;
     }
@@ -81,6 +80,13 @@ public class Service {
         this.type = type;
     }
 
+    public Integer getMinVersion() {
+        return minVersion;
+    }
+
+    public void setMinVersion(Integer minVersion) {
+        this.minVersion = minVersion;
+    }
 //    public List<ServiceAnnotation> getServiceAnnotationList() {
 //        return serviceAnnotationList;
 //    }
@@ -89,19 +95,28 @@ public class Service {
 //        this.serviceAnnotationList = serviceAnnotationList;
 //    }
 
-    public String getOwner() {
-        return owner;
+//    public String getOwner() {
+//        return owner;
+//    }
+//
+//    public void setOwner(String owner) {
+//        this.owner = owner;
+//    }
+//
+//    public String getProject() {
+//        return project;
+//    }
+//
+//    public void setProject(String project) {
+//        this.project = project;
+//    }
+
+
+    public String getServiceSuffix() {
+        return serviceSuffix;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
+    public void setServiceSuffix(String serviceSuffix) {
+        this.serviceSuffix = serviceSuffix;
     }
 }

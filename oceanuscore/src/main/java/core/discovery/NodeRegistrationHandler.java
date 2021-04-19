@@ -4,6 +4,7 @@ import core.common.InternalTools;
 import core.discovery.impl.client.ServiceRuntime;
 import core.discovery.node.Node;
 import core.discovery.node.Service;
+import core.discovery.node.ServiceNodeResult;
 import core.net.NetworkCommunicator;
 import core.net.adapters.data.ContentPacket;
 import core.net.data.RequestTransport;
@@ -11,7 +12,9 @@ import core.net.data.ResponseTransport;
 import script.utils.state.StateListener;
 import script.utils.state.StateMachine;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -56,6 +59,8 @@ public abstract class NodeRegistrationHandler {
     public abstract void stopNode();
 
     public abstract CompletableFuture<ServiceRuntime> registerService(Service service);
+    public abstract CompletableFuture<ServiceNodeResult> getNodesWithServices(Collection<String> services, Collection<Long> checkNodesAvailability, boolean onlyNodeServerCRC);
+    public abstract CompletableFuture<Node> getNodeByServerCRCId(Long serverCRCId);
     /**
      * Unregister service from Starfish network.
      *
@@ -107,5 +112,9 @@ public abstract class NodeRegistrationHandler {
 
     public void removeStateListener(StateListener<Integer, NodeRegistrationHandler> stateListener) {
         if(connectivityState != null ) connectivityState.removeStateListener(stateListener);
+    }
+
+    public Map<String, Object> memory() {
+        return null;
     }
 }

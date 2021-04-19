@@ -12,7 +12,6 @@ import com.docker.storage.cache.CacheStorageFactory;
 import com.docker.storage.cache.CacheStorageMethod;
 import com.docker.storage.mongodb.MongoClientFactory;
 import com.docker.tasks.Task;
-import core.common.ErrorCodes;
 import core.discovery.DiscoveryRuntime;
 import core.discovery.NodeRegistrationHandler;
 import core.discovery.errors.DiscoveryErrorCodes;
@@ -26,11 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class OnlineServer {
     private static final String TAG = OnlineServer.class.getSimpleName();
@@ -89,8 +85,9 @@ public class OnlineServer {
                 if(nodeRegistrationHandler == null) {
                     pendingServiceMap.put(service, future);
                     if(nodeRegisterStatus.compareAndSet(NODE_STATUS_NONE, NODE_STATUS_REGISTERING)) {
-                        DiscoveryRuntime.getNodeRegistrationHandler(-1).startNode(baseConfiguration.getDiscoveryHost(), baseConfiguration.getRpcPort()).
+                        DiscoveryRuntime.getAndInitNodeRegistrationHandler(-1).startNode(baseConfiguration.getDiscoveryHost(), baseConfiguration.getRpcPort()).
                                 thenAccept(consumer).exceptionally(throwable -> {
+                            throwable.printStackTrace();
                             LoggerEx.error(TAG, "Register node to "  + baseConfiguration.getDiscoveryHost() + " failed, " + throwable);
                             System.exit(0);
                             return null;

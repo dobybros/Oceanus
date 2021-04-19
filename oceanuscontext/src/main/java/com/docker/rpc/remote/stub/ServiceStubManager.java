@@ -40,6 +40,9 @@ public class ServiceStubManager {
     private Boolean usePublicDomain = false;
     private String fromService;
     private Integer lanType;
+
+    private ConcurrentHashMap<String, RemoteServerHandler> remoteServerHandlerMap = new ConcurrentHashMap<>();
+
     public ServiceStubManager(){
 
     }
@@ -59,14 +62,14 @@ public class ServiceStubManager {
             if (this.host == null) {
                 throw new NullPointerException("Remote host is null, ServiceStubManager initialize failed!");
             }
-            if (!this.host.startsWith("http")) {
-                this.host = "http://" + this.host;
-            }
-            RemoteServersManager.getInstance().addCrossHost(this.host);
+//            if (!this.host.startsWith("http")) {
+//                this.host = "http://" + this.host;
+//            }
+//            RemoteServersManager.getInstance().addCrossHost(this.host);
         }
-        synchronized (ServiceStubManager.class){
-            handle();
-        }
+//        synchronized (ServiceStubManager.class){
+//            handle();
+//        }
     }
     public void clearCache() {
         methodMap.clear();
@@ -273,8 +276,8 @@ public class ServiceStubManager {
     public void setLanType(Integer lanType) {
         this.lanType = lanType;
     }
-    private void handle(){
-        if(!RemoteServersManager.getInstance().isInit()){
+//    private void handle(){
+//        if(!RemoteServersManager.getInstance().isInit()){
 //            ServiceVersionServiceImpl serviceVersionService = (ServiceVersionServiceImpl) BeanFactory.getBean(ServiceVersionServiceImpl.class.getName());
 //            DockerStatusServiceImpl dockerStatusService = (DockerStatusServiceImpl) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
 //            if(serviceVersionService == null || dockerStatusService == null){
@@ -323,6 +326,6 @@ public class ServiceStubManager {
 //            }else {
 //                LoggerEx.error(TAG, "serviceVersionService or dockerStatusService is null, cant init RemoteServersManager");
 //            }
-        }
-    }
+//        }
+//    }
 }

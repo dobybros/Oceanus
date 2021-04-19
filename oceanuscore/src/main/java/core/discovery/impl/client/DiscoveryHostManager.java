@@ -13,7 +13,9 @@ import core.utils.ValidateUtils;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,6 +28,13 @@ public class DiscoveryHostManager {
 
     public List<InetSocketAddress> getDiscoveryAddresses() {
         return discoveryAddresses;
+    }
+
+    public Map<String, Object> memory() {
+        Map<String, Object> memoryMap = new HashMap<>();
+        memoryMap.put("discoveryAddresses", discoveryAddresses);
+        memoryMap.put("usingAddress", usingAddress);
+        return memoryMap;
     }
 
     public DiscoveryHostManager(String hosts) {
@@ -91,9 +100,17 @@ public class DiscoveryHostManager {
         }
         final RandomDraw randomDraw = new RandomDraw(copied.size());
         InetSocketAddress address;
+        InetSocketAddress usingAddressTemp = usingAddress;
         do {
-            int index = randomDraw.next();
-            address = copied.get(index);
+            if(usingAddressTemp != null) {
+                address = usingAddressTemp;
+                usingAddressTemp = null;
+            } else {
+                int index = randomDraw.next();
+                if(index == -1)
+                    break;
+                address = copied.get(index);
+            }
             if(address != null) {
                 NetworkCommunicator.ContentPacketResponseListener<R> listener = new NetworkCommunicator.ContentPacketResponseListener<>() {
                     @Override

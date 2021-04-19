@@ -7,28 +7,17 @@ import chat.config.BaseConfiguration;
 import chat.config.Configuration;
 import com.container.runtime.DefaultRuntimeContext;
 import com.container.runtime.executor.serviceversion.LocalServiceVersionsHandler;
-import com.docker.oceansbean.BeanFactory;
-import com.docker.script.ClassAnnotationHandlerEx;
 import com.docker.script.executor.RuntimeExecutor;
 import com.docker.script.executor.RuntimeExecutorListener;
 import com.docker.script.executor.prepare.PrepareAndStartServiceHandler;
 import com.container.runtime.executor.prepare.DefaultPrepareAndStartServiceHandler;
 import com.docker.script.executor.serviceversion.ServiceVersionsHandler;
-import com.container.runtime.executor.serviceversion.DefaultServiceVersionsHandler;
 import com.docker.server.OnlineServer;
-import com.docker.storage.adapters.DockerStatusService;
-import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
-import core.discovery.errors.DiscoveryErrorCodes;
-import core.discovery.impl.client.ServiceRuntime;
 import core.discovery.node.Service;
-import script.core.runtime.handler.AbstractClassAnnotationHandler;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Created by lick on 2020/12/17.
@@ -39,7 +28,7 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
     private ServiceVersionsHandler serviceVersionsHandler;
     private PrepareAndStartServiceHandler prepareServiceHandler;
 
-    private ConcurrentHashMap<String, Service> serviceMap = new ConcurrentHashMap<>();
+//    private ConcurrentHashMap<String, Service> serviceMap = new ConcurrentHashMap<>();
 
     public DefaultRuntimeExecutor(){
         this.serviceVersionsHandler = new LocalServiceVersionsHandler();//new DefaultServiceVersionsHandler();
@@ -102,16 +91,30 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
         }
 
         Service service = new Service();
-        String owner = configuration.getConfig().getProperty("self.owner");
-        String project = configuration.getConfig().getProperty("self.project");
-        if(owner == null || project == null) {
-            throw new CoreException(DiscoveryErrorCodes.ERROR_OWNER_PROJECT_MISSING, "Owner or project is missing in config.properties, please check \"self.owner\" and \"self.project\"");
-        }
-        service.setOwner(owner);
-        service.setProject(project);
+//        String owner = configuration.getConfig().getProperty("self.owner");
+//        String project = configuration.getConfig().getProperty("self.project");
+//        if(owner == null || project == null) {
+//            throw new CoreException(DiscoveryErrorCodes.ERROR_OWNER_PROJECT_MISSING, "Owner or project is missing in config.properties, please check \"self.owner\" and \"self.project\"");
+//        }
+//        service.setOwner(owner);
+//        service.setProject(project);
         service.setService(configuration.getService());
         service.setVersion(configuration.getVersion());
         service.setUploadTime(configuration.getDeployVersion());
+        String minVersionStr = configuration.getConfig().getProperty("oceanus.min.version", "1");
+        Integer minVersion = 1;
+        try {
+            minVersion = Integer.parseInt(minVersionStr);
+        } catch(Throwable ignored){}
+        service.setMinVersion(minVersion);
+
+        String serviceSuffix = configuration.getConfig().getProperty("oceanus.service.suffix");
+        if(serviceSuffix != null && serviceSuffix.contains("_")) {
+            serviceSuffix = serviceSuffix.replace("_", "");
+            LoggerEx.warn(TAG, "Service suffix don't allow \"_\" in it, will remove it by default, changed to suffix " + serviceSuffix);
+        }
+        service.setServiceSuffix(serviceSuffix);
+
 //        if(configuration.getConfig().get(Service.FIELD_MAXUSERNUMBER) != null){
 //            service.setMaxUserNumber(Long.parseLong((String) configuration.getConfig().get(Service.FIELD_MAXUSERNUMBER)));
 //        }
@@ -121,7 +124,7 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
 //                ((ClassAnnotationHandlerEx) handler).configService(service);
 //        }
 //        service.setType(Service.FIELD_SERVER_TYPE_NORMAL);
-        serviceMap.put(configuration.getService(), service);
+//        serviceMap.put(configuration.getService(), service);
 
         OnlineServer.getInstance().registerService(service).thenAccept(serviceRuntime -> {
             LoggerEx.info(TAG, "Service " + service.generateServiceKey() + " registered!");

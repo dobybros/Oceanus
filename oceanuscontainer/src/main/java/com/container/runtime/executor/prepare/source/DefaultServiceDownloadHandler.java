@@ -87,10 +87,14 @@ public class DefaultServiceDownloadHandler implements com.docker.script.executor
     }
 
     private String getPath(Configuration configuration){
-        if(!configuration.getLanguageType().equals(Configuration.LANGEUAGE_GROOVY)){
-            return configuration.getBaseConfiguration().getRemotePath() + configuration.getServiceVersion() + "#" + configuration.getLanguageType() + File.separator + configuration.getFileName();
+//        if(!configuration.getLanguageType().equals(Configuration.LANGEUAGE_GROOVY)){
+//            return configuration.getBaseConfiguration().getRemotePath() + configuration.getServiceVersion() + "#" + configuration.getLanguageType() + File.separator + configuration.getFileName();
+//        }
+        String remotePath = configuration.getBaseConfiguration().getRemotePath();
+        if(!remotePath.endsWith(File.separator)) {
+            remotePath = remotePath + File.separator;
         }
-        return configuration.getBaseConfiguration().getRemotePath() + configuration.getServiceVersion() + File.separator + configuration.getFileName();
+        return remotePath + configuration.getServiceVersion() + File.separator + configuration.getFileName();
     }
 
     private void unzip(File zipFile, String dir, String password) throws CoreException {
