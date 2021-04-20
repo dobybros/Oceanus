@@ -18,10 +18,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lick on 2020/12/17.
@@ -43,8 +40,10 @@ public class LocalServiceVersionsHandler implements ServiceVersionsHandler {
                 throw new CoreException(ContainerErrorCodes.ERROR_SERVICE_VERSIONS_CREATE_REMOTE_PATH_FAILED, "Force create directory " + directory + " failed (unknown), " + t.getMessage());
             }
         }
-        Map<String, Configuration> configurationMap = new HashMap<>();
+        LinkedHashMap<String, Configuration> configurationMap = new LinkedHashMap<>();
         Collection<File> groovyZipFiles = FileUtils.listFiles(directory, new String[]{"zip"}, true);
+        List<Configuration> configurations = new ArrayList<>();
+        Configuration discoveryConfiguration = null;
         for(File groovyZipFile : groovyZipFiles) {
             String path = groovyZipFile.getAbsolutePath().substring(directory.getAbsolutePath().length());
             if(path.startsWith(File.separator)) {
@@ -72,16 +71,27 @@ public class LocalServiceVersionsHandler implements ServiceVersionsHandler {
             configuration.setService(service);
             configuration.setVersion(version);
             configuration.setBaseConfiguration(baseConfiguration);
-            Configuration old = configurationMap.get(service);
+            if(service.equals("discovery")) {
+                discoveryConfiguration = configuration;
+            } else {
+                configurations.add(configuration);
+            }
+        }
+        if(discoveryConfiguration != null) {
+            configurations.add(0, discoveryConfiguration);
+        }
+
+        for(Configuration configuration : configurations) {
+            Configuration old = configurationMap.get(configuration.getService());
             if(old != null) {
                 if(old.getVersion() > configuration.getVersion()) {
-                    LoggerEx.warn(TAG, "Found smaller version of service " + service + " version " + version + " will NOT replace old version " + old.getVersion() + " because old is newer version");
+                    LoggerEx.warn(TAG, "Found smaller version of service " + configuration.getService() + " version " + configuration.getVersion() + " will NOT replace old version " + old.getVersion() + " because old is newer version");
                 } else {
-                    configurationMap.put(service, configuration);
-                    LoggerEx.warn(TAG, "Found bigger version of service " + service + " version " + version + " replace old version " + old.getVersion());
+                    configurationMap.put(configuration.getService(), configuration);
+                    LoggerEx.warn(TAG, "Found bigger version of service " + configuration.getService() + " version " + configuration.getVersion() + " replace old version " + old.getVersion());
                 }
             } else {
-                configurationMap.put(service, configuration);
+                configurationMap.put(configuration.getService(), configuration);
 //                LoggerEx.info(TAG, "Found service " + service + " version " + version);
             }
         }

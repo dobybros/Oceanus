@@ -6,18 +6,27 @@ import chat.main.ServerStart;
 import chat.config.BaseConfiguration;
 import chat.config.Configuration;
 import com.container.runtime.DefaultRuntimeContext;
+import com.container.runtime.executor.prepare.config.DiscoveryConfigHandler;
+import com.container.runtime.executor.prepare.source.DefaultServiceDownloadHandler;
 import com.container.runtime.executor.serviceversion.LocalServiceVersionsHandler;
 import com.docker.script.executor.RuntimeExecutor;
 import com.docker.script.executor.RuntimeExecutorListener;
 import com.docker.script.executor.prepare.PrepareAndStartServiceHandler;
 import com.container.runtime.executor.prepare.DefaultPrepareAndStartServiceHandler;
+import com.docker.script.executor.prepare.config.ConfigHandler;
+import com.docker.script.executor.prepare.source.ServiceDownloadHandler;
 import com.docker.script.executor.serviceversion.ServiceVersionsHandler;
 import com.docker.server.OnlineServer;
+import core.discovery.impl.client.ServiceRuntime;
 import core.discovery.node.Service;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 /**
  * Created by lick on 2020/12/17.
@@ -27,12 +36,16 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
     private final String TAG = DefaultRuntimeExecutor.class.getName();
     private ServiceVersionsHandler serviceVersionsHandler;
     private PrepareAndStartServiceHandler prepareServiceHandler;
+    private ConfigHandler configHandler;
+    private ServiceDownloadHandler serviceDownloadHandler;
 
 //    private ConcurrentHashMap<String, Service> serviceMap = new ConcurrentHashMap<>();
 
     public DefaultRuntimeExecutor(){
+        this.serviceDownloadHandler = new DefaultServiceDownloadHandler();
         this.serviceVersionsHandler = new LocalServiceVersionsHandler();//new DefaultServiceVersionsHandler();
         this.prepareServiceHandler = new DefaultPrepareAndStartServiceHandler();
+        this.configHandler = new DiscoveryConfigHandler();
     }
 
     @Override
@@ -41,6 +54,7 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
         try {
             this.serviceVersionsHandler.generateConfigurations(baseConfiguration).values().forEach(configuration -> compileService(configuration, runtimeExecutorHandler));
         } catch (Throwable t){
+            t.printStackTrace();
             runtimeExecutorHandler.handleFailed(t);
             return;
         }
@@ -73,21 +87,38 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
     }
 
     private void compileService(Configuration configuration, RuntimeExecutorListener runtimeExecutorListener){
+        //解析config.properties到configuration
         try {
-            this.prepareServiceHandler.prepareAndStart(configuration, (runtimeContext) -> {
-                //add service to dockerStatus
-                updateService(configuration, (DefaultRuntimeContext) runtimeContext);
-            });
-        } catch (Throwable t) {
-            runtimeExecutorListener.handleFailed(t, configuration.getService(), configuration.getVersion());
+            //        //下载service,以及判断是否需要热加载
+            if(this.serviceDownloadHandler.prepare(configuration)){
+                //下载pom.xml的依赖
+                this.configHandler.prepare(configuration);
+                CompletableFuture<Void> future = updateService(configuration, Service.STATUS_WILL_DEPLOY).thenAccept(o -> {
+                    try {
+                        this.prepareServiceHandler.prepareAndStart(configuration, (runtimeContext) -> {
+                            //add service to dockerStatus
+                            updateService(configuration, Service.STATUS_DEPLOYED);
+                        });
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        updateService(configuration, Service.STATUS_DEPLOY_FAILED);
+                        runtimeExecutorListener.handleFailed(t, configuration.getService(), configuration.getVersion());
+                    }
+                });
+                future.get();
+            }
+        } catch (IOException | CoreException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            LoggerEx.error(TAG, "Read config failed, " + e.getMessage() + " configuration " + configuration);
         }
     }
 
-    private void updateService(Configuration configuration, DefaultRuntimeContext runtimeContext) throws CoreException {
+    private CompletableFuture<Void> updateService(Configuration configuration, int serviceStatus) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
 //        DockerStatusService dockerStatusService = (DockerStatusService) BeanFactory.getBean(DockerStatusServiceImpl.class.getName());
         if(configuration.getService().equals("discovery")) {
             LoggerEx.info(TAG, "Service discovery will not register service to itself. configuration " + configuration);
-            return;
+            return CompletableFuture.completedFuture(null);
         }
 
         Service service = new Service();
@@ -101,6 +132,7 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
         service.setService(configuration.getService());
         service.setVersion(configuration.getVersion());
         service.setUploadTime(configuration.getDeployVersion());
+        service.setStatus(serviceStatus);
         String minVersionStr = configuration.getConfig().getProperty("oceanus.min.version", "1");
         Integer minVersion = 1;
         try {
@@ -126,13 +158,23 @@ public class DefaultRuntimeExecutor implements RuntimeExecutor {
 //        service.setType(Service.FIELD_SERVER_TYPE_NORMAL);
 //        serviceMap.put(configuration.getService(), service);
 
-        OnlineServer.getInstance().registerService(service).thenAccept(serviceRuntime -> {
+        CompletableFuture<ServiceRuntime> registerServiceFuture = OnlineServer.getInstance().registerService(service);
+        registerServiceFuture.thenAccept(serviceRuntime -> {
             LoggerEx.info(TAG, "Service " + service.generateServiceKey() + " registered!");
+            future.complete(null);
         }).exceptionally(throwable -> {
             LoggerEx.error(TAG, "Service " + service.generateServiceKey() + " register failed! " + throwable.getMessage());
+            future.completeExceptionally(throwable);
             return null;
         });
+        try {
+            registerServiceFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            LoggerEx.error(TAG, "Register service " + service + " failed, " + e.getMessage());
+        }
 //        dockerStatusService.deleteService(configuration.getBaseConfiguration().getServer(), service.getService(), service.getVersion());
 //        dockerStatusService.addService(configuration.getBaseConfiguration().getServer(), service);
+        return future;
     }
 }

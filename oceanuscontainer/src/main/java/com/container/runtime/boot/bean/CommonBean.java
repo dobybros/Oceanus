@@ -5,8 +5,8 @@ import chat.utils.IPHolder;
 import chat.base.bean.annotation.OceanusBean;
 import com.docker.context.ContextFactory;
 import com.docker.context.impl.DefaultContextFactory;
-import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.QueueSimplexListener;
+import com.docker.server.OnlineServer;
 import com.docker.tasks.RepairTaskHandler;
 import com.container.runtime.boot.manager.BootManager;
 import script.core.runtime.RuntimeFactory;
@@ -51,7 +51,7 @@ public class CommonBean {
     }
 
     @OceanusBean
-    public OnlineServerWithStatus onlineServer() {
+    public OnlineServer onlineServer() {
         return instance.getOnlineServer();
     }
 

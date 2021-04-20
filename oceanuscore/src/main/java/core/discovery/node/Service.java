@@ -23,6 +23,11 @@ public class Service {
     private Integer minVersion;
     private Long uploadTime;
     private Integer type;
+
+    public static final int STATUS_WILL_DEPLOY = 1;
+    public static final int STATUS_DEPLOYED = 10;
+    public static final int STATUS_DEPLOY_FAILED = -10;
+    private int status;
 //    private List<ServiceAnnotation> serviceAnnotationList;
 //    private Long longitude, latitude;
 //    private String country;
@@ -36,6 +41,7 @@ public class Service {
                 "minVersion " + minVersion + "; " +
                 "uploadTime " + uploadTime + "; " +
                 "serviceSuffix " + serviceSuffix + "; " +
+                "status " + status + "; " +
                 "type " + type  + "; " /*+
                 "owner " + owner + "; " +
                 "project " + project + "; "*/;
@@ -111,6 +117,14 @@ public class Service {
 //        this.project = project;
 //    }
 
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public String getServiceSuffix() {
         return serviceSuffix;

@@ -10,9 +10,9 @@ import com.container.runtime.boot.manager.BootManager;
 import com.container.runtime.boot.manager.DefaultOceansBeanManager;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.oceansbean.OceanusBeanManager;
-import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.impl.RMIServerHandler;
 import com.docker.script.GroovyServletScriptDispatcher;
+import com.docker.server.OnlineServer;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.jetty.server.Server;
@@ -106,7 +106,7 @@ public class OceanusStart {
     private static void init() throws IOException {
         IPHolder ipHolder = (IPHolder) BeanFactory.getBeanByName("ipHolder");
         ipHolder.init();
-        OnlineServerWithStatus onlineServer = (OnlineServerWithStatus) BeanFactory.getBeanByName("onlineServer");
+        OnlineServer onlineServer = (OnlineServer) BeanFactory.getBeanByName("onlineServer");
         onlineServer.start();
         BootManager bootManager = (BootManager) BeanFactory.getBeanByName("bootManager");
         bootManager.init();

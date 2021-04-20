@@ -112,7 +112,7 @@ public class OnlineServer {
         public void serverWillShutdown(OnlineServer onlineServer);
     }
 
-    protected OnlineServer() {
+    public OnlineServer() {
         instance = this;
     }
 
@@ -144,32 +144,32 @@ public class OnlineServer {
 //    public void setDockerStatusService(DockerStatusService dockerStatusService) {
 //        this.dockerStatusService = dockerStatusService;
 //    }
-
-    protected DockerStatus generateDockerStatus(Integer port) {
-        DockerStatus dockerStatus = new DockerStatus();
-        dockerStatus.setServer(baseConfiguration.getServer());
-        dockerStatus.setServerType(baseConfiguration.getServerType());
-        dockerStatus.setDockerName(baseConfiguration.getDockerName());
-        dockerStatus.setIp(ipHolder.getIp());
-        dockerStatus.setType(baseConfiguration.getType());
-        dockerStatus.setMaxUserNumber(baseConfiguration.getMaxUserNumber());
-        dockerStatus.setRpcPort(baseConfiguration.getRpcPort());
-        dockerStatus.setSslRpcPort(baseConfiguration.getSslRpcPort());
-        dockerStatus.setHttpPort(port);
-        dockerStatus.setLanId(baseConfiguration.getLanId());
-        if (baseConfiguration.getScaleInstanceId() != null) {
-            dockerStatus.setHealth(DockerStatus.HEALTH_MAX);
-        } else {
-            dockerStatus.setHealth(DockerStatus.HEALTH_MIN);
-        }
-        dockerStatus.setSslRpcPort(baseConfiguration.getSslRpcPort());
-        dockerStatus.setPublicWsPort(baseConfiguration.getPublicWsPort());
-        dockerStatus.setTime(ChatUtils.dateString(System.currentTimeMillis()));
-        dockerStatus.setStatus(DockerStatus.STATUS_STARTING);
-        Map<String, Object> info = new HashMap<String, Object>();
-        dockerStatus.setInfo(info);
-        return dockerStatus;
-    }
+//
+//    protected DockerStatus generateDockerStatus(Integer port) {
+//        DockerStatus dockerStatus = new DockerStatus();
+//        dockerStatus.setServer(baseConfiguration.getServer());
+//        dockerStatus.setServerType(baseConfiguration.getServerType());
+//        dockerStatus.setDockerName(baseConfiguration.getDockerName());
+//        dockerStatus.setIp(ipHolder.getIp());
+//        dockerStatus.setType(baseConfiguration.getType());
+//        dockerStatus.setMaxUserNumber(baseConfiguration.getMaxUserNumber());
+//        dockerStatus.setRpcPort(baseConfiguration.getRpcPort());
+//        dockerStatus.setSslRpcPort(baseConfiguration.getSslRpcPort());
+//        dockerStatus.setHttpPort(port);
+//        dockerStatus.setLanId(baseConfiguration.getLanId());
+//        if (baseConfiguration.getScaleInstanceId() != null) {
+//            dockerStatus.setHealth(DockerStatus.HEALTH_MAX);
+//        } else {
+//            dockerStatus.setHealth(DockerStatus.HEALTH_MIN);
+//        }
+//        dockerStatus.setSslRpcPort(baseConfiguration.getSslRpcPort());
+//        dockerStatus.setPublicWsPort(baseConfiguration.getPublicWsPort());
+//        dockerStatus.setTime(ChatUtils.dateString(System.currentTimeMillis()));
+//        dockerStatus.setStatus(DockerStatus.STATUS_STARTING);
+//        Map<String, Object> info = new HashMap<String, Object>();
+//        dockerStatus.setInfo(info);
+//        return dockerStatus;
+//    }
 
     public void start() {
         try {

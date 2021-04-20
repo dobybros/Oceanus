@@ -101,7 +101,7 @@ public class RemoteServersManager implements Runnable {
     private void updateServiceNodeResult(ServiceNodeResult serviceNodeResult) {
         Map<String, List<Node>> serviceNodes = serviceNodeResult.getServiceNodes();
         if(serviceNodes != null) {
-            Set<String> deletedServices = new HashSet<>();
+//            Set<String> deletedServices = new HashSet<>();
             Collection<String> services = serviceServerCRCIdMap.keySet();
             for(String service : services) {
                 if(serviceNodes.containsKey(service)) {
@@ -113,6 +113,10 @@ public class RemoteServersManager implements Runnable {
                         boolean changed = false;
                         for(Node node: nodes) { //遍历服务器返回的节点列表
                             serverCRCIds.add(node.getServerNameCRC());
+                            if(!nodeMap.containsKey(node.getServerNameCRC())) {
+                                nodeMap.putIfAbsent(node.getServerNameCRC(), node);
+                                LoggerEx.info(TAG, "Found node " + node + " for service " + service + " which node will be shared with other services");
+                            }
                             if(!changed && !monitor.nodeServerCRCIds.contains(node.getServerNameCRC())) {
                                 //有任何一个不一样说明， 服务的节点列表发生了变化
                                 changed = true;
@@ -127,13 +131,13 @@ public class RemoteServersManager implements Runnable {
                             monitor.time = System.currentTimeMillis();
                         }
                     }
-                } else {
+                } /*else {
                     deletedServices.add(service);
-                }
+                }*/
             }
-            for(String deletedService : deletedServices) {
-                serviceServerCRCIdMap.remove(deletedService);
-            }
+//            for(String deletedService : deletedServices) {
+//                serviceServerCRCIdMap.remove(deletedService);
+//            }
         }
         Map<String, List<Long>> serviceNodeCRCIds = serviceNodeResult.getServiceNodeCRCIds();
         if(serviceNodeCRCIds != null) {
@@ -174,11 +178,9 @@ public class RemoteServersManager implements Runnable {
     public void initService(String toService) {
         ServiceNodesMonitor serviceNodesMonitor;
         if(!serviceServerCRCIdMap.containsKey(toService)) {
-            serviceNodesMonitor = new ServiceNodesMonitor();
-            ServiceNodesMonitor exists = serviceServerCRCIdMap.putIfAbsent(toService, serviceNodesMonitor);
-            if(exists != null) {
-                serviceNodesMonitor = exists;
-            }
+            serviceServerCRCIdMap.putIfAbsent(toService, new ServiceNodesMonitor());
+            serviceNodesMonitor = serviceServerCRCIdMap.get(toService);
+
             final ServiceNodesMonitor theMonitor = serviceNodesMonitor;
             if(theMonitor.state.compareAndSet(ServiceNodesMonitor.STATE_NONE, ServiceNodesMonitor.STATE_INIT)) {
                 LoggerEx.info(TAG, "Current Thread " + Thread.currentThread() + " is getting nodes for service " + toService);
@@ -187,11 +189,13 @@ public class RemoteServersManager implements Runnable {
                     if(theMonitor.state.get() == ServiceNodesMonitor.STATE_INIT) {
                         List<Long> nodeIds = new ArrayList<>();
                         List<Node> nodes = serviceNodeResult.getServiceNodes().get(toService);
-                        for(Node node : nodes) {
-                            nodeIds.add(node.getServerNameCRC());
-                            if(!nodeMap.containsKey(node.getServerNameCRC())) {
-                                nodeMap.putIfAbsent(node.getServerNameCRC(), node);
-                                LoggerEx.info(TAG, "Found node " + node + " for service " + toService + " which node will be shared with other services");
+                        if(nodes != null) {
+                            for(Node node : nodes) {
+                                nodeIds.add(node.getServerNameCRC());
+                                if(!nodeMap.containsKey(node.getServerNameCRC())) {
+                                    nodeMap.putIfAbsent(node.getServerNameCRC(), node);
+                                    LoggerEx.info(TAG, "Found node " + node + " for service " + toService + " which node will be shared with other services");
+                                }
                             }
                         }
                         theMonitor.nodeServerCRCIds = nodeIds;
@@ -201,6 +205,7 @@ public class RemoteServersManager implements Runnable {
                         LoggerEx.error(TAG, "Init nodes for service " + toService + " state illegal, expect " + ServiceNodesMonitor.STATE_INIT + " but " + theMonitor.state.get());
                     }
                 }).exceptionally(throwable -> {
+                    throwable.printStackTrace();
                     LoggerEx.error(TAG, "Init nodes for service " + toService + " failed, " + throwable.getMessage());
                     return null;
                 }).whenComplete((aVoid, throwable) -> {

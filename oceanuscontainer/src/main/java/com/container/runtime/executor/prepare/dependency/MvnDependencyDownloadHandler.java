@@ -42,7 +42,11 @@ public class MvnDependencyDownloadHandler implements DependencyDownloadHandler {
                     LoggerEx.info(TAG, "maven info: mvn " + mvnSettingPath + " install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
                     CmdUtils.execute("mvn " + mvnSettingPath + " install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
                 } catch (IOException e) {
-                    CmdUtils.execute("mvn.cmd " + mvnSettingPath +" install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
+                    try {
+                        CmdUtils.execute("mvn.cmd " + mvnSettingPath +" install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
+                    } catch(IOException e1) {
+                        CmdUtils.execute("/usr/local/bin/mvn " + mvnSettingPath +" install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
+                    }
                 }
                 int allThisDependenciesIndexStart = pomContent.indexOf(MVN_SYMBOL_START);
                 int allThisDependenciesIndexEnd = pomContent.indexOf(MVN_SYMBOL_END);

@@ -6,11 +6,11 @@ import com.docker.context.ContextFactory;
 import com.docker.context.impl.DefaultContextFactory;
 import com.docker.file.adapters.GridFSFileHandler;
 import com.docker.http.MyHttpParameters;
-import com.docker.onlineserver.OnlineServerWithStatus;
 import com.docker.rpc.QueueSimplexListener;
 import com.docker.rpc.impl.RMIServerHandler;
 import com.docker.rpc.impl.RMIServerImplWrapper;
 //import com.docker.rpc.queue.KafkaSimplexListener;
+import com.docker.server.OnlineServer;
 import com.docker.storage.adapters.impl.*;
 import com.docker.storage.mongodb.MongoHelper;
 import com.docker.storage.mongodb.daos.*;
@@ -77,7 +77,7 @@ class ContextBeanApp {
     private JsonFilterFactory jsonFilterFactory;
     private RequestPermissionHandler requestPermissionHandler;
     private BootManager scriptManager;
-    private OnlineServerWithStatus onlineServer;
+    private OnlineServer onlineServer;
     private RMIServerImplWrapper rpcServer;
     private RMIServerImplWrapper rpcServerSsl;
     private RMIServerImplWrapper dockerRpcServer;
@@ -343,9 +343,9 @@ class ContextBeanApp {
         return rpcServer;
     }
 
-    synchronized OnlineServerWithStatus getOnlineServer() {
+    synchronized OnlineServer getOnlineServer() {
         if (onlineServer == null) {
-            onlineServer = new OnlineServerWithStatus();
+            onlineServer = new OnlineServer();
 //            onlineServer.setDockerStatusService(getDockerStatusService());
             onlineServer.setIpHolder(getIpHolder());
         }
