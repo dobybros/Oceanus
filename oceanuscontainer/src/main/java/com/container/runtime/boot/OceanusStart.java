@@ -11,7 +11,6 @@ import com.container.runtime.boot.manager.DefaultOceansBeanManager;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.oceansbean.OceanusBeanManager;
 import com.docker.rpc.impl.RMIServerHandler;
-import com.docker.script.GroovyServletScriptDispatcher;
 import com.docker.server.OnlineServer;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -49,7 +48,7 @@ public class OceanusStart {
             ServletHandler servletHandler = new ServletHandler();
             server.setHandler(servletHandler);
             servletHandler.addServletWithMapping(GroovyServletDispatcher.class, "/rest/*");
-            servletHandler.addServletWithMapping(GroovyServletScriptDispatcher.class, "/base/*");
+//            servletHandler.addServletWithMapping(GroovyServletScriptDispatcher.class, "/base/*");
             server.start();
             init();
             LoggerEx.info(TAG, "Server started on port " + baseConfiguration.getServerPort());

@@ -3,14 +3,11 @@ package com.docker.server;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.main.ServerStart;
-import chat.utils.ChatUtils;
 import chat.utils.IPHolder;
 import chat.config.BaseConfiguration;
-import com.docker.data.DockerStatus;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.storage.cache.CacheStorageFactory;
 import com.docker.storage.cache.CacheStorageMethod;
-import com.docker.storage.mongodb.MongoClientFactory;
 import com.docker.tasks.Task;
 import core.discovery.DiscoveryRuntime;
 import core.discovery.NodeRegistrationHandler;
@@ -20,9 +17,7 @@ import core.discovery.node.Service;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -240,7 +235,6 @@ public class OnlineServer {
             }
         }
         CacheStorageFactory.getInstance().releaseAllCacheStorageAdapter(CacheStorageMethod.METHOD_REDIS);
-        MongoClientFactory.getInstance().releaseAllMongoClient();
 //        if (shutdownList != null) {
 //            LoggerEx.info(TAG, "Deleted shutdownListener " + shutdownList + " size " + shutdownList.size());
 //            for (ShutdownListener shutdownListener : shutdownList) {

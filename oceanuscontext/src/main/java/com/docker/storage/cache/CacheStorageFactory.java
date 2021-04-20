@@ -2,7 +2,6 @@ package com.docker.storage.cache;
 
 import chat.logs.LoggerEx;
 import com.docker.storage.cache.handlers.CacheStorageAdapter;
-import com.docker.storage.cache.handlers.RedisCacheStorageHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -88,14 +87,14 @@ public class CacheStorageFactory {
             if (cacheStorageAdapterMap != null) {
                 CacheStorageAdapter cacheStorageAdapter = cacheStorageAdapterMap.get(host);
                 if (cacheStorageAdapter != null) {
-                    if (StringUtils.equals(cacheMethod, CacheStorageMethod.METHOD_REDIS)) {
-                        RedisCacheStorageHandler redisCacheStorageHandler = (RedisCacheStorageHandler) cacheStorageAdapterMap.remove(host);
-                        if (redisCacheStorageHandler != null) {
-                            redisCacheStorageHandler.disconnect();
-                        }
-//                        RedisListenerHandler redisListenerHandler = (RedisListenerHandler) BeanFactory.getBean(RedisListenerHandler.class.getName());
-//                        redisListenerHandler.setRedisHandler();
-                    }
+//                    if (StringUtils.equals(cacheMethod, CacheStorageMethod.METHOD_REDIS)) {
+//                        RedisCacheStorageHandler redisCacheStorageHandler = (RedisCacheStorageHandler) cacheStorageAdapterMap.remove(host);
+//                        if (redisCacheStorageHandler != null) {
+//                            redisCacheStorageHandler.disconnect();
+//                        }
+////                        RedisListenerHandler redisListenerHandler = (RedisListenerHandler) BeanFactory.getBean(RedisListenerHandler.class.getName());
+////                        redisListenerHandler.setRedisHandler();
+//                    }
                 }
             }
         }
@@ -110,15 +109,15 @@ public class CacheStorageFactory {
             if (cacheStorageAdapterMap != null) {
                 CacheStorageAdapter cacheStorageAdapter = cacheStorageAdapterMap.get(host);
                 if (cacheStorageAdapter != null) {
-                    if (StringUtils.equals(cacheMethod, CacheStorageMethod.METHOD_REDIS)) {
-                        RedisCacheStorageHandler redisCacheStorageHandler = (RedisCacheStorageHandler) cacheStorageAdapterMap.remove(host);
-                        LoggerEx.warn(TAG, "Will remove redisCacheStorageHandler, hosts: " + host);
-                        if (redisCacheStorageHandler != null) {
-                            redisCacheStorageHandler.disconnect();
-                        }
-//                        RedisListenerHandler redisListenerHandler = (RedisListenerHandler) BeanFactory.getBean(RedisListenerHandler.class.getName());
-//                        redisListenerHandler.setRedisHandler();
-                    }
+//                    if (StringUtils.equals(cacheMethod, CacheStorageMethod.METHOD_REDIS)) {
+//                        RedisCacheStorageHandler redisCacheStorageHandler = (RedisCacheStorageHandler) cacheStorageAdapterMap.remove(host);
+//                        LoggerEx.warn(TAG, "Will remove redisCacheStorageHandler, hosts: " + host);
+//                        if (redisCacheStorageHandler != null) {
+//                            redisCacheStorageHandler.disconnect();
+//                        }
+////                        RedisListenerHandler redisListenerHandler = (RedisListenerHandler) BeanFactory.getBean(RedisListenerHandler.class.getName());
+////                        redisListenerHandler.setRedisHandler();
+//                    }
                 }
             }
         }

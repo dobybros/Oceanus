@@ -11,16 +11,15 @@ import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.RemoteService;
 import com.docker.rpc.remote.RpcServerInterceptor;
 import com.docker.rpc.remote.stub.RpcCacheManager;
-import com.docker.script.ClassAnnotationHandlerEx;
 import com.docker.server.OnlineServer;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 import script.core.runtime.groovy.object.GroovyObjectEx;
+import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 import script.core.servlets.Tracker;
 import script.memodb.ObjectId;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -28,7 +27,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandlerEx {
+public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandler {
     private static final String TAG = ServiceSkeletonAnnotationHandler.class.getSimpleName();
     private ConcurrentHashMap<Long, SkelectonMethodMapping> methodMap = new ConcurrentHashMap<>();
 
@@ -363,8 +362,4 @@ public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandlerEx {
         return methodMap;
     }
 
-    @Override
-    public void configService(com.docker.data.Service theService) {
-//        theService.appendServiceAnnotation(annotationList);
-    }
 }

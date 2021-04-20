@@ -5,22 +5,14 @@ import chat.logs.LoggerEx;
 import chat.utils.TimerEx;
 import chat.utils.TimerTaskEx;
 import chat.config.BaseConfiguration;
-import com.docker.data.DeployServiceVersion;
-import com.docker.data.DockerStatus;
-import com.docker.data.ServiceVersion;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.script.executor.RuntimeExecutor;
 import com.docker.script.executor.RuntimeExecutorListener;
-import com.docker.storage.adapters.impl.DeployServiceVersionServiceImpl;
-import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
-import com.docker.storage.adapters.impl.ServiceVersionServiceImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.utils.ShutdownListener;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BootManager implements ShutdownListener {
     private static final String TAG = BootManager.class.getSimpleName();

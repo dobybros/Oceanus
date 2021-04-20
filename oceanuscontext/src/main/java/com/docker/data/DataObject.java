@@ -1,9 +1,7 @@
 package com.docker.data;
 
-import com.docker.storage.mongodb.CleanDocument;
-import org.bson.Document;
-import org.bson.types.ObjectId;
 
+import script.memodb.ObjectId;
 
 public abstract class DataObject {
 	public static final String FIELD_ID = "_id";
@@ -32,20 +30,7 @@ public abstract class DataObject {
 		if(id == null)
 			id = ObjectId.get().toString();
 	}
-	public Document toDocument(){
-		Document dbObj1 = new CleanDocument();//TODO need CleanDocument implementation like CleanDBObject
-//		Document dbObj1 = new Document();
-		if(id != null)
-			dbObj1.put(FIELD_ID, id);
-		return dbObj1;
-	}
-	
-	public void fromDocument(Document dbObj){
-		Object idObj = (Object) dbObj.get(FIELD_ID);
-		if(idObj != null) 
-			id = idObj.toString();
-	}
-	
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

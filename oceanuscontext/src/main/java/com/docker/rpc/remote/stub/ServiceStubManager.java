@@ -1,31 +1,18 @@
 package com.docker.rpc.remote.stub;
 
-import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ReflectionUtil;
-import com.docker.data.Lan;
-import com.docker.errors.CoreErrorCodes;
 import com.docker.rpc.MethodRequest;
 import com.docker.rpc.MethodResponse;
 import com.docker.rpc.async.AsyncRpcFuture;
 import com.docker.rpc.remote.MethodMapping;
-import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
-import com.docker.storage.adapters.impl.ServiceVersionServiceImpl;
-import com.docker.storage.mongodb.MongoHelper;
-import com.docker.storage.mongodb.daos.DockerStatusDAO;
-import com.docker.storage.mongodb.daos.ServiceVersionDAO;
-import com.docker.oceansbean.BeanFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.springframework.core.io.ClassPathResource;
 import script.core.servlets.Tracker;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,16 +44,16 @@ public class ServiceStubManager {
         }
         this.host = host;
     }
-    public void init(){
-        if(this.lanType != null && this.lanType.equals(Lan.TYPE_http)){
-            if (this.host == null) {
-                throw new NullPointerException("Remote host is null, ServiceStubManager initialize failed!");
-            }
+    public void init() {
+//        if(this.lanType != null && this.lanType.equals(Lan.TYPE_http)){
+//            if (this.host == null) {
+//                throw new NullPointerException("Remote host is null, ServiceStubManager initialize failed!");
+//            }
 //            if (!this.host.startsWith("http")) {
 //                this.host = "http://" + this.host;
 //            }
 //            RemoteServersManager.getInstance().addCrossHost(this.host);
-        }
+//        }
 //        synchronized (ServiceStubManager.class){
 //            handle();
 //        }

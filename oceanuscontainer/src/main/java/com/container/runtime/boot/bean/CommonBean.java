@@ -3,14 +3,9 @@ package com.container.runtime.boot.bean;
 import chat.config.BaseConfiguration;
 import chat.utils.IPHolder;
 import chat.base.bean.annotation.OceanusBean;
-import com.docker.context.ContextFactory;
 import com.docker.context.impl.DefaultContextFactory;
-import com.docker.rpc.QueueSimplexListener;
 import com.docker.server.OnlineServer;
-import com.docker.tasks.RepairTaskHandler;
 import com.container.runtime.boot.manager.BootManager;
-import script.core.runtime.RuntimeFactory;
-import script.core.runtime.classloader.ClassLoaderFactory;
 import script.core.runtime.classloader.impl.DefaultClassLoaderFactory;
 import script.core.runtime.impl.DefaultRuntimeFactory;
 import script.core.servlets.RequestPermissionHandler;
@@ -54,14 +49,6 @@ public class CommonBean {
     public OnlineServer onlineServer() {
         return instance.getOnlineServer();
     }
-
-    @OceanusBean
-    public RepairTaskHandler repairTaskHandler(){return instance.getRepairTaskHandler();}
-
-//    @OceanusBean
-//    public QueueSimplexListener queueSimplexListener(){
-//        return instance.getQueueSimplexListener();
-//    }
 
     @OceanusBean
     public DefaultRuntimeFactory runtimeFactory(){

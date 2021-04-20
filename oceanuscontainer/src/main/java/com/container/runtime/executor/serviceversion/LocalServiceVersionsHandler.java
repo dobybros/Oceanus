@@ -2,18 +2,10 @@ package com.container.runtime.executor.serviceversion;
 
 import chat.config.BaseConfiguration;
 import chat.config.Configuration;
-import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.container.errors.ContainerErrorCodes;
-import com.docker.data.DeployServiceVersion;
-import com.docker.oceansbean.BeanFactory;
 import com.docker.script.executor.serviceversion.ServiceVersionsHandler;
-import com.docker.storage.adapters.DeployServiceVersionService;
-import com.docker.storage.adapters.DockerStatusService;
-import com.docker.storage.adapters.impl.DeployServiceVersionServiceImpl;
-import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
-import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -25,7 +17,7 @@ import java.util.*;
  * Description：
  */
 public class LocalServiceVersionsHandler implements ServiceVersionsHandler {
-    private final String TAG = DeployServiceVersionServiceImpl.class.getName();
+    private final String TAG = LocalServiceVersionsHandler.class.getName();
     @Override
     public Map<String, Configuration> generateConfigurations(BaseConfiguration baseConfiguration) throws CoreException {
         String remotePath = baseConfiguration.getRemotePath();

@@ -8,8 +8,6 @@ import com.docker.context.config.ServerConfig;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.rpc.remote.stub.RemoteServersManager;
 import com.docker.script.BaseRuntimeContext;
-import com.docker.storage.adapters.DockerStatusService;
-import com.docker.storage.adapters.impl.DockerStatusServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;

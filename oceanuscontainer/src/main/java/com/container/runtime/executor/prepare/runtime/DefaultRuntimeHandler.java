@@ -10,10 +10,8 @@ import com.docker.handler.annotation.field.ServiceBeanHandler;
 import com.docker.rpc.remote.skeleton.ServiceSkeletonAnnotationHandler;
 import com.docker.script.BaseRuntimeContext;
 import com.docker.script.ServiceMemoryHandler;
-import com.docker.script.ServiceScaleHandler;
 import com.docker.script.executor.prepare.runtime.RuntimeHandler;
 import com.docker.script.servlet.GroovyServletManagerEx;
-import com.docker.script.servlet.WebServiceAnnotationHandler;
 import com.docker.storage.cache.CacheAnnotationHandler;
 import com.container.runtime.DefaultRuntimeContext;
 import script.Runtime;
@@ -95,7 +93,6 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
         runtimeContext.addClassAnnotationHandler(new RequestPermissionHandler());
         runtimeContext.addClassAnnotationHandler(new CacheAnnotationHandler());
         runtimeContext.addClassAnnotationHandler(new ServiceMemoryHandler());
-        runtimeContext.addClassAnnotationHandler(new ServiceScaleHandler());
         ServiceSkeletonAnnotationHandler serviceSkeletonAnnotationHandler = new ServiceSkeletonAnnotationHandler();
         serviceSkeletonAnnotationHandler.setService(runtimeContext.getConfiguration().getService());
         serviceSkeletonAnnotationHandler.setServiceVersion(runtimeContext.getConfiguration().getVersion());

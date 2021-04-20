@@ -4,10 +4,9 @@ import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.docker.errors.CoreErrorCodes;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.bson.types.ObjectId;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import script.memodb.ObjectId;
 
 import java.io.*;
 import java.lang.Character.UnicodeBlock;

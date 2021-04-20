@@ -2,7 +2,6 @@ package com.docker.rpc.remote.stub;
 
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
-import com.docker.data.Lan;
 import com.docker.rpc.MethodRequest;
 import com.docker.rpc.async.AsyncRpcFuture;
 //import com.docker.rpc.method.HttpInvocation;
@@ -35,12 +34,13 @@ public class RemoteInvocationHandlerImpl implements RemoteInvocationHandler {
         handleAsyncWithHandler(methodMapping, methodRequest);
         MethodInvocation methodInvocation = null;
         if(methodRequest.getServiceStubManager() != null){
-            if(methodRequest.getServiceStubManager().getLanType() == null || methodRequest.getServiceStubManager().getLanType().equals(Lan.TYPE_RPC)){
-                methodInvocation = new RPCMethodInvocation(methodRequest, methodMapping, methodInterceptors, remoteServerHandler, methodKey);
-            } else {
+            methodInvocation = new RPCMethodInvocation(methodRequest, methodMapping, methodInterceptors, remoteServerHandler, methodKey);
+//            if(methodRequest.getServiceStubManager().getLanType() == null || methodRequest.getServiceStubManager().getLanType().equals(Lan.TYPE_RPC)){
+//                methodInvocation = new RPCMethodInvocation(methodRequest, methodMapping, methodInterceptors, remoteServerHandler, methodKey);
+//            } else {
                 //TODO Aplomb should not enter here. No longer use http for cross lan invocation.
 //                methodInvocation = new HttpInvocation(methodRequest, methodMapping, methodInterceptors, remoteServerHandler, methodKey);
-            }
+//            }
             return methodInvocation.proceed();
         }
         return null;
