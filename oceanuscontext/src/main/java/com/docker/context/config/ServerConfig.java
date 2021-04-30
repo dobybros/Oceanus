@@ -1,9 +1,10 @@
 package com.docker.context.config;
 
+import com.docker.oceansbean.BeanFactory;
+
 import chat.config.BaseConfiguration;
 import chat.config.Configuration;
 import chat.utils.IPHolder;
-import com.docker.oceansbean.BeanFactory;
 
 /**
  * Created by lick on 2021/1/2.
@@ -20,6 +21,7 @@ public class ServerConfig {
     private Integer rpcPort;
     private String scaleInstanceId;
     private String publicDomain;
+    private String localPath;
 
     public ServerConfig(Configuration configuration) {
         BaseConfiguration baseConfiguration = configuration.getBaseConfiguration();
@@ -33,6 +35,51 @@ public class ServerConfig {
         this.rpcPort = baseConfiguration.getRpcPort();
         this.scaleInstanceId = baseConfiguration.getScaleInstanceId();
         this.publicDomain = baseConfiguration.getPublicDomain();
+        this.localPath = configuration.getLocalPath();
+    }
+
+    public void setServerPort(Integer serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public void setLanId(String lanId) {
+        this.lanId = lanId;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public void setRpcPort(Integer rpcPort) {
+        this.rpcPort = rpcPort;
+    }
+
+    public void setScaleInstanceId(String scaleInstanceId) {
+        this.scaleInstanceId = scaleInstanceId;
+    }
+
+    public void setPublicDomain(String publicDomain) {
+        this.publicDomain = publicDomain;
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
     }
 
     public Integer getServerPort() {
