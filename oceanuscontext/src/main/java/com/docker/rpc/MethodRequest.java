@@ -60,10 +60,12 @@ public class MethodRequest extends RPCRequest {
 
     private String callbackFutureId;
 
+    private Class<?> specifiedReturnClass;
+
     @Override
     public String toString() {
         return "MethodRequest crc: " + crc + " service: " + service + " fromServerName: " + fromServerName + " argsSize: " + (args != null ? args.length : 0)
-                + " trackId: " + trackId + " sourceIp: " + sourceIp + " sourcePort: " + sourcePort + " fromService: " + fromService;
+                + " trackId: " + trackId + " sourceIp: " + sourceIp + " sourcePort: " + sourcePort + " fromService: " + fromService + " specifiedReturnClass: " + specifiedReturnClass;
     }
 
 	public MethodRequest() {
@@ -343,6 +345,14 @@ public class MethodRequest extends RPCRequest {
 
     public void setArgsTmpStr(String argsTmpStr) {
         this.argsTmpStr = argsTmpStr;
+    }
+
+    public Class<?> getSpecifiedReturnClass() {
+        return specifiedReturnClass;
+    }
+
+    public void setSpecifiedReturnClass(Class<?> specifiedReturnClass) {
+        this.specifiedReturnClass = specifiedReturnClass;
     }
 
     public ServiceStubManager getServiceStubManager() {

@@ -31,7 +31,7 @@ public class ServiceRegistrationServerHandler extends ServerHandler implements C
             }
             ConcurrentSkipListSet<Long> nodeServers = discoveryManagerImpl.serviceNodesMap.get(serviceKey);
             if(nodeServers == null) {
-                synchronized (discoveryManagerImpl.serviceNodesMap) {
+                synchronized (discoveryManagerImpl) {
                     nodeServers = discoveryManagerImpl.serviceNodesMap.get(serviceKey);
                     if(nodeServers == null) {
                         nodeServers = new ConcurrentSkipListSet<>();

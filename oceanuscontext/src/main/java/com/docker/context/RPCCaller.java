@@ -11,11 +11,11 @@ public abstract class RPCCaller {
         this.lanId = lanId;
     }
 
-    public abstract Object call(String service, String className, String method, Object... args) throws CoreException;
+    public abstract <T> T call(String service, String className, String method, Class<T> returnClass, Object... args) throws CoreException;
 
-    public abstract Object call(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException;
+    public abstract <T> T call(String service, String className, String method, String onlyCallOneServer, Class<T> returnClass, Object... args) throws CoreException;
 
-    public abstract CompletableFuture<?> callAsync(String service, String className, String method, Object... args) throws CoreException;
+    public abstract <T> CompletableFuture<T> callAsync(String service, String className, String method, Class<T> returnClass, Object... args) throws CoreException;
 
-    public abstract CompletableFuture<?> callAsync(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException;
+    public abstract <T> CompletableFuture<T> callAsync(String service, String className, String method, String onlyCallOneServer, Class<T> returnClass, Object... args) throws CoreException;
 }

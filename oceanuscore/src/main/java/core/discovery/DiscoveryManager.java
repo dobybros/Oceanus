@@ -60,4 +60,8 @@ public abstract class DiscoveryManager {
     public void unregisterServiceAndBroadcast(String owner, String project, String service, int version) {}
 
     public abstract Map<String, Object> memory();
+
+    public String toJSONString() {return "";}
+
+    public void fromJSONString(String jsonString) {}
 }

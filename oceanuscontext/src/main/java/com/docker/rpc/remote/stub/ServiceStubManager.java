@@ -139,7 +139,7 @@ public class ServiceStubManager {
         }
     }
 
-    private MethodRequest getMethodRequest(String service, String className, String method, Object[] args) {
+    private MethodRequest getMethodRequest(String service, String className, String method, Class<?> returnClass, Object[] args) {
         Long crc = ReflectionUtil.getCrc(className, method, service);
         MethodRequest request = new MethodRequest();
         request.setEncode(MethodRequest.ENCODE_JAVABINARY);
@@ -150,23 +150,24 @@ public class ServiceStubManager {
         Tracker tracker = Tracker.trackerThreadLocal.get();
         request.setTrackId(tracker == null ? null : tracker.getTrackId());
         request.setServiceStubManager(this);
+        request.setSpecifiedReturnClass(returnClass);
         return request;
     }
 
-    public CompletableFuture<?> callAsync(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException {
-        MethodRequest request = getMethodRequest(service, className, method, args);
+    public <T> CompletableFuture<T> callAsync(String service, String className, String method, String onlyCallOneServer, Class<T> returnClass, Object... args) throws CoreException {
+        MethodRequest request = getMethodRequest(service, className, method, returnClass, args);
         AsyncRpcFuture asyncRpcFuture = new AsyncRpcFuture(ReflectionUtil.getCrc(className, method, service), null);
         RemoteServerHandler remoteServerHandler = getRemoteServerHandler(service, onlyCallOneServer);
         remoteServerHandler.setCallbackFutureId(asyncRpcFuture.getCallbackFutureId());
         RpcCacheManager.getInstance().pushToAsyncRpcMap(asyncRpcFuture.getCallbackFutureId(), asyncRpcFuture);
         LoggerEx.info(TAG, "pushToAsyncRpcMap success, callbackFutureId: " + asyncRpcFuture.getCallbackFutureId() + ",CurrentThread: " + Thread.currentThread() + ",asyncFuture:" + RpcCacheManager.getInstance().getAsyncRpcFuture(asyncRpcFuture.getCallbackFutureId()));
-        return remoteServerHandler.callAsync(request);
+        return (CompletableFuture<T>) remoteServerHandler.callAsync(request);
     }
 
-    public Object call(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException {
-        MethodRequest request = getMethodRequest(service, className, method, args);
+    public <T> T call(String service, String className, String method, String onlyCallOneServer, Class<T> returnClass, Object... args) throws CoreException {
+        MethodRequest request = getMethodRequest(service, className, method, returnClass, args);
         MethodResponse response = getRemoteServerHandler(service, onlyCallOneServer).call(request);
-        return Proxy.getReturnObject(request, response);
+        return (T) Proxy.getReturnObject(request, response);
     }
 
     public <T> T getService(String service, Class<T> adapterClass) {

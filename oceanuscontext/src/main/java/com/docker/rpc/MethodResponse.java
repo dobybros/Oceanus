@@ -89,10 +89,15 @@ public class MethodResponse extends RPCResponse {
                                     byte[] data = GZipUtils.decompress(returnBytes);
                                     String json = new String(data, "utf8");
                                     returnTmpStr = json;
-                                    if (methodMapping == null || methodMapping.getReturnClass().equals(Object.class)) {
-                                        returnObject = JSON.parse(json);
+                                    Class<?> returnClass = ((MethodRequest)request).getSpecifiedReturnClass();
+                                    if(returnClass != null && !returnClass.equals(Object.class)) {
+                                        returnObject = JSON.parseObject(json, returnClass);
                                     } else {
-                                        returnObject = JSON.parseObject(json, methodMapping.getGenericReturnClass());
+                                        if (methodMapping == null || methodMapping.getReturnClass().equals(Object.class)) {
+                                            returnObject = JSON.parse(json);
+                                        } else {
+                                            returnObject = JSON.parseObject(json, methodMapping.getGenericReturnClass());
+                                        }
                                     }
                                 } catch (IOException e) {
                                     e.printStackTrace();

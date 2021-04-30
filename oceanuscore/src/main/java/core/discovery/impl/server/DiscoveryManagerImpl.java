@@ -1,6 +1,8 @@
 package core.discovery.impl.server;
 
 import chat.logs.LoggerEx;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import core.common.CoreRuntime;
 import core.discovery.DiscoveryManager;
 import core.discovery.data.discovery.*;
@@ -34,7 +36,7 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
      * {owner}_{project}_{service} as key
      */
     ConcurrentHashMap<String, Service> serviceMap = new ConcurrentHashMap<>();
-    final ConcurrentHashMap<String, ConcurrentSkipListSet<Long>> serviceNodesMap = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String, ConcurrentSkipListSet<Long>> serviceNodesMap = new ConcurrentHashMap<>();
 
     final ConcurrentHashMap<Class<? extends RequestTransport<?>>, Class<? extends ContentPacketListener<? extends RequestTransport<?>>>> contentPacketHandlerMap = new ConcurrentHashMap<>();
 
@@ -55,7 +57,42 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
         memoryMap.put("contentPacketHandlerMap", contentPacketHandlerMap);
         return memoryMap;
     }
+    public class DiscoveryInfo {
+        private ConcurrentHashMap<String, ConcurrentSkipListSet<Long>> serviceNodesMap;
+        private ConcurrentHashMap<Long, Node> nodeMap;
 
+        public ConcurrentHashMap<String, ConcurrentSkipListSet<Long>> getServiceNodesMap() {
+            return serviceNodesMap;
+        }
+
+        public void setServiceNodesMap(ConcurrentHashMap<String, ConcurrentSkipListSet<Long>> serviceNodesMap) {
+            this.serviceNodesMap = serviceNodesMap;
+        }
+
+        public ConcurrentHashMap<Long, Node> getNodeMap() {
+            return nodeMap;
+        }
+
+        public void setNodeMap(ConcurrentHashMap<Long, Node> nodeMap) {
+            this.nodeMap = nodeMap;
+        }
+    }
+
+    @Override
+    public String toJSONString() {
+        DiscoveryInfo discoveryInfo = new DiscoveryInfo();
+        discoveryInfo.setServiceNodesMap(serviceNodesMap);
+        discoveryInfo.setNodeMap(nodeMap);
+
+        return JSONObject.toJSONString(discoveryInfo);
+    }
+
+    @Override
+    public void fromJSONString(String jsonString) {
+        DiscoveryInfo discoveryInfo = JSON.parseObject(jsonString, DiscoveryInfo.class);
+        nodeMap = discoveryInfo.nodeMap;
+        serviceNodesMap = discoveryInfo.serviceNodesMap;
+    }
     public DiscoveryManagerImpl() {
         registerContentPacketClass(NodeRegistrationRequest.class, NodeRegistrationServerHandler.class);
         registerContentPacketClass(ServiceRegistrationRequest.class, ServiceRegistrationServerHandler.class);

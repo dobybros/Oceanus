@@ -5,7 +5,6 @@ import com.docker.context.Context;
 import com.docker.context.RPCCaller;
 import com.docker.context.ServiceGenerator;
 import com.docker.context.config.ServerConfig;
-import com.docker.oceansbean.BeanFactory;
 import com.docker.rpc.remote.stub.RemoteServersManager;
 import com.docker.script.BaseRuntimeContext;
 
@@ -57,23 +56,23 @@ public class ServiceContext implements Context {
         if(rpcCaller == null) {
             rpcCaller = new RPCCaller(lanId) {
                 @Override
-                public Object call(String service, String className, String method, Object... args) throws CoreException {
-                    return call(service, className, method, null, args);
+                public <T> T call(String service, String className, String method, Class<T> returnClass, Object... args) throws CoreException {
+                    return call(service, className, method, null, returnClass, args);
                 }
 
                 @Override
-                public Object call(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException {
-                    return runtimeContext.getServiceStubManagerFactory().get(this.lanId).call(service, className, method, onlyCallOneServer, args);
+                public <T> T call(String service, String className, String method, String onlyCallOneServer, Class<T> returnClass, Object... args) throws CoreException {
+                    return runtimeContext.getServiceStubManagerFactory().get(this.lanId).call(service, className, method, onlyCallOneServer, returnClass, args);
                 }
 
                 @Override
-                public CompletableFuture<?> callAsync(String service, String className, String method, Object... args) throws CoreException {
-                    return callAsync(service, className, method, args);
+                public <T> CompletableFuture<T> callAsync(String service, String className, String method, Class<T> returnClass, Object... args) throws CoreException {
+                    return callAsync(service, className, method, returnClass, args);
                 }
 
                 @Override
-                public CompletableFuture<?> callAsync(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException {
-                    return runtimeContext.getServiceStubManagerFactory().get(this.lanId).callAsync(service, className, method, onlyCallOneServer, args);
+                public <T> CompletableFuture<T> callAsync(String service, String className, String method, String onlyCallOneServer, Class<T> returnClass, Object... args) throws CoreException {
+                    return runtimeContext.getServiceStubManagerFactory().get(this.lanId).callAsync(service, className, method, onlyCallOneServer, returnClass, args);
                 }
             };
             lanRpcCallCacheMap.putIfAbsent(lanId, rpcCaller);
@@ -103,13 +102,13 @@ public class ServiceContext implements Context {
                 }
 
                 @Override
-                public Object call(String service, String className, String method, Object... args) throws CoreException {
-                    return callOneServer(service, className, method, null, args);
+                public <T> T call(String service, String className, String method, Class<T> returnClass, Object... args) throws CoreException {
+                    return callOneServer(service, className, method, null, returnClass, args);
                 }
 
                 @Override
-                public Object callOneServer(String service, String className, String method, String onlyCallOneServer, Object... args) throws CoreException {
-                    return runtimeContext.getServiceStubManagerFactory().get(this.lanId).call(service, className, method, onlyCallOneServer, args);
+                public <T> T callOneServer(String service, String className, String method, String onlyCallOneServer, Class<T> returnClass, Object... args) throws CoreException {
+                    return (T) runtimeContext.getServiceStubManagerFactory().get(this.lanId).call(service, className, method, onlyCallOneServer, returnClass, args);
                 }
             };
             lanServiceGeneratorCacheMap.putIfAbsent(lanId, serviceGenerator);

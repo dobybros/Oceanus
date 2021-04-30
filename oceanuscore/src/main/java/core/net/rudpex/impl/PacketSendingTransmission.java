@@ -472,36 +472,40 @@ public class PacketSendingTransmission extends PacketTransmission {
         Throwable throwable = null;
         boolean breakByCounter = false;
         //inputStream读到末尾了， 或者totalReadSize读到指定的size总数时， 结束发送Packet。
-        while((size < 0 || size > totalReadSize) && ((readSize = inputStream.read(buffer, startPos, len)) != -1)) {
-            totalReadSize += readSize;
-            counter++;
-            if(counter >= numOfPackets) {
-                breakByCounter = true;
-            }
-            if((len -= readSize) == 0) {
-                //send
-                if(breakByCounter) {
-                    sendPacket(buffer, 0, packetLen, COMPLETE_STATUS_PARTIAL_COMPLETED);
-                } else {
-                    sendPacket(buffer, 0, packetLen, COMPLETE_STATUS_SENDING);
+        try {
+            while((size < 0 || size > totalReadSize) && ((readSize = inputStream.read(buffer, startPos, len)) != -1)) {
+                totalReadSize += readSize;
+                counter++;
+                if(counter >= numOfPackets) {
+                    breakByCounter = true;
                 }
-                if(size < 0) {
-                    startPos = 0;
-                    len = PacketTransmissionManager.SPLIT_PACKET_SIZE;
-                } else if(size == totalReadSize) {
-                    //all packets send
+                if((len -= readSize) == 0) {
+                    //send
+                    if(breakByCounter) {
+                        sendPacket(buffer, 0, packetLen, COMPLETE_STATUS_PARTIAL_COMPLETED);
+                    } else {
+                        sendPacket(buffer, 0, packetLen, COMPLETE_STATUS_SENDING);
+                    }
+                    if(size < 0) {
+                        startPos = 0;
+                        len = PacketTransmissionManager.SPLIT_PACKET_SIZE;
+                    } else if(size == totalReadSize) {
+                        //all packets send
+                        break;
+                    } else {
+                        startPos = 0;
+                        len = Math.min(PacketTransmissionManager.SPLIT_PACKET_SIZE, size - totalReadSize);
+                    }
+                    packetLen = len;
+                } else {
+                    startPos += readSize;
+                    len -= readSize;
+                }
+                if(breakByCounter)
                     break;
-                } else {
-                    startPos = 0;
-                    len = Math.min(PacketTransmissionManager.SPLIT_PACKET_SIZE, size - totalReadSize);
-                }
-                packetLen = len;
-            } else {
-                startPos += readSize;
-                len -= readSize;
             }
-            if(breakByCounter)
-                break;
+        } catch(Throwable t) {
+            throw t;
         }
         if(!breakByCounter) {
 //            if(startPos > 0) {//怀疑有bug， 如果startPos刚好是0的时候， 会不会发不出completed包
