@@ -499,7 +499,7 @@ public class PacketSendingTransmission extends PacketTransmission {
                     packetLen = len;
                 } else {
                     startPos += readSize;
-                    len -= readSize;
+//                    len -= readSize;
                 }
                 if(breakByCounter)
                     break;
