@@ -3,7 +3,6 @@ package com.docker.rpc.impl;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
-//import chat.utils.AverageCounter;
 import com.docker.rpc.*;
 import com.docker.rpc.async.AsyncCallbackRequest;
 import com.docker.rpc.remote.stub.RpcCacheManager;
@@ -20,6 +19,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+//import chat.utils.AverageCounter;
 
 
 public class RMIClientHandler extends RPCClientAdapter {
@@ -410,6 +411,7 @@ public class RMIClientHandler extends RPCClientAdapter {
             LoggerEx.error(TAG, "RMI call failed, " + ExceptionUtils.getFullStackTrace(ce) + " start reconnecting...");
             throw new CoreException(ChatErrorCodes.ERROR_RMICALL_CONNECT_FAILED, "RMI call failed, " + ce.getMessage() + " start reconnecting...");
         } catch (Throwable t) {
+            t.printStackTrace();
             CoreException theCoreException = null;
             if (t instanceof ServerException) {
                 Throwable remoteException = t.getCause();
@@ -430,6 +432,7 @@ public class RMIClientHandler extends RPCClientAdapter {
                     }
                 }
             }
+
             if (t instanceof CoreException){
                 CoreException coreException = (CoreException)t;
                 if(request instanceof MethodRequest){
@@ -442,8 +445,13 @@ public class RMIClientHandler extends RPCClientAdapter {
                     coreException = theCoreException;
                 }
                 throw coreException;
+            } else {
+                Throwable cause = t.getCause();
+                if(cause instanceof CoreException) {
+                    throw (CoreException)cause;
+                }
             }
-            t.printStackTrace();
+
             LoggerEx.error(TAG, "RMI call failed, " + ExceptionUtils.getFullStackTrace(t));
             throw new CoreException(ChatErrorCodes.ERROR_RMICALL_FAILED, "RMI call failed, " + t.getMessage());
         }
