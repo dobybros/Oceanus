@@ -12,6 +12,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.SocketTimeoutException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -408,11 +409,21 @@ public class RMIClientHandler extends RPCClientAdapter {
                     clientMonitorThread.connected.notify();
                 }
             }
-            LoggerEx.error(TAG, "RMI call failed, " + ExceptionUtils.getFullStackTrace(ce) + " start reconnecting...");
+            Throwable cause = ce.getCause();
+            LoggerEx.error(TAG, "RMI call failed, " + ce.getMessage() + " start reconnecting...");
+            if(cause instanceof SocketTimeoutException) {
+                throw new CoreException(ChatErrorCodes.ERROR_RMICALL_TIMEOUT, "RMI call timeout, " + ce.getMessage() + " start reconnecting...");
+            }
             throw new CoreException(ChatErrorCodes.ERROR_RMICALL_CONNECT_FAILED, "RMI call failed, " + ce.getMessage() + " start reconnecting...");
         } catch (Throwable t) {
             t.printStackTrace();
+
             CoreException theCoreException = null;
+            if(t instanceof UnmarshalException) {
+                UnmarshalException unmarshalException = (UnmarshalException) t;
+                if(unmarshalException.detail != null)
+                    t = unmarshalException.detail;
+            }
             if (t instanceof ServerException) {
                 Throwable remoteException = t.getCause();
                 if (remoteException instanceof RemoteException) {
@@ -431,9 +442,7 @@ public class RMIClientHandler extends RPCClientAdapter {
                         throw coreException;
                     }
                 }
-            }
-
-            if (t instanceof CoreException){
+            } else if (t instanceof CoreException){
                 CoreException coreException = (CoreException)t;
                 if(request instanceof MethodRequest){
                     theCoreException = new CoreException(coreException.getCode(), coreException.getMessage().concat(" $$client: service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(((MethodRequest)request).getCrc()) + ", fromService: " + ((MethodRequest)request).getFromService()));
@@ -445,10 +454,14 @@ public class RMIClientHandler extends RPCClientAdapter {
                     coreException = theCoreException;
                 }
                 throw coreException;
+            } else if(t instanceof SocketTimeoutException) {
+                throw new CoreException(ChatErrorCodes.ERROR_RMICALL_TIMEOUT, "RMI call timeout, " + t.getMessage() + " start reconnecting...");
             } else {
                 Throwable cause = t.getCause();
                 if(cause instanceof CoreException) {
                     throw (CoreException)cause;
+                } else if(cause instanceof SocketTimeoutException) {
+                    throw new CoreException(ChatErrorCodes.ERROR_RMICALL_TIMEOUT, "RMI call timeout, " + cause.getMessage() + " start reconnecting...");
                 }
             }
 

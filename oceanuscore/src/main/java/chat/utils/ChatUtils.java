@@ -1,5 +1,7 @@
 package chat.utils;
 
+import chat.errors.CoreException;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -322,4 +324,16 @@ public class ChatUtils {
         return addr;
 
     }
+
+    public static CoreException getCoreException(Throwable throwable) {
+		if(throwable instanceof CoreException) {
+			return (CoreException) throwable;
+		} else {
+			Throwable cause = throwable.getCause();
+			if(cause != null && cause instanceof CoreException) {
+				return (CoreException) cause;
+			}
+		}
+		return null;
+	}
 }

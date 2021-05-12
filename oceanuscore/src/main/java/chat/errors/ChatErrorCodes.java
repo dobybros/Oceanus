@@ -119,4 +119,5 @@ public interface ChatErrorCodes {
 	int ERROR_REFLECT = CODE_CORE - 223;
 	int ERROR_BOOT = CODE_CORE - 224;
 	int ERROR_NODE_IP_NOT_FOUND = CODE_CORE - 225;
+	int ERROR_RMICALL_TIMEOUT = CODE_CORE - 226;
 }
