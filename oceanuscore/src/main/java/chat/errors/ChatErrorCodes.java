@@ -103,7 +103,6 @@ public interface ChatErrorCodes {
 	int ERROR_SERVER_CONNECT_FAILED= CODE_CORE - 211;
 	int ERROR_SERVER_NOT_FOUND = CODE_CORE - 212;
 	/*******************ehcache******************/
-	int ERROR_CREATE_CACHE= CODE_CORE - 212;
 	int ERROR_CACHE_ILLEGAL_PARAMETER= CODE_CORE - 213;
 	int ERROR_CACHE_PUT= CODE_CORE - 214;
 	int ERROR_CACHE_GET= CODE_CORE - 215;
@@ -120,4 +119,5 @@ public interface ChatErrorCodes {
 	int ERROR_BOOT = CODE_CORE - 224;
 	int ERROR_NODE_IP_NOT_FOUND = CODE_CORE - 225;
 	int ERROR_RMICALL_TIMEOUT = CODE_CORE - 226;
+	int ERROR_CREATE_CACHE= CODE_CORE - 227;
 }
