@@ -1,5 +1,6 @@
 package com.docker.context;
 
+import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import com.docker.context.config.ServerConfig;
 
@@ -12,6 +13,9 @@ import java.util.Properties;
  * Description：
  */
 public interface Context {
+    int ERROR_REMOTE_SERVICE_CONNECT_FAILED = ChatErrorCodes.ERROR_RMICALL_CONNECT_FAILED;
+    int ERROR_REMOTE_SERVICE_CONNECT_TIMEOUT = ChatErrorCodes.ERROR_RMICALL_TIMEOUT;
+
     Properties getConfig();
 
     ServerConfig getServerConfig();
