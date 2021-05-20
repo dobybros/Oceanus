@@ -33,22 +33,18 @@ public abstract class FileAdapter {
     }
 	protected void copy(PathEx path, InputStream is, OutputStream os, READWRITE readWrite) throws IOException {
 		boolean encrypted = false;
-		EncryptService encrypterListener = null;
-		if (encrypterListener == null) {
-			encrypterListener = encryptService;
-		}
-		if(encrypterListener != null) {
+		if(encryptService != null) {
 			switch(readWrite) {
 			case READ:
 				try {
-					encrypterListener.decrypt(is, os);
+					encryptService.decrypt(is, os);
 					encrypted = true;
 				} catch (Throwable e) {
 					LoggerEx.error("D", "rollback...");
 				}
 				break;
 			case WRITE:
-				encrypterListener.encrypt(is, os);
+				encryptService.encrypt(is, os);
 				encrypted = true;
 				break;
 			}
@@ -179,8 +175,8 @@ public abstract class FileAdapter {
 		}
 	}
 
-	public static final String DOC_ROOT_PATH = "resources/";
-    public static final String DOC_STICKER_SUIT_ROOT_PATH = "stickersuit/";
+//	public static final String DOC_ROOT_PATH = "resources/";
+//    public static final String DOC_STICKER_SUIT_ROOT_PATH = "stickersuit/";
 	
     public abstract FileEntity saveFile(InputStream is, PathEx path, FileReplaceStrategy strategy,
             SaveFileCachedListener listener) throws IOException;
