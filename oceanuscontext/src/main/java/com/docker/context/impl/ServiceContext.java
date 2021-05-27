@@ -7,6 +7,7 @@ import com.docker.context.ServiceGenerator;
 import com.docker.context.config.ServerConfig;
 import com.docker.rpc.remote.stub.RemoteServersManager;
 import com.docker.script.BaseRuntimeContext;
+import script.core.runtime.groovy.object.AbstractObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,7 +120,11 @@ public class ServiceContext implements Context {
     @Override
     public Object getAndCreateBean(Class<?> clazz) {
         try {
-            return this.runtimeContext.getRuntimeBeanFactory().get(null, runtimeContext.getRuntime().path(clazz));
+            Object obj = this.runtimeContext.getRuntimeBeanFactory().get(null, runtimeContext.getRuntime().path(clazz));
+            if(obj instanceof AbstractObject) {
+                return ((AbstractObject) obj).getObject();
+            }
+            return obj;
         } catch (CoreException e) {
             e.printStackTrace();
         }
@@ -129,7 +134,11 @@ public class ServiceContext implements Context {
     @Override
     public Object getAndCreateBean(String beanName, Class<?> clazz) {
         try {
-            return this.runtimeContext.getRuntimeBeanFactory().get(beanName, runtimeContext.getRuntime().path(clazz));
+            Object obj = this.runtimeContext.getRuntimeBeanFactory().get(beanName, runtimeContext.getRuntime().path(clazz));
+            if(obj instanceof AbstractObject) {
+                return ((AbstractObject) obj).getObject();
+            }
+            return obj;
         } catch (CoreException e) {
             e.printStackTrace();
         }
