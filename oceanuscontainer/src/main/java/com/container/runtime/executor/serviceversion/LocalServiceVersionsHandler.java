@@ -1,16 +1,22 @@
 package com.container.runtime.executor.serviceversion;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+
+import com.container.errors.ContainerErrorCodes;
+import com.docker.script.executor.serviceversion.ServiceVersionsHandler;
+
 import chat.config.BaseConfiguration;
 import chat.config.Configuration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
-import com.container.errors.ContainerErrorCodes;
-import com.docker.script.executor.serviceversion.ServiceVersionsHandler;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 /**
  * Created by lick on 2020/12/17.
@@ -18,11 +24,12 @@ import java.util.*;
  */
 public class LocalServiceVersionsHandler implements ServiceVersionsHandler {
     private final String TAG = LocalServiceVersionsHandler.class.getName();
+
     @Override
     public Map<String, Configuration> generateConfigurations(BaseConfiguration baseConfiguration) throws CoreException {
         String remotePath = baseConfiguration.getRemotePath();
         File directory = new File(remotePath);
-        if(!directory.isDirectory()) {
+        if (!directory.isDirectory()) {
             try {
                 FileUtils.forceMkdir(directory);
             } catch (IOException e) {
@@ -36,22 +43,23 @@ public class LocalServiceVersionsHandler implements ServiceVersionsHandler {
         Collection<File> groovyZipFiles = FileUtils.listFiles(directory, new String[]{"zip"}, true);
         List<Configuration> configurations = new ArrayList<>();
         Configuration discoveryConfiguration = null;
-        for(File groovyZipFile : groovyZipFiles) {
+        for (File groovyZipFile : groovyZipFiles) {
             String path = groovyZipFile.getAbsolutePath().substring(directory.getAbsolutePath().length());
-            if(path.startsWith(File.separator)) {
+            if (path.startsWith(File.separator)) {
                 path = path.substring(File.separator.length());
             }
-            String[] strs = path.split(File.separator);
+            path = path.replace("\\", "/");
+            String[] strs = path.split("/");
             String service = null;
             Integer version = null;
-            if(strs.length == 2) {
-                if(strs[0].contains("_")) {
+            if (strs.length == 2) {
+                if (strs[0].contains("_")) {
                     int pos = strs[0].lastIndexOf("_v");
                     service = strs[0].substring(0, pos);
                     String versionStr = strs[0].substring(pos + 2);
                     try {
                         version = Integer.parseInt(versionStr);
-                    } catch(Throwable throwable) {
+                    } catch (Throwable throwable) {
                         throwable.printStackTrace();
                         throw new CoreException(ContainerErrorCodes.ERROR_SERVICE_VERSIONS_GROOVY_ZIP_VERSION_ILLEGAL, "groovy.zip path version is illegal, ignored. " + groovyZipFile.getAbsolutePath());
                     }
@@ -63,20 +71,20 @@ public class LocalServiceVersionsHandler implements ServiceVersionsHandler {
             configuration.setService(service);
             configuration.setVersion(version);
             configuration.setBaseConfiguration(baseConfiguration);
-            if(service.equals("discovery")) {
+            if (service.equals("discovery")) {
                 discoveryConfiguration = configuration;
             } else {
                 configurations.add(configuration);
             }
         }
-        if(discoveryConfiguration != null) {
+        if (discoveryConfiguration != null) {
             configurations.add(0, discoveryConfiguration);
         }
 
-        for(Configuration configuration : configurations) {
+        for (Configuration configuration : configurations) {
             Configuration old = configurationMap.get(configuration.getService());
-            if(old != null) {
-                if(old.getVersion() > configuration.getVersion()) {
+            if (old != null) {
+                if (old.getVersion() > configuration.getVersion()) {
                     LoggerEx.warn(TAG, "Found smaller version of service " + configuration.getService() + " version " + configuration.getVersion() + " will NOT replace old version " + old.getVersion() + " because old is newer version");
                 } else {
                     configurationMap.put(configuration.getService(), configuration);
