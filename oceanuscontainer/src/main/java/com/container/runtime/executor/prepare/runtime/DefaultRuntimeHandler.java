@@ -3,24 +3,26 @@ package com.container.runtime.executor.prepare.runtime;
 import chat.config.Configuration;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
-
+import com.container.runtime.DefaultRuntimeContext;
 import com.docker.handler.annotation.field.ConfigPropertyHandler;
 import com.docker.handler.annotation.field.JavaBeanHandler;
 import com.docker.handler.annotation.field.ServiceBeanHandler;
+import com.docker.oceansbean.BeanFactory;
 import com.docker.rpc.remote.skeleton.ServiceSkeletonAnnotationHandler;
 import com.docker.script.BaseRuntimeContext;
 import com.docker.script.ServiceMemoryHandler;
 import com.docker.script.executor.prepare.runtime.RuntimeHandler;
 import com.docker.script.servlet.GroovyServletManagerEx;
 import com.docker.storage.cache.CacheAnnotationHandler;
-import com.container.runtime.DefaultRuntimeContext;
 import script.Runtime;
-import com.docker.oceansbean.BeanFactory;
 import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.RuntimeFactory;
 import script.core.runtime.ServerLifeCircleHandler;
 import script.core.runtime.handler.AbstractClassAnnotationHandler;
-import script.core.runtime.handler.annotation.clazz.*;
+import script.core.runtime.handler.annotation.clazz.BeanHandler;
+import script.core.runtime.handler.annotation.clazz.ConditionalOnPropertyClassAnnotationHandler;
+import script.core.runtime.handler.annotation.clazz.RedeployMainHandler;
+import script.core.runtime.handler.annotation.clazz.TimerTaskHandler;
 import script.core.runtime.impl.DefaultRuntimeFactory;
 import script.core.servlets.GroovyServletDispatcher;
 import script.core.servlets.RequestPermissionHandler;
@@ -34,6 +36,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class DefaultRuntimeHandler implements RuntimeHandler {
     private final String TAG = DefaultRuntimeFactory.class.getName();
+
     @Override
     public BaseRuntimeContext prepare(Configuration configuration) throws CoreException {
         RuntimeFactory runtimeFactory = (RuntimeFactory) BeanFactory.getBean(DefaultRuntimeFactory.class.getName());
@@ -48,16 +51,17 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
             //启动编译，以及后续处理
             runtime.start();
             return runtimeContext;
-        }catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e){
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             AbstractRuntimeContext runtimeContext = configuration.getBaseConfiguration().removeRuntimeContext(configuration.getService());
-            if(runtimeContext != null){
+            if (runtimeContext != null) {
                 runtimeContext.close();
             }
             throw new CoreException(ChatErrorCodes.ERROR_REFLECT, "Create runtime failed, configuration" + configuration + ",e: " + e.getMessage());
         }
     }
-    private void prepareAnnotationHandler(DefaultRuntimeContext runtimeContext){
-        if(runtimeContext.getConfiguration().getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR))
+
+    private void prepareAnnotationHandler(DefaultRuntimeContext runtimeContext) {
+        if (runtimeContext.getConfiguration().getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR))
             return;
         //class's annotations
         String enableGroovyMVC = null;
@@ -84,6 +88,8 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
         } else {
             GroovyServletDispatcher.removeGroovyServletManagerEx(runtimeContext.getConfiguration().getServiceVersion());
         }
+        //加载条件判定，应该在其他handler之前
+        runtimeContext.addClassAnnotationHandler(new ConditionalOnPropertyClassAnnotationHandler());
 
         runtimeContext.addClassAnnotationHandler(new RedeployMainHandler());
 //        runtimeContext.addClassAnnotationHandler(new RegisterClassAnnotationHandler());

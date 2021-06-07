@@ -1,15 +1,15 @@
 package script.core.runtime.handler.annotation.clazz;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ConcurrentHashSet;
 import script.core.annotation.RedeployMain;
 import script.core.runtime.groovy.object.GroovyObjectEx;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RedeployMainHandler extends ClassAnnotationHandler {
 
@@ -24,6 +24,8 @@ public class RedeployMainHandler extends ClassAnnotationHandler {
     @Override
     public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
         if (annotatedClassMap != null) {
+            ConditionalOnPropertyClassAnnotationHandler conditionalHandler = (ConditionalOnPropertyClassAnnotationHandler) getRuntimeContext()
+                    .getClassAnnotationHandler(ConditionalOnPropertyClassAnnotationHandler.class);
             ConcurrentHashSet<GroovyObjectEx> newRedeploySet = new ConcurrentHashSet<>();
             //按order排序
             List<Class<?>> values = annotatedClassMap.values().stream().sorted((c1, c2) -> {
@@ -34,6 +36,10 @@ public class RedeployMainHandler extends ClassAnnotationHandler {
 
             for (Class<?> groovyClass : values) {
                 GroovyObjectEx<?> groovyObj = (GroovyObjectEx<?>) getObject(null, groovyClass, runtimeContext);
+                if (!conditionalHandler.match(groovyClass)) {
+                    LoggerEx.warn(TAG, "Execute redeploy main for " + groovyClass + " not match");
+                    continue;
+                }
                 try {
                     groovyObj.invokeRootMethod("main");
                 } catch (Throwable t) {
