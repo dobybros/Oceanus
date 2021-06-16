@@ -3,6 +3,7 @@ package com.container.runtime.boot.handler;
 import chat.base.bean.annotation.OceanusBean;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
+import chat.logs.LoggerEx;
 import com.docker.oceansbean.AbstractOceansAnnotationHandler;
 import com.docker.oceansbean.OceanusBeanManager;
 import org.apache.commons.lang.StringUtils;
@@ -23,12 +24,16 @@ import java.util.Set;
  * Description：
  */
 public class OceanusBeanAnnotationHandler extends AbstractOceansAnnotationHandler {
-    public OceanusBeanAnnotationHandler(OceanusBeanManager oceanusBeanManager){
+    public static final String TAG = OceanusBeanAnnotationHandler.class.getSimpleName();
+
+
+    public OceanusBeanAnnotationHandler(OceanusBeanManager oceanusBeanManager) {
         super(oceanusBeanManager);
     }
+
     @Override
     public void handle(String packageName) throws CoreException {
-        if(StringUtils.isBlank(packageName)){
+        if (StringUtils.isBlank(packageName)) {
             packageName = "com.container.runtime.boot.bean";
         }
         // 扫包
@@ -36,29 +41,30 @@ public class OceanusBeanAnnotationHandler extends AbstractOceansAnnotationHandle
                 .forPackages(packageName) // 指定路径URL
                 .addScanners(new SubTypesScanner()) // 添加子类扫描工具
                 .addScanners(new FieldAnnotationsScanner()) // 添加 属性注解扫描工具
-                .addScanners(new MethodAnnotationsScanner() ) // 添加 方法注解扫描工具
-                .addScanners(new MethodParameterScanner() ) // 添加方法参数扫描工具
+                .addScanners(new MethodAnnotationsScanner()) // 添加 方法注解扫描工具
+                .addScanners(new MethodParameterScanner()) // 添加方法参数扫描工具
         );
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(getAnnotationClass());
-        for (Class c : classes){
+        for (Class c : classes) {
             try {
                 Object o = c.getDeclaredConstructor().newInstance();
                 Method[] methods = c.getMethods();
                 String[] beanNames;
-                for (Method method : methods){
-                    if(method.isAnnotationPresent(OceanusBean.class)){
+                for (Method method : methods) {
+                    if (method.isAnnotationPresent(OceanusBean.class)) {
                         OceanusBean oceanusBean = method.getAnnotation(OceanusBean.class);
-                        if(oceanusBean.value().length > 0){
+                        if (oceanusBean.value().length > 0) {
                             beanNames = oceanusBean.value();
-                        }else {
+                        } else {
                             beanNames = new String[1];
                             beanNames[0] = method.getName();
                         }
+                        LoggerEx.info(TAG, "Oceanus Bean invoke bean class:" + c.getName() + "method:" + method.getName());
                         Object bean = method.invoke(o);
                         oceanusBeanManager.addBean(method.getReturnType().getName(), beanNames, bean);
                     }
                 }
-            }catch (Throwable t){
+            } catch (Throwable t) {
                 throw new CoreException(ChatErrorCodes.ERROR_REFLECT, ExceptionUtils.getFullStackTrace(t));
             }
         }

@@ -416,14 +416,6 @@
             <artifactId>lettuce-core</artifactId>
             <version>5.3.4.RELEASE</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.github.luben/zstd-jni -->
-        <dependency>
-            <groupId>com.github.luben</groupId>
-            <artifactId>zstd-jni</artifactId>
-            <version>1.4.9-2</version>
-            <classifier>${os.detected.classifier}</classifier>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.rocksdb/rocksdbjni -->
         <dependency>
             <groupId>org.rocksdb</groupId>

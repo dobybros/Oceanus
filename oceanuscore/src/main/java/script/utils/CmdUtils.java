@@ -1,11 +1,12 @@
 package script.utils;
 
+import chat.logs.LoggerEx;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -13,8 +14,13 @@ import java.util.concurrent.TimeUnit;
  * Description：
  */
 public class CmdUtils {
-    public static String execute(String cmd) throws Throwable{
+    public static final String TAG = CmdUtils.class.getSimpleName();
+
+    public static String execute(String cmd) throws Throwable {
         //"mvn dependency:list -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath())
+
+        LoggerEx.info(TAG, "cmd execute：" + cmd);
+
         final CommandLine cmdLine = CommandLine.parse(cmd);
         ExecuteWatchdog watchdog = new ExecuteWatchdog(TimeUnit.MINUTES.toMillis(5));//设置超时时间
         DefaultExecutor executor = new DefaultExecutor();

@@ -16,17 +16,7 @@
         </dependency>
         <dependency>
             <groupId>oceanus</groupId>
-            <artifactId>MongodbConnector</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>oceanus</groupId>
             <artifactId>container</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>oceanus</groupId>
-            <artifactId>imcontainer</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>

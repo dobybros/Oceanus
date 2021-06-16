@@ -1,10 +1,10 @@
 package com.container.runtime.boot.manager;
 
+import chat.config.BaseConfiguration;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.TimerEx;
 import chat.utils.TimerTaskEx;
-import chat.config.BaseConfiguration;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.script.executor.RuntimeExecutor;
 import com.docker.script.executor.RuntimeExecutorListener;
@@ -12,7 +12,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.utils.ShutdownListener;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 public class BootManager implements ShutdownListener {
     private static final String TAG = BootManager.class.getSimpleName();
@@ -20,11 +21,12 @@ public class BootManager implements ShutdownListener {
     private BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     private boolean isShutdown = false;
     private boolean isLoading = false;
+
     public void init() {
         File dockerFile = new File(baseConfiguration.getLocalPath() + "/" + baseConfiguration.getDockerName());
         if (dockerFile.exists()) {
             File[] serviceFiles = dockerFile.listFiles();
-            if(serviceFiles != null){
+            if (serviceFiles != null) {
                 for (File serviceFile : serviceFiles) {
                     try {
                         FileUtils.deleteDirectory(new File(baseConfiguration.getLocalPath() + "/" + baseConfiguration.getDockerName() + "/" + serviceFile.getName() + "/groovy"));
@@ -51,13 +53,15 @@ public class BootManager implements ShutdownListener {
             reload();
         }
     }
-    private void reload(){
+
+    private void reload() {
         isLoading = true;
         this.runtimeExecutor.execute(baseConfiguration, new RuntimeExecutorListener() {
             @Override
             public void handleSuccess() {
                 isLoading = false;
                 try {
+
 //                    DeployServiceVersion deployServiceVersion = deployServiceVersionService.getServiceVersion(baseConfiguration.getServerType());
 //                    if(!baseConfiguration.getUseHulkAdmin()){
 //                        updateServiceVersion(deployServiceVersion);
@@ -68,7 +72,7 @@ public class BootManager implements ShutdownListener {
 //                        dockerStatusService.update(baseConfiguration.getServer(), dockerStatus);
 //                        LoggerEx.info(TAG, "================ This dockerStatus reload finish =======================");
 //                    }
-                }catch (Throwable t){
+                } catch (Throwable t) {
                     handleFailed(t);
                 }
             }
@@ -76,9 +80,9 @@ public class BootManager implements ShutdownListener {
             @Override
             public void handleFailed(Throwable t, String service, Integer version) {
                 isLoading = false;
-                if(baseConfiguration.getKillProcess()){
+                if (baseConfiguration.getKillProcess()) {
                     handleFailed(t);
-                }else {
+                } else {
                     LoggerEx.error(TAG, ExceptionUtils.getFullStackTrace(t));
 //                    try {
 //                        dockerStatusService.deleteService(baseConfiguration.getServer(), service, version);

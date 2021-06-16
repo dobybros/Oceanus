@@ -1,10 +1,10 @@
 package com.container.runtime.executor.prepare.dependency;
 
+import chat.config.Configuration;
 import chat.logs.LoggerEx;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import chat.config.Configuration;
 import com.docker.script.executor.prepare.dependency.DependencyDownloadHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -23,29 +23,38 @@ public class MvnDependencyDownloadHandler implements DependencyDownloadHandler {
     private final String MVN_SYMBOL = "AllThisDependencies";
     private final String MVN_SYMBOL_START = "<!--AllThisDependencies";
     private final String MVN_SYMBOL_END = "AllThisDependencies-->";
+
     @Override
     public void prepare(Configuration configuration) throws Throwable {
-        if(configuration.getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR))
+        if (configuration.getLanguageType().equals(Configuration.LANGEUAGE_JAVA_JAR))
             return;
         File pomFile = new File(configuration.getLocalPath() + File.separator + "pom.xml");
-        if(pomFile.exists()){
+        if (pomFile.exists()) {
             String mvnSettingPath = "";
             String mvnJarsDir = configuration.getBaseConfiguration().getLibsPath();
-            if(mvnJarsDir != null){
+            if (mvnJarsDir != null) {
                 mvnSettingPath = "-s " + configuration.getBaseConfiguration().getMavenSettingsPath();
-            }else {
+            } else {
                 mvnJarsDir = System.getProperty("user.home") + File.separator + ".m2" + File.separator + "repository";
             }
             String pomContent = FileUtils.readFileToString(pomFile, "utf-8");
-            if(pomContent.contains(MVN_SYMBOL)){
+            if (pomContent.contains(MVN_SYMBOL)) {
                 try {
                     LoggerEx.info(TAG, "maven info: mvn " + mvnSettingPath + " install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
                     CmdUtils.execute("mvn " + mvnSettingPath + " install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
                 } catch (IOException e) {
                     try {
-                        CmdUtils.execute("mvn.cmd " + mvnSettingPath +" install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
-                    } catch(IOException e1) {
-                        CmdUtils.execute("/usr/local/bin/mvn " + mvnSettingPath +" install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
+                        CmdUtils.execute("mvn.cmd " + mvnSettingPath + " install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
+                    } catch (IOException e1) {
+                        try {
+                            CmdUtils.execute("/usr/local/bin/mvn " + mvnSettingPath + " install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
+                        } catch (Throwable throwable) {
+                            try {
+                                CmdUtils.execute("/usr/share/maven/bin/mvn " + mvnSettingPath + " install -DskipTests -f " + FilenameUtils.separatorsToUnix(pomFile.getAbsolutePath()));
+                            } catch (Throwable ex) {
+                                LoggerEx.error(TAG, "mvn download error:" + ex);
+                            }
+                        }
                     }
                 }
                 int allThisDependenciesIndexStart = pomContent.indexOf(MVN_SYMBOL_START);
