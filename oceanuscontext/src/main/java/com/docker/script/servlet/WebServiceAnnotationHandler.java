@@ -18,8 +18,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
-	private static final String TAG = WebServiceAnnotationHandler.class.getSimpleName();
+    private static final String TAG = WebServiceAnnotationHandler.class.getSimpleName();
     private ConcurrentHashMap<String, WebMethodMapping> methodMap = new ConcurrentHashMap<>();
+
     @Override
     public void handlerShutdown() {
         methodMap.clear();
@@ -29,6 +30,7 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
     public Class<? extends Annotation> handleAnnotationClass() {
         return WebService.class;
     }
+
     @Override
     public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
         if (annotatedClassMap != null && !annotatedClassMap.isEmpty()) {
@@ -47,7 +49,9 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
                     WebService requestIntercepting = groovyClass.getAnnotation(WebService.class);
                     if (requestIntercepting != null) {
                         GroovyObjectEx<?> serverAdapter = (GroovyObjectEx<?>) getObject(null, groovyClass, runtimeContext);
-                        scanClass(groovyClass, serverAdapter, newMethodMap);
+                        if (serverAdapter != null) {
+                            scanClass(groovyClass, serverAdapter, newMethodMap);
+                        }
                     }
                 }
             }
@@ -59,7 +63,7 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
 
     public Class<?>[] getMethodParameterTypes(String className, String methodName) {
         WebMethodMapping methodMapping = methodMap.get(className + "#" + methodName);
-        if(methodMapping != null)
+        if (methodMapping != null)
             return methodMapping.getMethod().getParameterTypes();
         return null;
     }
@@ -68,13 +72,14 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
         WebMethodMapping methodMapping = methodMap.get(className + "#" + methodName);
         return methodMapping.getWebService().getObject();
     }
+
     public Object execute(String className, String methodName, Object... args) throws CoreException {
         WebMethodMapping methodMapping = methodMap.get(className + "#" + methodName);
         try {
             return methodMapping.invoke(args);
         } catch (Exception e) {
             e.printStackTrace();
-            if(e instanceof CoreException)
+            if (e instanceof CoreException)
                 throw (CoreException) e;
             else
                 throw new CoreException(ChatErrorCodes.ERROR_UNKNOWN, "Unknown error while invoke method " + methodName + " in class " + className + " with args " + Arrays.toString(args) + " failed, " + e.getMessage() + " errorClass " + e.getClass());
@@ -89,13 +94,13 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
         }
 
         public Object invoke(Object[] rawArgs) throws CoreException {
-            if(method == null)
+            if (method == null)
                 throw new CoreException(ChatErrorCodes.ERROR_METHODMAPPING_METHOD_NULL, "Invoke method is null");
             int argLength = rawArgs != null ? rawArgs.length : 0;
             Object[] args = null;
-            if(parameterTypes.length == argLength) {
+            if (parameterTypes.length == argLength) {
                 args = rawArgs;
-            } else if(parameterTypes.length < argLength) {
+            } else if (parameterTypes.length < argLength) {
                 args = new Object[parameterTypes.length];
                 System.arraycopy(rawArgs, 0, args, 0, parameterTypes.length);
             } else {
@@ -108,12 +113,12 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
                 returnObj = webService.invokeRootMethod(method.getName(), args);
 //                returnObj = method.invoke(obj, args);
             } catch (Throwable t) {
-                if(t instanceof InvokerInvocationException) {
+                if (t instanceof InvokerInvocationException) {
                     Throwable theT = ((InvokerInvocationException) t).getCause();
-                    if(theT != null)
+                    if (theT != null)
                         t = theT;
                 }
-                if(t instanceof CoreException)
+                if (t instanceof CoreException)
                     exception = (CoreException) t;
                 else
                     exception = new CoreException(ChatErrorCodes.ERROR_METHODMAPPING_INVOKE_UNKNOWNERROR, t.getMessage());
@@ -136,7 +141,7 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
 //    }
 
     public void scanClass(Class<?> clazz, GroovyObjectEx<?> serverAdapter, ConcurrentHashMap<String, WebMethodMapping> methodMap) {
-        if(clazz == null)
+        if (clazz == null)
             return;
 //        Object obj = cachedInstanceMap.get(clazz);
 //        if(obj == null) {
@@ -155,30 +160,30 @@ public class WebServiceAnnotationHandler extends ClassAnnotationHandler {
 //        }
 
         Method[] methods = chat.utils.ReflectionUtil.getMethods(clazz);
-        if(methods != null) {
-            for(Method method : methods) {
-                if(method.isSynthetic() || method.getModifiers() == Modifier.PRIVATE)
+        if (methods != null) {
+            for (Method method : methods) {
+                if (method.isSynthetic() || method.getModifiers() == Modifier.PRIVATE)
                     continue;
                 WebMethodMapping mm = new WebMethodMapping(method);
                 mm.setWebService(serverAdapter);
                 String value = method.getDeclaringClass().getSimpleName() + "#" + method.getName();
-                if(methodMap.contains(value)) {
+                if (methodMap.contains(value)) {
                     LoggerEx.warn(TAG, "Don't support override methods, please rename your method " + method + " for value " + value + " and existing method " + methodMap.get(value).getMethod());
                     continue;
                 }
                 Class<?>[] parameterTypes = method.getParameterTypes();
-                if(parameterTypes != null) {
+                if (parameterTypes != null) {
                     boolean failed = false;
-                    for(int i = 0; i < parameterTypes.length; i++) {
+                    for (int i = 0; i < parameterTypes.length; i++) {
                         parameterTypes[i] = chat.utils.ReflectionUtil.getInitiatableClass(parameterTypes[i]);
                         Class<?> parameterType = parameterTypes[i];
-                        if(!chat.utils.ReflectionUtil.canBeInitiated(parameterType)) {
+                        if (!chat.utils.ReflectionUtil.canBeInitiated(parameterType)) {
                             failed = true;
                             LoggerEx.warn(TAG, "Parameter " + parameterType + " in method " + method + " couldn't be initialized. ");
                             break;
                         }
                     }
-                    if(failed)
+                    if (failed)
                         continue;
                 }
                 mm.setParameterTypes(parameterTypes);

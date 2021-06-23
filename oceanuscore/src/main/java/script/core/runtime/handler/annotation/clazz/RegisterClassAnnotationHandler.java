@@ -26,13 +26,16 @@ public class RegisterClassAnnotationHandler extends ClassAnnotationHandler {
                 RegisterClassAnnotation registerClassAnnotation = groovyClass.getAnnotation(RegisterClassAnnotation.class);
                 if (registerClassAnnotation != null) {
                     GroovyObjectEx<?> groovyObj = (GroovyObjectEx<?>) getObject(null, groovyClass, runtimeContext);
+                    if (groovyObj == null) {
+                        continue;
+                    }
                     try {
                         Object o = groovyObj.getObject();
-                        if(o instanceof ClassAnnotationHandler){
-                            ClassAnnotationHandler classAnnotationHandler = ((ClassAnnotationHandler)o);
+                        if (o instanceof ClassAnnotationHandler) {
+                            ClassAnnotationHandler classAnnotationHandler = ((ClassAnnotationHandler) o);
                             classAnnotationHandler.handleAnnotatedClasses(runtimeContext.getAllClasses());
                         }
-                    }catch (Throwable t){
+                    } catch (Throwable t) {
                         t.printStackTrace();
                     }
                 }

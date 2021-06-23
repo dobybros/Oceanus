@@ -35,9 +35,12 @@ public class RedeployMainHandler extends ClassAnnotationHandler {
             }).collect(Collectors.toList());
 
             for (Class<?> groovyClass : values) {
+//                if (!conditionalHandler.match(groovyClass)) {
+//                    LoggerEx.warn(TAG, "Execute redeploy main for " + groovyClass + " not match");
+//                    continue;
+//                }
                 GroovyObjectEx<?> groovyObj = (GroovyObjectEx<?>) getObject(null, groovyClass, runtimeContext);
-                if (!conditionalHandler.match(groovyClass)) {
-                    LoggerEx.warn(TAG, "Execute redeploy main for " + groovyClass + " not match");
+                if (groovyObj == null) {
                     continue;
                 }
                 try {

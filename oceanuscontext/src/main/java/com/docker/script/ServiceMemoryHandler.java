@@ -5,7 +5,6 @@ import chat.logs.LoggerEx;
 import com.docker.script.annotations.ServiceMemory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.runtime.groovy.object.AbstractObject;
-import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.lang.annotation.Annotation;
@@ -20,6 +19,7 @@ import java.util.Map;
 public class ServiceMemoryHandler extends ClassAnnotationHandler {
     private final String TAG = ServiceMemory.class.getSimpleName();
     private List<AbstractObject<?>> serviceMemoryList = new ArrayList<>();
+
     @Override
     public Class<? extends Annotation> handleAnnotationClass() {
         return ServiceMemory.class;
@@ -27,18 +27,21 @@ public class ServiceMemoryHandler extends ClassAnnotationHandler {
 
     @Override
     public void handleAnnotatedClasses(Map<String, Class<?>> annotatedClassMap) throws CoreException {
-        if(annotatedClassMap != null){
+        if (annotatedClassMap != null) {
             Collection<Class<?>> values = annotatedClassMap.values();
-            for (Class<?> groovyClass : values){
+            for (Class<?> groovyClass : values) {
                 AbstractObject<?> groovyObj = (AbstractObject<?>) getObject(null, groovyClass, runtimeContext);
-                serviceMemoryList.add(groovyObj);
+                if (groovyObj != null) {
+                    serviceMemoryList.add(groovyObj);
+                }
             }
         }
     }
-    public List<Object> getMemory(){
-        if(!serviceMemoryList.isEmpty()){
+
+    public List<Object> getMemory() {
+        if (!serviceMemoryList.isEmpty()) {
             List<Object> list = new ArrayList<>();
-            for (AbstractObject<?> abstractObject : serviceMemoryList){
+            for (AbstractObject<?> abstractObject : serviceMemoryList) {
                 try {
                     Object jsonObject = abstractObject.invokeRootMethod("memory");
                     list.add(jsonObject);
@@ -51,6 +54,7 @@ public class ServiceMemoryHandler extends ClassAnnotationHandler {
         }
         return null;
     }
+
     @Override
     public void handlerShutdown() {
     }

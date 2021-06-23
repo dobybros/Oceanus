@@ -50,6 +50,9 @@ public class TimerTaskHandler extends ClassAnnotationHandler {
                     long period = timerTask.period();
                     String cron = processAnnotationString(runtimeContext, timerTask.cron());
                     GroovyObjectEx<?> groovyObj = (GroovyObjectEx) getObject(null, groovyClass, runtimeContext);
+                    if (groovyObj == null) {
+                        continue;
+                    }
                     MyTimerTask task = new MyTimerTask(key, groovyObj);
                     task.setId(key);
                     if (!StringUtils.isEmpty(cron)) {
@@ -89,6 +92,7 @@ public class TimerTaskHandler extends ClassAnnotationHandler {
             }
         }
     }
+
     public class MyTimerTask extends TimerTaskEx {
         private GroovyObjectEx<?> groovyObj;
         private String key;

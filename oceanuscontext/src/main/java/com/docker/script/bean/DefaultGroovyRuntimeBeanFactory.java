@@ -2,6 +2,7 @@ package com.docker.script.bean;
 
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
+import chat.errors.GroovyErrorCodes;
 import chat.logs.LoggerEx;
 import chat.utils.ReflectionUtil;
 import groovy.lang.GroovyObject;
@@ -9,20 +10,21 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.annotation.Bean;
 import script.core.runtime.AbstractRuntimeContext;
+import script.core.runtime.classloader.ClassHolder;
+import script.core.runtime.classloader.DefaultClassLoader;
 import script.core.runtime.groovy.GroovyRuntimeBeanFactory;
 import script.core.runtime.groovy.object.AbstractObject;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.runtime.handler.AbstractFieldAnnotationHandler;
+import script.core.runtime.handler.annotation.clazz.ConditionalOnPropertyClassAnnotationHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * Created by lick on 2020/12/18.
@@ -31,21 +33,39 @@ import java.util.function.Consumer;
 public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
     private Map<String, AbstractObject> beanMap = new ConcurrentHashMap<>();
     private AbstractRuntimeContext runtimeContext;
-    public DefaultGroovyRuntimeBeanFactory(AbstractRuntimeContext runtimeContext){
+
+    public DefaultGroovyRuntimeBeanFactory(AbstractRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
     }
+
     @Override
     protected <T> AbstractObject<T> getBeanGroovy(String beanName, String groovyPath) throws CoreException {
-        if(StringUtils.isBlank(beanName)){
+        if (StringUtils.isBlank(beanName)) {
             beanName = groovyPath;
         }
         AbstractObject<T> goe = beanMap.get(beanName);
-        if(goe == null){
+        if (goe == null) {
+            ConditionalOnPropertyClassAnnotationHandler conditionalHandler = (ConditionalOnPropertyClassAnnotationHandler) this.runtimeContext
+                    .getClassAnnotationHandler(ConditionalOnPropertyClassAnnotationHandler.class);
+            if (conditionalHandler != null) {
+                DefaultClassLoader classLoader = (DefaultClassLoader) runtimeContext.getCurrentClassLoader();
+                if (classLoader == null)
+                    throw new CoreException(GroovyErrorCodes.ERROR_GROOVY_CLASSLOADERNOTFOUND, "Classloader is null");
+                ClassHolder holder = classLoader.getClass(groovyPath);
+                if (holder == null)
+                    throw new CoreException(GroovyErrorCodes.ERROR_GROOVY_CLASSNOTFOUND, "Groovy " + groovyPath + " doesn't be found in classLoader " + classLoader);
+                Class<?> clazz = holder.getParsedClass();
+                if (!conditionalHandler.match(clazz)) {
+                    LoggerEx.warn(TAG, "Execute create bean for " + clazz + " not match");
+                    return null;
+                }
+            }
+
             goe = new GroovyObjectEx<T>(groovyPath);
             AbstractObject oldObj = beanMap.putIfAbsent(beanName, goe);
-            if(oldObj != null){
+            if (oldObj != null) {
                 goe = oldObj;
-            }else {
+            } else {
                 goe.setRuntimeContext(this.runtimeContext);
             }
         }
@@ -54,10 +74,10 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
 
     @Override
     protected void fillObjectGroovy() throws CoreException {
-        for (AbstractObject object : beanMap.values()){
+        for (AbstractObject object : beanMap.values()) {
             try {
                 fillObject(object);
-            } catch(Throwable throwable) {
+            } catch (Throwable throwable) {
                 throwable.printStackTrace();
                 LoggerEx.error(TAG, "Fill object " + object + " failed, " + throwable.getMessage());
             }
@@ -68,13 +88,13 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
     public void fillObject(Object o) throws CoreException {
         try {
             GroovyObject gObj = null;
-            if(o instanceof AbstractObject){
-                if(((AbstractObject) o).isFill()){
+            if (o instanceof AbstractObject) {
+                if (((AbstractObject) o).isFill()) {
                     return;
                 }
                 gObj = (GroovyObject) ((AbstractObject) o).getObject(false);
-            }else if(o instanceof GroovyObject){
-                gObj = (GroovyObject)o;
+            } else if (o instanceof GroovyObject) {
+                gObj = (GroovyObject) o;
             }
             Field[] fields = ReflectionUtil.getFields(gObj.getClass());
             if (fields != null) {
@@ -100,9 +120,9 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
 
                         AbstractObject<?> beanValue = null;
                         if (StringUtils.isBlank(beanName)) {
-                            if(gClass != null){
+                            if (gClass != null) {
                                 Class<?> theClass = runtimeContext.getClass(gClass.getName());
-                                if(theClass == null) {
+                                if (theClass == null) {
                                     LoggerEx.error(TAG, "Class " + gClass + " doesn't be found in your runtime, perhaps you want to use JavaBean instead");
                                 } else {
                                     gClass = theClass;
@@ -128,7 +148,7 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
                                 }
                             }
                         }
-                    }else {
+                    } else {
                         List<AbstractFieldAnnotationHandler> injectListeners = runtimeContext.getFieldAnnotationHandlers();
                         if (injectListeners != null) {
                             for (AbstractFieldAnnotationHandler listener : injectListeners) {
@@ -150,7 +170,7 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
                     }
                 }
             }
-        }catch (IllegalAccessException e){
+        } catch (IllegalAccessException e) {
             throw new CoreException(ChatErrorCodes.ERROR_REFLECT, ExceptionUtils.getFullStackTrace(e));
         }
     }

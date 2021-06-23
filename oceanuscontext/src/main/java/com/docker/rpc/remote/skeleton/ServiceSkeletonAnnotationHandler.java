@@ -23,7 +23,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -76,7 +79,9 @@ public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandler {
 //                        GroovyObjectEx<RemoteService> serverAdapter = getGroovyRuntime()
 //                                .create(groovyClass);
                         GroovyObjectEx<RemoteService> serverAdapter = (GroovyObjectEx<RemoteService>) getObject(null, groovyClass, runtimeContext);
-                        scanClass(groovyClass, serverAdapter, newMethodMap);
+                        if (serverAdapter != null) {
+                            scanClass(groovyClass, serverAdapter, newMethodMap);
+                        }
                     }
                 }
             }

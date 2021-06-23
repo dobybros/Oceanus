@@ -43,6 +43,6 @@ public class ConditionalOnPropertyClassAnnotationHandler extends ClassAnnotation
      * @return
      */
     public boolean match(Class<?> clazz) {
-        return MapUtils.getBoolean(classToMatchMap, clazz, true);
+        return clazz != null && MapUtils.getBoolean(classToMatchMap, clazz, true);
     }
 }

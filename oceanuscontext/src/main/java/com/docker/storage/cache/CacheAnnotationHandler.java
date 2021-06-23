@@ -55,7 +55,9 @@ public class CacheAnnotationHandler extends ClassAnnotationHandler {
                     CacheClass cacheClass = groovyClass.getAnnotation(CacheClass.class);
                     if (cacheClass != null) {
                         GroovyObjectEx cacheGroovyObj = (GroovyObjectEx) getObject(null, groovyClass, runtimeContext);
-                        scanClass(groovyClass, cacheGroovyObj);
+                        if (cacheGroovyObj != null) {
+                            scanClass(groovyClass, cacheGroovyObj);
+                        }
                     }
                 }
             }
@@ -87,7 +89,7 @@ public class CacheAnnotationHandler extends ClassAnnotationHandler {
 
     private void handleCacheEvictAnnotation(String serviceName, Class<?> clazz, Method method) {
         CacheEvict cacheEvict = method.getAnnotation(CacheEvict.class);
-        if (cacheEvict != null){
+        if (cacheEvict != null) {
             String methodKey = String.valueOf(ReflectionUtil.getCrc(clazz, method.getName(), serviceName));
             CacheObj cacheObj = new CacheObj();
             cacheObj.setCacheMethod(cacheEvict.cacheMethod());
