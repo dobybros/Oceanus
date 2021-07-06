@@ -257,7 +257,7 @@ public class LocalFileHandler extends FileAdapter {
     }
 
     @Override
-    public String generateUploadUrl() throws IOException {
+    public UploadResultInfo generateUploadUrl(String path) throws IOException {
         return null;
     }
 

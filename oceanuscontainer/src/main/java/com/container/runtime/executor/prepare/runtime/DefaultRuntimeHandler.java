@@ -65,6 +65,9 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
             return;
         //class's annotations
         String enableGroovyMVC = null;
+        //加载条件判定，应该在其他handler之前
+        runtimeContext.addClassAnnotationHandler(new ConditionalOnPropertyClassAnnotationHandler());
+
         runtimeContext.addClassAnnotationHandler(new BeanHandler());
 
         enableGroovyMVC = runtimeContext.getConfiguration().getConfig().getProperty("web.groovymvc.enable");
@@ -88,8 +91,7 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
         } else {
             GroovyServletDispatcher.removeGroovyServletManagerEx(runtimeContext.getConfiguration().getServiceVersion());
         }
-        //加载条件判定，应该在其他handler之前
-        runtimeContext.addClassAnnotationHandler(new ConditionalOnPropertyClassAnnotationHandler());
+
 
         runtimeContext.addClassAnnotationHandler(new RedeployMainHandler());
 //        runtimeContext.addClassAnnotationHandler(new RegisterClassAnnotationHandler());

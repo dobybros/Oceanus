@@ -248,7 +248,7 @@ public abstract class FileAdapter {
      * @return url:上传文件的url+token
      * @throws IOException
      */
-    public abstract String generateUploadUrl() throws IOException;
+    public abstract UploadResultInfo generateUploadUrl(String path) throws IOException;
 
     /**
      * Check the file adapter support download url or not.
@@ -359,17 +359,69 @@ public abstract class FileAdapter {
 
     /**
      * @param basePath
+     * @param pathPrefix
+     * @param datePath
      * @param rId
      * @return
      */
-    public String generatePath(String basePath, String datePath, String rId) {
+    public String generatePath(String basePath, String pathPrefix, String datePath, String rId) {
 //        if (!basePath.endsWith("/")) {
 //            basePath += "/";
 //        }
 //        if (datePath.startsWith("/")) {
 //            datePath = datePath.substring(1);
 //        }
-        return basePath + "/" + datePath + "/" + rId;
+        StringBuilder sb = new StringBuilder();
+        sb.append(basePath)
+                .append("/");
+        if (StringUtils.isNotBlank(pathPrefix)) {
+            sb.append(pathPrefix)
+                    .append("/");
+        }
+        sb.append(datePath)
+                .append("/")
+                .append(rId);
+
+        return sb.toString();
+    }
+
+    /**
+     * 上传文件的url、以及rId
+     */
+    public static class UploadResultInfo {
+        public static final String TAG = UploadResultInfo.class.getSimpleName();
+        /**
+         * 上传文件的路径
+         */
+        String uploadUrl;
+        /**
+         * 资源id、或路径
+         */
+        String rId;
+
+        UploadResultInfo() {
+        }
+
+        UploadResultInfo(String uploadUrl, String rId) {
+            this.uploadUrl = uploadUrl;
+            this.rId = rId;
+        }
+
+        String getUploadUrl() {
+            return uploadUrl;
+        }
+
+        void setUploadUrl(String uploadUrl) {
+            this.uploadUrl = uploadUrl;
+        }
+
+        String getRId() {
+            return rId;
+        }
+
+        void setRId(String rId) {
+            this.rId = rId;
+        }
     }
 
 

@@ -5,6 +5,7 @@ import chat.errors.CoreException;
 import chat.errors.GroovyErrorCodes;
 import chat.logs.LoggerEx;
 import chat.utils.ReflectionUtil;
+import com.google.common.collect.Sets;
 import groovy.lang.GroovyObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -24,6 +25,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -31,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Description：
  */
 public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
+    private Set<String> forbiddenGroovyPathSet = Sets.newConcurrentHashSet();
     private Map<String, AbstractObject> beanMap = new ConcurrentHashMap<>();
     private AbstractRuntimeContext runtimeContext;
 
@@ -40,8 +43,11 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
 
     @Override
     protected <T> AbstractObject<T> getBeanGroovy(String beanName, String groovyPath) throws CoreException {
+        if (forbiddenGroovyPathSet.contains(groovyPath)) {
+            return null;
+        }
         if (StringUtils.isBlank(beanName)) {
-            beanName = groovyPath;
+            beanName = groovyPath.replace("/", ".").replace(".groovy", "");
         }
         AbstractObject<T> goe = beanMap.get(beanName);
         if (goe == null) {
@@ -56,6 +62,7 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
                     throw new CoreException(GroovyErrorCodes.ERROR_GROOVY_CLASSNOTFOUND, "Groovy " + groovyPath + " doesn't be found in classLoader " + classLoader);
                 Class<?> clazz = holder.getParsedClass();
                 if (!conditionalHandler.match(clazz)) {
+                    forbiddenGroovyPathSet.add(groovyPath);
                     LoggerEx.warn(TAG, "Execute create bean for " + clazz + " not match");
                     return null;
                 }
@@ -63,6 +70,7 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
 
             goe = new GroovyObjectEx<T>(groovyPath);
             AbstractObject oldObj = beanMap.putIfAbsent(beanName, goe);
+
             if (oldObj != null) {
                 goe = oldObj;
             } else {
