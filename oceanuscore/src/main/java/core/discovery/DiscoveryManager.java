@@ -2,7 +2,9 @@ package core.discovery;
 
 import core.common.InternalTools;
 import core.net.ContentPacketListener;
+import core.net.NetworkCommunicator;
 import core.net.data.RequestTransport;
+import script.utils.state.StateListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +26,7 @@ import java.util.Map;
 public abstract class DiscoveryManager {
     protected InternalTools internalTools;
 
-    protected int port = 16666;
+    protected int port = 36666;
     /**
      * start Aquaman's discovery at port 16666
      */
@@ -58,10 +60,10 @@ public abstract class DiscoveryManager {
      * @param version
      */
     public void unregisterServiceAndBroadcast(String owner, String project, String service, int version) {}
-
+    public abstract DiscoveryManager addStateListener(StateListener<Integer, NetworkCommunicator> stateListener);
+    public abstract boolean removeStateListener(StateListener<Integer, NetworkCommunicator> stateListener);
     public abstract Map<String, Object> memory();
 
-    public String toJSONString() {return "";}
+    public abstract DiscoveryInfo getDiscoveryInfo();
 
-    public void fromJSONString(String jsonString) {}
 }

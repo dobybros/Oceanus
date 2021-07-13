@@ -48,6 +48,7 @@ public final class DiscoveryRuntime extends CoreRuntime {
         }
         return nodeRegistrationHandler;
     }
+
     public static DiscoveryManager getDiscoveryManager() {
         if(discoveryManager == null) {
             synchronized (DiscoveryRuntime.class) {

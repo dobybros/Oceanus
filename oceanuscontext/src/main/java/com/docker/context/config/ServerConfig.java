@@ -22,6 +22,7 @@ public class ServerConfig {
     private String scaleInstanceId;
     private String publicDomain;
     private String localPath;
+    private String discoveryHost;
 
     public ServerConfig(Configuration configuration) {
         BaseConfiguration baseConfiguration = configuration.getBaseConfiguration();
@@ -36,6 +37,7 @@ public class ServerConfig {
         this.scaleInstanceId = baseConfiguration.getScaleInstanceId();
         this.publicDomain = baseConfiguration.getPublicDomain();
         this.localPath = configuration.getLocalPath();
+        this.discoveryHost = baseConfiguration.getDiscoveryHost();
     }
 
     public void setServerPort(Integer serverPort) {
@@ -116,5 +118,13 @@ public class ServerConfig {
 
     public String getPublicDomain() {
         return publicDomain;
+    }
+
+    public String getDiscoveryHost() {
+        return discoveryHost;
+    }
+
+    public void setDiscoveryHost(String discoveryHost) {
+        this.discoveryHost = discoveryHost;
     }
 }

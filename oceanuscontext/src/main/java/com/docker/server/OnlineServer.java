@@ -80,6 +80,7 @@ public class OnlineServer {
                 if(nodeRegistrationHandler == null) {
                     pendingServiceMap.put(service, future);
                     if(nodeRegisterStatus.compareAndSet(NODE_STATUS_NONE, NODE_STATUS_REGISTERING)) {
+                        configSystemProperties();
                         DiscoveryRuntime.getAndInitNodeRegistrationHandler(-1).startNode(baseConfiguration.getDiscoveryHost(), baseConfiguration.getRpcPort()).
                                 thenAccept(consumer).exceptionally(throwable -> {
                             throwable.printStackTrace();
@@ -99,6 +100,11 @@ public class OnlineServer {
             }
         }
         return future;
+    }
+
+    private void configSystemProperties() {
+        //这个是使用RUDP做微服务调用， 但是现在基本上没有使用， 所以做最小配置
+        System.setProperty("starfish.discovery.packet.send.pool.size", "1");
     }
 
     public static interface OnlineServerStartHandler {

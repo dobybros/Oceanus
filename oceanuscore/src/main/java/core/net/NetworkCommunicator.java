@@ -152,7 +152,7 @@ public abstract class NetworkCommunicator {
         registerPacketType(PACKET_TYPE_ERROR, ErrorPacket.class);
     }
 
-    protected void registerPacketType(short type, Class<? extends Packet> packetClass) {
+    public void registerPacketType(short type, Class<? extends Packet> packetClass) {
         if(packetClass == null) {
             if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("packetClass is null while registerPacketType, type " + type);
             return;
@@ -162,7 +162,7 @@ public abstract class NetworkCommunicator {
 //        LoggerHelper.logger.info("registerPacketType " + type + " packetClass " + packetClass + " for " + this);
     }
 
-    protected void unregisterPacketType(short type) {
+    public void unregisterPacketType(short type) {
         typePacketMap.remove(type);
     }
 
@@ -210,14 +210,14 @@ public abstract class NetworkCommunicator {
                         if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("resurrectPacket failed, because of contentClass is not found for contentType " + contentType + " type " + type);
                     }
                     break;
-                case PACKET_TYPE_SERVER_NAME:
-                case PACKET_TYPE_STRING:
-                case PACKET_TYPE_ERROR:
-                    SerializationStreamHandler serializationStreamHandler = NetRuntime.getSerializationStreamHandler();
-                    return serializationStreamHandler.convert(is, packetClass);
+//                case PACKET_TYPE_SERVER_NAME:
+//                case PACKET_TYPE_STRING:
+//                case PACKET_TYPE_ERROR:
+//                    return NetRuntime.getSerializationStreamHandler().convert(is, packetClass);
                 default:
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("resurrectPacket failed, because of packetType is illegal, contentType " + contentType + " type " + type);
-                    break;
+                    return NetRuntime.getSerializationStreamHandler().convert(is, packetClass);
+//                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("resurrectPacket failed, because of packetType is illegal, contentType " + contentType + " type " + type);
+//                    break;
             }
         }
         return null;

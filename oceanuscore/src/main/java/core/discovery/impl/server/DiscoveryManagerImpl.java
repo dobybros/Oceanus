@@ -4,6 +4,7 @@ import chat.logs.LoggerEx;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import core.common.CoreRuntime;
+import core.discovery.DiscoveryInfo;
 import core.discovery.DiscoveryManager;
 import core.discovery.data.discovery.*;
 import core.discovery.errors.DiscoveryErrorCodes;
@@ -15,6 +16,7 @@ import core.net.NetRuntime;
 import core.net.NetworkCommunicator;
 import core.net.adapters.data.ErrorPacket;
 import core.net.data.RequestTransport;
+import script.utils.state.StateListener;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -37,7 +39,7 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
      */
     ConcurrentHashMap<String, Service> serviceMap = new ConcurrentHashMap<>();
     ConcurrentHashMap<String, ConcurrentSkipListSet<Long>> serviceNodesMap = new ConcurrentHashMap<>();
-
+    private DiscoveryInfo discoveryInfo = new DiscoveryInfo(serviceNodesMap, nodeMap);
     final ConcurrentHashMap<Class<? extends RequestTransport<?>>, Class<? extends ContentPacketListener<? extends RequestTransport<?>>>> contentPacketHandlerMap = new ConcurrentHashMap<>();
 
     @Override
@@ -57,42 +59,12 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
         memoryMap.put("contentPacketHandlerMap", contentPacketHandlerMap);
         return memoryMap;
     }
-    public class DiscoveryInfo {
-        private ConcurrentHashMap<String, ConcurrentSkipListSet<Long>> serviceNodesMap;
-        private ConcurrentHashMap<Long, Node> nodeMap;
-
-        public ConcurrentHashMap<String, ConcurrentSkipListSet<Long>> getServiceNodesMap() {
-            return serviceNodesMap;
-        }
-
-        public void setServiceNodesMap(ConcurrentHashMap<String, ConcurrentSkipListSet<Long>> serviceNodesMap) {
-            this.serviceNodesMap = serviceNodesMap;
-        }
-
-        public ConcurrentHashMap<Long, Node> getNodeMap() {
-            return nodeMap;
-        }
-
-        public void setNodeMap(ConcurrentHashMap<Long, Node> nodeMap) {
-            this.nodeMap = nodeMap;
-        }
-    }
 
     @Override
-    public String toJSONString() {
-        DiscoveryInfo discoveryInfo = new DiscoveryInfo();
-        discoveryInfo.setServiceNodesMap(serviceNodesMap);
-        discoveryInfo.setNodeMap(nodeMap);
-
-        return JSONObject.toJSONString(discoveryInfo);
+    public DiscoveryInfo getDiscoveryInfo() {
+        return discoveryInfo;
     }
 
-    @Override
-    public void fromJSONString(String jsonString) {
-        DiscoveryInfo discoveryInfo = JSON.parseObject(jsonString, DiscoveryInfo.class);
-        nodeMap = discoveryInfo.nodeMap;
-        serviceNodesMap = discoveryInfo.serviceNodesMap;
-    }
     public DiscoveryManagerImpl() {
         registerContentPacketClass(NodeRegistrationRequest.class, NodeRegistrationServerHandler.class);
         registerContentPacketClass(ServiceRegistrationRequest.class, ServiceRegistrationServerHandler.class);
@@ -101,7 +73,19 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
         registerContentPacketClass(LatencyCheckRequest.class, LatencyCheckHandler.class);
         registerContentPacketClass(NodeRegistrationRequest.class, NodeRegistrationServerHandler.class);
     }
+    public DiscoveryManager addStateListener(StateListener<Integer, NetworkCommunicator> stateListener) {
+        if(networkCommunicator != null) {
+            networkCommunicator.addStateListener(stateListener);
+        }
+        return this;
+    }
 
+    public boolean removeStateListener(StateListener<Integer, NetworkCommunicator> stateListener) {
+        if(networkCommunicator != null) {
+            return networkCommunicator.removeStateListener(stateListener);
+        }
+        return false;
+    }
     @Override
     public void start() throws IOException {
         start(port);

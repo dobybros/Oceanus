@@ -3,6 +3,7 @@ package core.discovery.impl.client;
 import chat.logs.LoggerEx;
 import core.discovery.data.FailedResponse;
 import core.discovery.errors.DiscoveryErrorCodes;
+import core.discovery.utils.DiscoveryDomainFormatUtils;
 import core.discovery.utils.RandomDraw;
 import core.net.NetworkCommunicator;
 import core.net.adapters.data.ContentPacket;
@@ -23,7 +24,9 @@ public class DiscoveryHostManager {
     private static final String TAG = DiscoveryHostManager.class.getSimpleName();
     private String host;
     private int port;
-    private final List<InetSocketAddress> discoveryAddresses = new ArrayList<>();
+    //domain format must contains "discovery_{[min]~[max]}"
+//    private String discoveryDomainFormat = "local.discovery_{0~2}.seastarnet.cn";
+    private List<InetSocketAddress> discoveryAddresses = new ArrayList<>();
     private InetSocketAddress usingAddress;
 
     public List<InetSocketAddress> getDiscoveryAddresses() {
@@ -37,28 +40,32 @@ public class DiscoveryHostManager {
         return memoryMap;
     }
 
-    public DiscoveryHostManager(String hosts) {
-        ValidateUtils.checkNotNull(hosts);
-
-        String[] strs = hosts.split(",");
-        for(String str : strs) {
-            String[] hostPort = str.split(":");
-            if(hostPort.length == 2) {
-                String host = hostPort[0];
-                String portStr = hostPort[1];
-                Integer port = 16666;
-                try {
-                    port = Integer.parseInt(portStr);
-                } catch(Throwable t) {
-                    LoggerEx.error(TAG, "Illegal port string " + portStr);
-                }
-                discoveryAddresses.add(new InetSocketAddress(host, port));
-            }
-        }
-
-        if(discoveryAddresses.isEmpty())
-            throw new IllegalArgumentException("Need configure discovery host \"discovery.host\" in oceanus.properties");
+    public DiscoveryHostManager(String discoveryDomainFormat) {
+        discoveryAddresses = DiscoveryDomainFormatUtils.parseAddresses(discoveryDomainFormat);
     }
+
+//    public DiscoveryHostManager(String hosts) {
+//        ValidateUtils.checkNotNull(hosts);
+//
+//        String[] strs = hosts.split(",");
+//        for(String str : strs) {
+//            String[] hostPort = str.split(":");
+//            if(hostPort.length == 2) {
+//                String host = hostPort[0];
+//                String portStr = hostPort[1];
+//                Integer port = 16666;
+//                try {
+//                    port = Integer.parseInt(portStr);
+//                } catch(Throwable t) {
+//                    LoggerEx.error(TAG, "Illegal port string " + portStr);
+//                }
+//                discoveryAddresses.add(new InetSocketAddress(host, port));
+//            }
+//        }
+//
+//        if(discoveryAddresses.isEmpty())
+//            throw new IllegalArgumentException("Need configure discovery host \"discovery.host\" in oceanus.properties");
+//    }
 
     public void init() {
         //Block to handle aquaman address.

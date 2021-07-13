@@ -83,6 +83,7 @@ public class RUDPEXNetworkCommunicator extends NetworkCommunicator {
                 datagramSocket = new DatagramSocket(port);
             } else {
                 datagramSocket = new DatagramSocket();
+//                datagramSocket.getOption()
             }
             connectStateMachine.gotoState(CONNECTIVITY_STATE_CONNECTED, "Connected at" + (port == -1 ? " any" : "") + " port " + (port == -1? datagramSocket.getLocalPort() : port));
         } catch (Throwable e) {
