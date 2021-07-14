@@ -29,7 +29,7 @@ public class DiscoveryDomainFormatUtils {
                             List<InetSocketAddress> discoveryAddresses = new ArrayList<>();
                             if(max >= min && port > 0) {
                                 String firstPart = discoveryDomainFormat.substring(0, pos + startStr.length() - 1);
-                                String tailPart = discoveryDomainFormat.substring(endPos + 1);
+                                String tailPart = discoveryDomainFormat.substring(endPos + 1, portPos);
                                 for(int i = min; i <= max; i++) {
                                     InetSocketAddress inetSocketAddress = new InetSocketAddress(firstPart + i + tailPart, port);
                                     discoveryAddresses.add(inetSocketAddress);

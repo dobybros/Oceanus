@@ -3,23 +3,20 @@ package com.docker.rpc.remote.stub;
 import chat.config.BaseConfiguration;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
-import chat.json.Result;
 import chat.logs.LoggerEx;
-import com.alibaba.fastjson.JSON;
+import com.docker.oceansbean.BeanFactory;
 import com.docker.rpc.*;
 import com.docker.rpc.async.AsyncRpcFuture;
-import com.docker.rpc.remote.MethodMapping;
 import com.docker.server.OnlineServer;
 import com.docker.utils.RandomDraw;
-import com.docker.utils.ScriptHttpUtils;
-import core.common.ErrorCodes;
 import core.discovery.node.Node;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import com.docker.oceansbean.BeanFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -310,6 +307,7 @@ public class RemoteServerHandler {
                     if(response != null)
                         return response;
                 } catch (Throwable t) {
+                    t.printStackTrace();
                     if (t instanceof CoreException) {
                         CoreException ce = (CoreException) t;
                         switch (ce.getCode()) {

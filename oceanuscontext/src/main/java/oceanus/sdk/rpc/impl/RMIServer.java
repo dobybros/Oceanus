@@ -1,4 +1,4 @@
-package com.docker.rpc.impl;
+package oceanus.sdk.rpc.impl;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

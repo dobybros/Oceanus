@@ -6,6 +6,7 @@ import chat.logs.LoggerEx;
 import com.docker.rpc.*;
 import com.docker.rpc.async.AsyncCallbackRequest;
 import com.docker.rpc.remote.stub.RpcCacheManager;
+import oceanus.sdk.rpc.impl.RMIServer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 

@@ -1,7 +1,7 @@
 package com.docker.rpc.remote;
 
 import com.docker.rpc.RPCRequest;
-import com.docker.rpc.impl.RMIServer;
+import oceanus.sdk.rpc.impl.RMIServer;
 
 public interface RpcServerInterceptor {
     public Object invoke(RPCRequest rpcRequest, RMIServer rmiServer);

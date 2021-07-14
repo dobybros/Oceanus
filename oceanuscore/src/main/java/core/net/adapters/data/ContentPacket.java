@@ -62,7 +62,7 @@ public class ContentPacket<T> extends Packet {
         Long crc = classCRCCacheMap.get(contentClass);
         if(crc == null) {
             java.util.zip.CRC32 x1 = new java.util.zip.CRC32();
-            x1.update((contentClass.getName()).getBytes());
+            x1.update((contentClass.getSimpleName()).getBytes());
             long value = x1.getValue();
             classCRCCacheMap.putIfAbsent(contentClass, value);
             crcClassCacheMap.putIfAbsent(value, contentClass);
