@@ -12,6 +12,7 @@ import com.docker.rpc.remote.RemoteService;
 import com.docker.rpc.remote.RpcServerInterceptor;
 import com.docker.rpc.remote.stub.RpcCacheManager;
 import com.docker.server.OnlineServer;
+import groovy.lang.GroovyObject;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 import script.core.runtime.groovy.object.GroovyObjectEx;
@@ -227,6 +228,9 @@ public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandler {
             for (Method method : methods) {
                 if (method.isSynthetic() || method.getModifiers() == Modifier.PRIVATE)
                     continue;
+                if(method.getDeclaringClass().isAssignableFrom(GroovyObject.class)) {
+                    continue;
+                }
                 SkelectonMethodMapping mm = new SkelectonMethodMapping(method);
                 mm.setRemoteService(serverAdapter);
                 long value = ReflectionUtil.getCrc(method, service);

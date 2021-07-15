@@ -6,7 +6,6 @@ import chat.utils.TimerTaskEx;
 import com.docker.rpc.RPCClientAdapter;
 import com.docker.rpc.RPCClientAdapterMap;
 import com.docker.rpc.RPCRequest;
-import com.docker.rpc.remote.stub.RemoteServers;
 import com.docker.rpc.remote.stub.RemoteServersManager;
 import com.docker.rpc.remote.stub.RpcCacheManager;
 import core.discovery.node.Node;
@@ -120,7 +119,7 @@ public class AsyncRpcFuture {
                     hasServer = true;
                     String ip = null;
                     Integer port = null;
-                    ip = server.getRpcIP();
+                    ip = server.getRpcIp();
                     port = server.getRpcPort();
 //                    if (rpcClientAdapterMap.isEnableSsl()) {
 //                    } else {

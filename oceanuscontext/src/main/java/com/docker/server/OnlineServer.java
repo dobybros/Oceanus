@@ -81,7 +81,7 @@ public class OnlineServer {
                     pendingServiceMap.put(service, future);
                     if(nodeRegisterStatus.compareAndSet(NODE_STATUS_NONE, NODE_STATUS_REGISTERING)) {
                         configSystemProperties();
-                        DiscoveryRuntime.getAndInitNodeRegistrationHandler(-1).startNode(baseConfiguration.getDiscoveryHost(), baseConfiguration.getRpcPort()).
+                        DiscoveryRuntime.getAndInitNodeRegistrationHandler(-1).startNode(baseConfiguration.getDiscoveryHost(), ipHolder.getIp(), baseConfiguration.getRpcPort()).
                                 thenAccept(consumer).exceptionally(throwable -> {
                             throwable.printStackTrace();
                             LoggerEx.error(TAG, "Register node to "  + baseConfiguration.getDiscoveryHost() + " failed, " + throwable);

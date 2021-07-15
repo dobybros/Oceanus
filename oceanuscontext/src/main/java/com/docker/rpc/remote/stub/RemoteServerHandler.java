@@ -161,7 +161,7 @@ public class RemoteServerHandler {
     }
 
     private CompletableFuture<?> sendAsyncMethodRequest(MethodRequest request, Node server, List<Long> keptSortedServers) throws CoreException {
-        String ip = server.getRpcIP();
+        String ip = server.getRpcIp();
 
         if(ip == null) {
             throw new CoreException(ChatErrorCodes.ERROR_NODE_IP_NOT_FOUND, "Node ip doesn't be found, " + server + " request " + request);
@@ -232,7 +232,7 @@ public class RemoteServerHandler {
 //    }
 
     private MethodResponse sendMethodRequest(MethodRequest request, Node server) throws CoreException {
-        String ip = server.getRpcIP();
+        String ip = server.getRpcIp();
 
         if(ip == null) {
             throw new CoreException(ChatErrorCodes.ERROR_NODE_IP_NOT_FOUND, "Node ip doesn't be found, " + server + " request " + request);

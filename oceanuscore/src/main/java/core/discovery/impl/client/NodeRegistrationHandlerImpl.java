@@ -20,14 +20,11 @@ import oshi.hardware.NetworkIF;
 import script.utils.state.StateMachine;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
 //    private NetworkCommunicatorFactory networkCommunicatorFactory = NetRuntime.getNetworkCommunicatorFactory();
@@ -57,6 +54,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
      */
     private ServiceNodesManager serviceNodesManager;
     private int rpcPort;
+    private String rpcIp;
     private ConcurrentHashMap<String, Service> serviceMap = new ConcurrentHashMap<>();
 
     @Override
@@ -124,6 +122,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         errorPacket = null;
         node = new Node();
         node.setRpcPort(rpcPort);
+        node.setRpcIp(rpcIp);
         node.setPort(publicUdpPort);
         if(networkCommunicator == null) {
             if(publicUdpPort == -1) {
@@ -294,7 +293,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
     }
 
     @Override
-    public synchronized CompletableFuture<NodeRegistrationHandler> startNode(String discoveryHosts, int rpcPort) {
+    public synchronized CompletableFuture<NodeRegistrationHandler> startNode(String discoveryHosts, String rpcIp, int rpcPort) {
         if(connectivityState == null)
             throw new IllegalStateException("NodeRegistrationHandler need init first before start node.");
         if(connectivityState.getCurrentState() != CONNECTIVITY_STATE_NONE)
@@ -302,6 +301,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         if(startNodeFuture != null)
             throw new IllegalStateException("NodeRegistrationHandler is starting, state " + connectivityState.getCurrentState());
 
+        this.rpcIp = rpcIp;
         this.rpcPort = rpcPort;
         startNodeFuture = new CompletableFuture<>();
 

@@ -1,8 +1,5 @@
 package core.discovery.node;
 
-import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
-
 import java.util.List;
 
 /**
@@ -47,7 +44,7 @@ public class Node {
      * RPC port
      */
     private int rpcPort;
-
+    private String rpcIp;
     /**
      * Need hole punching or not.
      */
@@ -105,12 +102,20 @@ public class Node {
         this.serverNameCRC = serverNameCRC;
     }
 
-    public String getRpcIP() {
-//        List<String> ips = server.getIps();
-        String ip = null;
-        if(ips != null) {
-            ip = ips.get(ips.size() - 1);
-        }
-        return ip;
+//    public String getRpcIP() {
+////        List<String> ips = server.getIps();
+//        String ip = null;
+//        if(ips != null) {
+//            ip = ips.get(ips.size() - 1);
+//        }
+//        return ip;
+//    }
+
+    public String getRpcIp() {
+        return rpcIp;
+    }
+
+    public void setRpcIp(String rpcIp) {
+        this.rpcIp = rpcIp;
     }
 }
