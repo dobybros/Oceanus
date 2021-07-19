@@ -67,7 +67,7 @@ public class RpcRequestCall {
             } else {
                 message = t.getMessage();
             }
-            throw new RemoteException(message, t);
+            throw new RemoteException(message);
         }
     }
     public static synchronized RpcRequestCall getInstance(){
