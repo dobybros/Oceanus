@@ -28,14 +28,10 @@ public class RMIServerImplWrapper extends ClassAnnotationGlobalHandler {
 
 	RPCServerMethodInvocation serverMethodInvocation;
 
-	public RMIServer initServer(boolean enableSsl) {
+	public RMIServer initServer() {
 		if(server == null) {
 			try {
-				if (enableSsl) {
-					server = new RMIServerImpl(port + 1, this, enableSsl);
-				} else {
-					server = new RMIServerImpl(port + 1, this);
-				}
+				server = new RMIServerImpl(port + 1, this);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}

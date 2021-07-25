@@ -1,8 +1,7 @@
 package com.docker.rpc;
 
 import chat.logs.LoggerEx;
-import com.docker.rpc.impl.ExpireListener;
-import com.docker.rpc.impl.RMIClientHandler;
+import com.docker.rpc.impl.RMIClientHandlerEx;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -57,26 +56,29 @@ public class RPCClientAdapterMap {
         if (clientAdapter == null) {
             if (ip == null)
                 return null;
-            RMIClientHandler rmiClient = new RMIClientHandler();
+            RMIClientHandlerEx rmiClient = new RMIClientHandlerEx();
             rmiClient.setRmiPort(rmiPort);
             rmiClient.setServerHost(ip);
             rmiClient.setRmiId(serverName);
-            rmiClient.setEnableSsl(enableSsl);
-            if (enableSsl) {
-                rmiClient.setRpcSslClientTrustJksPath(rpcSslClientTrustJksPath);
-                rmiClient.setRpcSslServerJksPath(rpcSslServerJksPath);
-                rmiClient.setRpcSslJksPwd(rpcSslJksPwd);
-            }
+//            rmiClient.setEnableSsl(enableSsl);
+//            if (enableSsl) {
+//                rmiClient.setRpcSslClientTrustJksPath(rpcSslClientTrustJksPath);
+//                rmiClient.setRpcSslServerJksPath(rpcSslServerJksPath);
+//                rmiClient.setRpcSslJksPwd(rpcSslJksPwd);
+//            }
 //			rmiClient.setServerAdapterMap(serverAdapterMap);
-            rmiClient.setExpireTime(expireTime, new ExpireListener<RPCClientAdapter>() {
-                @Override
-                public boolean expired(RPCClientAdapter handler, long touch, long expireTime) {
-                    RPCClientAdapter removedHandler = RPCClientAdapterMap.this.unregisterServer(serverName);
-                    if (removedHandler == null) {
-                        handler.clientDestroy();
-                    }
-                    return true;
+            rmiClient.setDisconnectedAfterRetryListener((handler) -> {
+                RPCClientAdapter removedHandler = RPCClientAdapterMap.this.unregisterServer(serverName);
+                if (removedHandler == null) {
+                    handler.clientDestroy();
                 }
+            });
+            rmiClient.setExpireTime(expireTime, (handler, touch, expireTime) -> {
+                RPCClientAdapter removedHandler = RPCClientAdapterMap.this.unregisterServer(serverName);
+                if (removedHandler == null) {
+                    handler.clientDestroy();
+                }
+                return true;
             });
             clientAdapter = rmiClient;
 

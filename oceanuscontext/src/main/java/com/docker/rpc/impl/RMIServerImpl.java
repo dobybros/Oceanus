@@ -29,8 +29,6 @@ import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.servlets.Tracker;
 import script.memodb.ObjectId;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
-import javax.rmi.ssl.SslRMIServerSocketFactory;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
@@ -44,11 +42,6 @@ public class RMIServerImpl extends UnicastRemoteObject implements RMIServer {
 
     public RMIServerImpl(Integer port, RMIServerImplWrapper serverWrapper) throws RemoteException {
         super(port);
-        this.serverWrapper = serverWrapper;
-    }
-
-    public RMIServerImpl(Integer port, RMIServerImplWrapper serverWrapper, boolean enableSsl) throws RemoteException {
-        super(port, new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory(null, null, true));
         this.serverWrapper = serverWrapper;
     }
 
