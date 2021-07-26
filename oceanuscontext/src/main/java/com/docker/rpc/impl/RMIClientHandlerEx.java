@@ -203,9 +203,9 @@ public class RMIClientHandlerEx extends RPCClientAdapter {
         status.set(STATUS_TERMINATED);
         expireListener = null;
         if(registry != null) {
-            try {
-                registry.unbind(rmiId);
-            } catch (Throwable ignored) { }
+//            try {
+//                registry.unbind(rmiId);
+//            } catch (Throwable ignored) { }
             registry = null;
         }
         if (server != null) {
