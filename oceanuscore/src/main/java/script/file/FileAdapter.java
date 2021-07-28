@@ -359,7 +359,7 @@ public abstract class FileAdapter {
 
     /**
      * @param basePath
-     * @param pathPrefix
+     * @param pathPrefix：可以做权限
      * @param datePath
      * @param rId
      * @return
@@ -393,33 +393,33 @@ public abstract class FileAdapter {
         /**
          * 上传文件的路径
          */
-        String uploadUrl;
+        private String uploadUrl;
         /**
          * 资源id、或路径
          */
-        String rId;
+        private String rId;
 
-        UploadResultInfo() {
+        public UploadResultInfo() {
         }
 
-        UploadResultInfo(String uploadUrl, String rId) {
+        public UploadResultInfo(String uploadUrl, String rId) {
             this.uploadUrl = uploadUrl;
             this.rId = rId;
         }
 
-        String getUploadUrl() {
+        public String getUploadUrl() {
             return uploadUrl;
         }
 
-        void setUploadUrl(String uploadUrl) {
+        public void setUploadUrl(String uploadUrl) {
             this.uploadUrl = uploadUrl;
         }
 
-        String getRId() {
+        public String getRId() {
             return rId;
         }
 
-        void setRId(String rId) {
+        public void setRId(String rId) {
             this.rId = rId;
         }
     }
