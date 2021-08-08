@@ -1,8 +1,6 @@
 package core.discovery.impl.server;
 
 import chat.logs.LoggerEx;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import core.common.CoreRuntime;
 import core.discovery.DiscoveryInfo;
 import core.discovery.DiscoveryManager;
@@ -21,8 +19,10 @@ import script.utils.state.StateListener;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
@@ -105,6 +105,13 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
                         try {
                             Constructor<? extends ContentPacketListener<?>> constructor = valueClass.getConstructor(DiscoveryManager.class);
                             ContentPacketListener contentPacketListener = constructor.newInstance(DiscoveryManagerImpl.this);
+                            if(contentPacketListenerCreatedListener != null) {
+                                try {
+                                    contentPacketListenerCreatedListener.created(valueClass, contentPacketListener);
+                                } catch (Throwable throwable) {
+                                    LoggerEx.error(TAG, "contentPacketListenerCreatedListener " + contentPacketListenerCreatedListener + " callback failed, " + throwable.getMessage() + " for " + contentPacketListener);
+                                }
+                            }
                             networkCommunicator.addContentPacketListener(keyClass, contentPacketListener);
                         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();

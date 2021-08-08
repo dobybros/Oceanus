@@ -16,7 +16,6 @@ import script.utils.state.StateMachine;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -744,7 +743,7 @@ public abstract class NetworkCommunicator {
     }
 
 
-    public boolean removePacketListener(short type, PacketListener<StringPacket> packetListener) {
+    public boolean removePacketListener(short type, PacketListener packetListener) {
         CopyOnWriteArrayList<PacketListener> listeners = typePacketListeners.get(type);
         if(listeners != null)
             return listeners.remove(packetListener);

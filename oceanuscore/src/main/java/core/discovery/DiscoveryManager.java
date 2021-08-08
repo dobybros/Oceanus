@@ -26,7 +26,8 @@ import java.util.Map;
 public abstract class DiscoveryManager {
     protected InternalTools internalTools;
 
-    protected int port = 36666;
+    protected int port = 16666;
+    protected ContentPacketListenerCreatedListener contentPacketListenerCreatedListener;
     /**
      * start Aquaman's discovery at port 16666
      */
@@ -66,4 +67,12 @@ public abstract class DiscoveryManager {
 
     public abstract DiscoveryInfo getDiscoveryInfo();
 
+    public DiscoveryManager setContentPacketListenerCreatedListener(ContentPacketListenerCreatedListener contentPacketListenerCreatedListener) {
+        this.contentPacketListenerCreatedListener = contentPacketListenerCreatedListener;
+        return this;
+    }
+
+    public interface ContentPacketListenerCreatedListener {
+        void created(Class<? extends ContentPacketListener<?>> clazz, ContentPacketListener<?> contentPacketListener);
+    }
 }
