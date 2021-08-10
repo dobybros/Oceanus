@@ -26,13 +26,4 @@ public class RpcBean {
         return instance.getDockerRpcServerAdapter();
     }
 
-    @OceanusBean
-    public com.docker.rpc.impl.RMIServerImplWrapper dockerRpcServerSsl() {
-        return instance.getDockerRpcServerSsl();
-    }
-
-    @OceanusBean
-    public RMIServerHandler dockerRpcServerAdapterSsl() {
-        return instance.getDockerRpcServerAdapterSsl();
-    }
 }

@@ -8,17 +8,31 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class RequestTransport<R extends ResponseTransport> extends Transport {
+    private static final AtomicLong counter = new AtomicLong(0);
+
     private static ConcurrentHashMap<Class<?>, Class<? extends ResponseTransport>> cachedMap = new ConcurrentHashMap<>();
 
+    private Long requestCounter;
+
     public RequestTransport() {
+        requestCounter = counter.getAndIncrement();
         transportId = UUID.randomUUID().toString().replace("-", "");
     }
 
     public RequestTransport renewTransportId() {
         transportId = UUID.randomUUID().toString().replace("-", "");
         return this;
+    }
+
+    public Long getRequestCounter() {
+        return requestCounter;
+    }
+
+    public void setRequestCounter(Long requestCounter) {
+        this.requestCounter = requestCounter;
     }
 
     @Override

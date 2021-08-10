@@ -14,8 +14,6 @@ import oceanus.sdk.rpc.impl.RMIServer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
-import javax.rmi.ssl.SslRMIServerSocketFactory;
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -37,8 +35,6 @@ public class RMIServerHandler {
     private Registry registry;
     private RMIServer server;
     private RMIServerImplWrapper serverImpl;
-
-    private boolean enableSsl = false;
 
     private static final String TAG = "RMI";
 
@@ -67,19 +63,13 @@ public class RMIServerHandler {
         BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
         rmiId = baseConfiguration.getServer();
         try {
-            if(enableSsl && !rmiId.endsWith(RMIID_SSL_SUFFIX))
-                rmiId = rmiId + RMIID_SSL_SUFFIX;
+//            if(enableSsl && !rmiId.endsWith(RMIID_SSL_SUFFIX))
+//                rmiId = rmiId + RMIID_SSL_SUFFIX;
             LoggerEx.info(TAG, "InetAddress host name : " + InetAddress.getLocalHost().getHostName() + ", InetAddress host address : " + InetAddress.getLocalHost().getHostAddress());
             System.setProperty("java.rmi.server.hostname", ip);
-            if(enableSsl) {
-                System.setProperty("java.rmi.server.sslport", String.valueOf(rmiPort)); //I made it up for pass port to somewhere else.
-                setSslProp();
-                registry = LocateRegistry.createRegistry(rmiPort,  new SslRMIClientSocketFactory(), new SslRMIServerSocketFactory(null, null, true));
-            }else {
-                System.setProperty("java.rmi.server.port", String.valueOf(rmiPort)); //I made it up for pass port to somewhere else.
-                registry = LocateRegistry.createRegistry(rmiPort);
-            }
-            server = serverImpl.initServer(enableSsl);
+            System.setProperty("java.rmi.server.port", String.valueOf(rmiPort)); //I made it up for pass port to somewhere else.
+            registry = LocateRegistry.createRegistry(rmiPort);
+            server = serverImpl.initServer();
 
 //            registry = LocateRegistry.createRegistry(rmiPort);
 //            server = serverImpl.initServer();
@@ -91,30 +81,30 @@ public class RMIServerHandler {
             LoggerEx.fatal(TAG, "RMIClientHandler server start failed. Server will be shutdown... " + ExceptionUtils.getFullStackTrace(t));
             OnlineServer.shutdownNow();
             System.exit(0);
-        } finally {
+        } /*finally {
             resetSslProp();
-        }
+        }*/
     }
 
-    private void setSslProp() {
-//        String pass = "liyazhou";
-        System.setProperty("javax.net.ssl.debug", "all");
-//        System.setProperty("javax.net.ssl.trustStore", "/Users/liyazhou/workspace/tcpssl/certificate/clientTrust.jks");
-        System.setProperty("javax.net.ssl.trustStore", rpcSslClientTrustJksPath);
-        System.setProperty("javax.net.ssl.trustStorePassword", rpcSslJksPwd);
-//        System.setProperty("javax.net.ssl.keyStore", "/Users/liyazhou/workspace/tcpssl/certificate/server.jks");
-        System.setProperty("javax.net.ssl.keyStore", rpcSslServerJksPath);
-        System.setProperty("javax.net.ssl.keyStorePassword", rpcSslJksPwd);
-        System.setProperty("https.protocols", "TLSv1.2,TLSv1.1,SSLv3");
-    }
+//    private void setSslProp() {
+////        String pass = "liyazhou";
+//        System.setProperty("javax.net.ssl.debug", "all");
+////        System.setProperty("javax.net.ssl.trustStore", "/Users/liyazhou/workspace/tcpssl/certificate/clientTrust.jks");
+//        System.setProperty("javax.net.ssl.trustStore", rpcSslClientTrustJksPath);
+//        System.setProperty("javax.net.ssl.trustStorePassword", rpcSslJksPwd);
+////        System.setProperty("javax.net.ssl.keyStore", "/Users/liyazhou/workspace/tcpssl/certificate/server.jks");
+//        System.setProperty("javax.net.ssl.keyStore", rpcSslServerJksPath);
+//        System.setProperty("javax.net.ssl.keyStorePassword", rpcSslJksPwd);
+//        System.setProperty("https.protocols", "TLSv1.2,TLSv1.1,SSLv3");
+//    }
 
-    private void resetSslProp() {
-        System.getProperties().remove("javax.net.ssl.debug");
-        System.getProperties().remove("javax.net.ssl.trustStore");
-        System.getProperties().remove("javax.net.ssl.trustStorePassword");
-        System.getProperties().remove("javax.net.ssl.keyStore");
-        System.getProperties().remove("javax.net.ssl.keyStorePassword");
-    }
+//    private void resetSslProp() {
+//        System.getProperties().remove("javax.net.ssl.debug");
+//        System.getProperties().remove("javax.net.ssl.trustStore");
+//        System.getProperties().remove("javax.net.ssl.trustStorePassword");
+//        System.getProperties().remove("javax.net.ssl.keyStore");
+//        System.getProperties().remove("javax.net.ssl.keyStorePassword");
+//    }
 
     public synchronized void serverDestroy() {
         try {
@@ -265,14 +255,6 @@ public class RMIServerHandler {
 
     public void setServerImpl(RMIServerImplWrapper serverImpl) {
         this.serverImpl = serverImpl;
-    }
-
-    public boolean isEnableSsl() {
-        return enableSsl;
-    }
-
-    public void setEnableSsl(boolean enableSsl) {
-        this.enableSsl = enableSsl;
     }
 
     public IPHolder getIpHolder() {

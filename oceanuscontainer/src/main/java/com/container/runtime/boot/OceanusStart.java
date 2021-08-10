@@ -111,7 +111,7 @@ public class OceanusStart {
         bootManager.init();
         RMIServerHandler dockerRpcServerAdapter = (RMIServerHandler) BeanFactory.getBeanByName("dockerRpcServerAdapter");
         dockerRpcServerAdapter.serverStart();
-        RMIServerHandler dockerRpcServerAdapterSsl = (RMIServerHandler) BeanFactory.getBeanByName("dockerRpcServerAdapterSsl");
-        dockerRpcServerAdapterSsl.serverStart();
+//        RMIServerHandler dockerRpcServerAdapterSsl = (RMIServerHandler) BeanFactory.getBeanByName("dockerRpcServerAdapterSsl");
+//        dockerRpcServerAdapterSsl.serverStart();
     }
 }

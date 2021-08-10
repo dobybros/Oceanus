@@ -98,33 +98,6 @@ class ContextBeanApp {
         return classLoaderFactory;
     }
 
-    synchronized RMIServerHandler getDockerRpcServerAdapterSsl() {
-        if (dockerRpcServerAdapterSsl == null) {
-            dockerRpcServerAdapterSsl = new RMIServerHandler();
-            dockerRpcServerAdapterSsl.setServerImpl(getDockerRpcServerSsl());
-            dockerRpcServerAdapterSsl.setIpHolder(getIpHolder());
-            dockerRpcServerAdapterSsl.setRmiPort(baseConfiguration.getSslRpcPort());
-            dockerRpcServerAdapterSsl.setEnableSsl(true);
-            dockerRpcServerAdapterSsl.setRpcSslClientTrustJksPath(baseConfiguration.getRpcSslClientTrustJksPath());
-            dockerRpcServerAdapterSsl.setRpcSslServerJksPath(baseConfiguration.getRpcSslServerJksPath());
-            dockerRpcServerAdapterSsl.setRpcSslJksPwd(baseConfiguration.getRpcSslJksPwd());
-        }
-        return dockerRpcServerAdapterSsl;
-    }
-
-    synchronized RMIServerImplWrapper getDockerRpcServerSsl() {
-        if (dockerRpcServerSsl == null) {
-            try {
-                dockerRpcServerSsl = getRpcServerSsl();
-//                dockerRpcServerSsl = new com.docker.rpc.impl.RMIServerImplWrapper(Integer.valueOf(getRpcPort()));
-                dockerRpcServerSsl.setRmiServerHandler(getDockerRpcServerAdapterSsl());
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-        return dockerRpcServerSsl;
-    }
-
     synchronized RMIServerHandler getDockerRpcServerAdapter() {
         if (dockerRpcServerAdapter == null) {
             dockerRpcServerAdapter = new RMIServerHandler();

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Description：
  */
 public class DefaultContextFactory implements ContextFactory {
-    private Map<RuntimeContext, Context> runtimeContextContextMap = new ConcurrentHashMap<>();
+    private final Map<RuntimeContext, Context> runtimeContextContextMap = new ConcurrentHashMap<>();
     @Override
     public Context get(RuntimeContext runtimeContext) {
         Context context = runtimeContextContextMap.get(runtimeContext);

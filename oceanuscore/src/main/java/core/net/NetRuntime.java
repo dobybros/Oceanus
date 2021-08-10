@@ -7,6 +7,8 @@ import core.net.serializations.SerializationStreamFactory;
 import core.net.serializations.SerializationStreamHandler;
 import core.net.serializations.handlers.FastJsonSerializationStreamHandler;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 public final class NetRuntime extends CoreRuntime {
     private static SerializationStreamFactory serializationStreamFactory = new SerializationStreamFactory();
     private static Class<? extends SerializationStreamHandler> serializationStreamHandlerClass;
@@ -78,5 +80,8 @@ public final class NetRuntime extends CoreRuntime {
 
     public static Long getServerNameCRC() {
         return getNetworkCommunicatorFactory().getServerNameCRC();
+    }
+    public static ScheduledExecutorService getScheduledExecutorService() {
+        return getInternalTools().getScheduledExecutorService();
     }
 }

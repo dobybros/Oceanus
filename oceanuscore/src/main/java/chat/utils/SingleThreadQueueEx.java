@@ -2,7 +2,6 @@ package chat.utils;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -10,9 +9,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Description：
  */
 public class SingleThreadQueueEx<T> implements Runnable {
-    private ConcurrentLinkedQueue<T> queue = new ConcurrentLinkedQueue<>();
-    private ExecutorService threadPoolExecutor;
-    private AtomicBoolean isRunning = new AtomicBoolean(false);
+    private final ConcurrentLinkedQueue<T> queue = new ConcurrentLinkedQueue<>();
+    private final ExecutorService threadPoolExecutor;
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private Handler<T> handler;
     public SingleThreadQueueEx(ExecutorService threadPoolExecutor){
         this.threadPoolExecutor = threadPoolExecutor;
@@ -28,24 +27,22 @@ public class SingleThreadQueueEx<T> implements Runnable {
     }
     @Override
     public void run() {
-        if(queue != null){
-            boolean end = false;
-            while (!end){
-                if(queue.isEmpty()){
-                    synchronized (this){
-                        if(queue.isEmpty()){
-                            isRunning.compareAndSet(true, false);
-                            end = true;
-                        }
+        boolean end = false;
+        while (!end){
+            if(queue.isEmpty()) {
+                synchronized (this) {
+                    if(queue.isEmpty()) {
+                        isRunning.compareAndSet(true, false);
+                        end = true;
                     }
-                }else {
-                    T t = queue.poll();
-                    if(t != null){
-                        try {
-                            this.handler.execute(t);
-                        }catch (Throwable e){
-                            this.handler.error(t, e);
-                        }
+                }
+            } else {
+                T t = queue.poll();
+                if(t != null) {
+                    try {
+                        this.handler.execute(t);
+                    } catch (Throwable e) {
+                        this.handler.error(t, e);
                     }
                 }
             }
@@ -65,6 +62,10 @@ public class SingleThreadQueueEx<T> implements Runnable {
     public void offerAndStart(T t){
         offer(t);
         start();
+    }
+
+    public void clear() {
+        queue.clear();
     }
 
     public interface Handler<T>{
