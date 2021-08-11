@@ -5,10 +5,6 @@ import core.discovery.impl.client.ServiceRuntime;
 import core.discovery.node.Node;
 import core.discovery.node.Service;
 import core.discovery.node.ServiceNodeResult;
-import core.net.NetworkCommunicator;
-import core.net.adapters.data.ContentPacket;
-import core.net.data.RequestTransport;
-import core.net.data.ResponseTransport;
 import script.utils.state.StateListener;
 import script.utils.state.StateMachine;
 
@@ -35,24 +31,7 @@ public abstract class NodeRegistrationHandler {
     public static final int CONNECTIVITY_STATE_DISCONNECTED = -100;
     public static final int CONNECTIVITY_STATE_RECONNECTING = 88;
     protected StateMachine<Integer, NodeRegistrationHandler> connectivityState;
-    /**
-     * Start node to register to Aquaman registration center to join the Starfish network.
-     * Node means current server, can only be started once.
-     * Node communicate with Aquaman must go through public ip, because need geolocation detection.
-     *
-     * Jobs in this method,
-     * 1, Start udp server on one specified port or hole punching port. Every read/write will go through this port.
-     * 2, Register current node into Starfish network with public key's fingerprints.
-     * 3, Choose a fastest aquamanDomain, aquaman[number].seastarnet.cn, like aquaman3.seastarnet.cn is the fastest aquaman node, current node will connect with it.
-     * 4, Health ping/pong with Aquaman node.
-     *  @param discoveryHosts
-     * @param nodeFingerprints SHA-256 fingerprints generate for the node, need send to Aquaman node to retrieve private key for decrypting messages from this node.
- *                              Each node need to use authorised public key to join Starfish network. Every communication to Aquaman need encrypt by the public key.
-     * @param nodePublicKey the public key for encrypting messages from this node during transfer.
-     * @return
-     */
-    public abstract CompletableFuture<NodeRegistrationHandler> startNode(String discoveryHosts, String rpcId, int rpcPort);
-    public abstract void init(int publicUdpPort);
+    public abstract CompletableFuture<NodeRegistrationHandler> startNode(String discoveryHosts);
     /**
      * Stop from Starfish network
      */
@@ -67,8 +46,6 @@ public abstract class NodeRegistrationHandler {
      * @param service
      */
     public abstract NodeRegistrationHandler unregisterService(String service);
-
-    public abstract <K extends RequestTransport<R>, R extends ResponseTransport> CompletableFuture<ContentPacket<R>> sendContentPacket(ContentPacket<K> packet, Class<R> responseClass, String serviceKey);
 
     public interface NodeEventListener {
         public int NODE_EVENT_ADDED = 1;
@@ -94,8 +71,6 @@ public abstract class NodeRegistrationHandler {
      * @param nodeEventListener
      */
     public abstract NodeRegistrationHandler unwatchNodeEventsForPublicServices(List<String> services, NodeEventListener nodeEventListener);
-
-    public abstract NetworkCommunicator getConnectedNetworkCommunicator();
 
     public Node getNode() {
         return node;
