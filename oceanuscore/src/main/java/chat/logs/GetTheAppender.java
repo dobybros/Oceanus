@@ -65,7 +65,8 @@ public class GetTheAppender {
         path = Paths.get(path, "../../../logs/").toString();
         String dateStr = format.format(new Date());
         //设置文件名
-        appender.setFile(OptionHelper.substVars(path + "/" + "server." + dateStr + ".log", context));
+        appender.setFile(OptionHelper.substVars(path + "/" + "server." + "now" + ".log", context));
+//        appender.setFile(OptionHelper.substVars(path + "/" + "server." + dateStr + ".log", context));
 
         appender.setAppend(true);
 
@@ -75,7 +76,8 @@ public class GetTheAppender {
         SizeAndTimeBasedRollingPolicy policy = new SizeAndTimeBasedRollingPolicy();
         policy.setContext(context);
         //文件名格式
-        String fp = OptionHelper.substVars(path + "/" + "server." + dateStr + "/.%d{yyyy-MM-dd}.%i.log", context);
+        String fp = OptionHelper.substVars(path + "/" + "server.%d{yyyy-MM-dd}.%i.log", context);
+//        String fp = OptionHelper.substVars(path + "/" + "server." + dateStr + "/.%d{yyyy-MM-dd}.%i.log", context);
         //最大日志文件大小
         policy.setMaxFileSize(FileSize.valueOf("1GB"));
         //设置文件名模式
