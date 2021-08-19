@@ -1,6 +1,7 @@
 package core.utils.thread;
 
-import core.log.LoggerHelper;
+
+import chat.logs.LoggerEx;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.util.List;
@@ -74,7 +75,7 @@ public class MultipleFixedThreadManager {
                             fixedThreadListener.threadExceeded();
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();
-                            LoggerHelper.getLogger().error(TAG, "FixedThreadListener excute threadExceeded failed, errMsg: " + ExceptionUtils.getFullStackTrace(throwable));
+                            LoggerEx.error(TAG, "FixedThreadListener excute threadExceeded failed, errMsg: " + ExceptionUtils.getFullStackTrace(throwable));
                         }
                     }
                 }
@@ -93,7 +94,7 @@ public class MultipleFixedThreadManager {
                         this.t.run();
                     } catch (Throwable t) {
                         t.printStackTrace();
-                        LoggerHelper.getLogger().error(TAG, "Excute SpecifyThreads error,key: "+ key +" err: " + ExceptionUtils.getFullStackTrace(t));
+                        LoggerEx.error(TAG, "Excute SpecifyThreads error,key: "+ key +" err: " + ExceptionUtils.getFullStackTrace(t));
                     } finally {
                         synchronized (lock) {
                             counter --;
@@ -104,7 +105,7 @@ public class MultipleFixedThreadManager {
                     }
                 });
             } else {
-                LoggerHelper.getLogger().warn(TAG, "Task exceed countThreads, task: " + key + ",countThreads: " + countThreads);
+                LoggerEx.warn(TAG, "Task exceed countThreads, task: " + key + ",countThreads: " + countThreads);
             }
         }
     }

@@ -1,7 +1,8 @@
 package core.storage.rocksdb.handler.operation;
 
+import chat.logs.LoggerEx;
 import core.common.InternalTools;
-import core.log.LoggerHelper;
+
 import core.storage.adapters.assist.impl.queue.CommonZSetOperation;
 import core.storage.adapters.data.zset.Tuple;
 import core.storage.rocksdb.data.structure.common.KeyExpireData;
@@ -21,6 +22,7 @@ import java.util.concurrent.locks.ReadWriteLock;
  * Description：
  */
 public class RocksDBZSetOperation extends CommonZSetOperation {
+    private static final String TAG = RocksDBZSetOperation.class.getSimpleName();
     private RocksDB rocksDB;
     public RocksDBZSetOperation(RocksDB rocksDB, InternalTools internalTools){
         this.rocksDB = rocksDB;
@@ -1014,7 +1016,7 @@ public class RocksDBZSetOperation extends CommonZSetOperation {
                                             }
                                             Map<String, Object> map = new HashMap<>();
                                             if(shouldDelete){
-                                                LoggerHelper.getLogger().info(structure + " key: " + key + ",meta version: " + (keyMataData == null ? null : keyMataData.version) + ",will delete version: " + version + ", meta ttl: " + (keyMataData == null ? null : keyMataData.ttl) + ", will delete ttl: " + ttl);
+                                                LoggerEx.info(TAG, structure + " key: " + key + ",meta version: " + (keyMataData == null ? null : keyMataData.version) + ",will delete version: " + version + ", meta ttl: " + (keyMataData == null ? null : keyMataData.ttl) + ", will delete ttl: " + ttl);
                                                 for (long j = maxLevel; j >= 0 ; j--) {
                                                     try {
                                                         byte[] preBytes = genKeyLevelDataHead(key, version, j);
@@ -1025,7 +1027,7 @@ public class RocksDBZSetOperation extends CommonZSetOperation {
                                                             keyFieldLevelData = getKeyFieldLevelData(key, keyFieldLevelData.nextValues, version, j);
                                                         }
                                                     }catch (Throwable t){
-                                                        LoggerHelper.getLogger().error(structure + " clear keyFieldLevelData failed, key: " + key + ",version: " + version + ",level: " + j);
+                                                        LoggerEx.error(TAG, structure + " clear keyFieldLevelData failed, key: " + key + ",version: " + version + ",level: " + j);
                                                     }
                                                 }
 
@@ -1058,7 +1060,7 @@ public class RocksDBZSetOperation extends CommonZSetOperation {
                 t.printStackTrace();
             }
         }
-        LoggerHelper.getLogger().info(structure + " finish clear, time: " + System.currentTimeMillis());
+        LoggerEx.info(TAG, structure + " finish clear, time: " + System.currentTimeMillis());
 
     }
 }

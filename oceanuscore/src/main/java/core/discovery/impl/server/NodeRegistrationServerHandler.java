@@ -1,11 +1,11 @@
 package core.discovery.impl.server;
 
+import chat.logs.LoggerEx;
 import core.discovery.DiscoveryManager;
 import core.discovery.data.discovery.NodeRegistrationRequest;
 import core.discovery.data.discovery.NodeRegistrationResponse;
 import core.discovery.errors.DiscoveryErrorCodes;
 import core.discovery.node.Node;
-import core.log.LoggerHelper;
 import core.net.ContentPacketListener;
 import core.net.adapters.data.ContentPacket;
 import core.net.data.ResponseTransport;
@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NodeRegistrationServerHandler extends ServerHandler implements ContentPacketListener<NodeRegistrationRequest> {
+    private static final String TAG = NodeRegistrationServerHandler.class.getSimpleName();
+
     public NodeRegistrationServerHandler(DiscoveryManager discoveryManager) {
         super(discoveryManager);
     }
@@ -43,7 +45,7 @@ public class NodeRegistrationServerHandler extends ServerHandler implements Cont
             Node old = discoveryManagerImpl.nodeMap.putIfAbsent(serverIdCRC, node);
             if(old != null) {
                 if(!old.getServerName().equals(node.getServerName())) {
-                    LoggerHelper.logger.error("serverIdCRC is existing already, old serverName " + old.getServerName() + " new serverName " + node.getServerName() + " new server from " + remoteAddress + " will be denied to join. ");
+                    LoggerEx.error(TAG, "serverIdCRC is existing already, old serverName " + old.getServerName() + " new serverName " + node.getServerName() + " new server from " + remoteAddress + " will be denied to join. ");
                     responseTransport = request.generateFailedResponse(DiscoveryErrorCodes.ERROR_DUPLICATED_SERVER_CRC, "Duplicated server crc");
                 } else {
                     old.setIps(node.getIps());

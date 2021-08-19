@@ -54,7 +54,7 @@ public class NetworkCommunicatorFactory extends AbstractFactory<NetworkCommunica
 //    public NetworkCommunicator startAsServer(int port) throws IOException {
 //        NetworkCommunicator networkCommunicator = createNetworkCommunicator();
 //
-//        LoggerHelper.logger.info("startAsServer " + serverName);
+//        LoggerEx.info(TAG, "startAsServer " + serverName);
 ////        networkCommunicator.startServer(port);
 //        if(port > 0) {
 //            networkCommunicator.startAtFixedPort(port);
@@ -66,7 +66,7 @@ public class NetworkCommunicatorFactory extends AbstractFactory<NetworkCommunica
 
 //    private void putContentType(String type, Class<?> contentClass) {
 //        if(isNetworkCommunicatorCreated) {
-//            LoggerHelper.logger.warn("[NetworkCommunicatorFactory] Register content type should before create any of NetworkCommunicator, otherwise the register type " + type + " for contentClass " + contentClass + " may not be available.");
+//            LoggerEx.warn(TAG, "[NetworkCommunicatorFactory] Register content type should before create any of NetworkCommunicator, otherwise the register type " + type + " for contentClass " + contentClass + " may not be available.");
 //        }
 //        contentTypeClassMap.put(type, contentClass);
 //    }

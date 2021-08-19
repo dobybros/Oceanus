@@ -1,8 +1,8 @@
 package core.discovery.impl.client;
 
+import chat.logs.LoggerEx;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import core.common.InternalTools;
-import core.log.LoggerHelper;
 import core.net.NetRuntime;
 import core.net.NetworkCommunicator;
 import core.net.adapters.data.ContentPacket;
@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.concurrent.*;
 
 public class ServiceNodesManager {
+    private static final String TAG = ServiceNodesManager.class.getSimpleName();
     Random random = new Random();
     NetworkCommunicator networkCommunicator;
     ConcurrentHashMap<String, ServiceNodesHandler> serviceNodesMap = new ConcurrentHashMap<>();
@@ -38,7 +39,7 @@ public class ServiceNodesManager {
                     }
                     if(poolSize < 0)
                         poolSize =  NetRuntime.getCpuCores() * 2;;
-                    LoggerHelper.logger.info("starfish.discovery.packet.send.pool.size is " + poolSize);
+                    LoggerEx.info(TAG, "starfish.discovery.packet.send.pool.size is " + poolSize);
                     ThreadFactory namedThreadFactory =
                             new ThreadFactoryBuilder().setNameFormat("PacketSending-ThreadPool-%d").build();
                     sendingThreadPool = Executors.newFixedThreadPool(poolSize, namedThreadFactory);

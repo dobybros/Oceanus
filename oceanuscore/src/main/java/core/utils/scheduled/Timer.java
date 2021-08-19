@@ -1,6 +1,8 @@
 package core.utils.scheduled;
 
-import core.log.LoggerHelper;
+
+
+import chat.logs.LoggerEx;
 
 import java.util.UUID;
 
@@ -54,7 +56,7 @@ public class Timer {
             }
         } catch (Throwable e) {
             e.printStackTrace();
-            LoggerHelper.getLogger().error(TAG, "Remove timetask filed, taskId: " + task.getId() + ",e: " + e);
+            LoggerEx.error(TAG, "Remove timetask filed, taskId: " + task.getId() + ",e: " + e);
         }
     }
 
@@ -69,7 +71,7 @@ public class Timer {
             }
             QuartzFactory.getInstance().addJob(task);
         } catch (Throwable e) {
-            LoggerHelper.getLogger().error(TAG, "Schedule scheduleTask " + task + " failed, " + e);
+            LoggerEx.error(TAG, "Schedule scheduleTask " + task + " failed, " + e);
         }
     }
 
@@ -87,7 +89,7 @@ public class Timer {
             QuartzFactory.getInstance().addJob(task);
         } catch (Throwable e) {
             e.printStackTrace();
-            LoggerHelper.getLogger().error(TAG, "Schedule Period scheduleTask " + task + " failed, " + e);
+            LoggerEx.error(TAG, "Schedule Period scheduleTask " + task + " failed, " + e);
         }
     }
 
@@ -102,7 +104,7 @@ public class Timer {
             QuartzFactory.getInstance().addCronJob(task);
         } catch (Throwable e) {
             e.printStackTrace();
-            LoggerHelper.getLogger().error(TAG, "Schedule scheduleTask " + task + " failed, " + e);
+            LoggerEx.error(TAG, "Schedule scheduleTask " + task + " failed, " + e);
         }
     }
 }

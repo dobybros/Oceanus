@@ -1,10 +1,10 @@
 package core.discovery.impl.server;
 
+import chat.logs.LoggerEx;
 import core.discovery.DiscoveryManager;
 import core.discovery.data.discovery.ServiceRegistrationRequest;
 import core.discovery.data.discovery.ServiceRegistrationResponse;
 import core.discovery.node.Service;
-import core.log.LoggerHelper;
 import core.net.ContentPacketListener;
 import core.net.adapters.data.ContentPacket;
 import core.net.data.ResponseTransport;
@@ -13,6 +13,8 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class ServiceRegistrationServerHandler extends ServerHandler implements ContentPacketListener<ServiceRegistrationRequest> {
+    private static final String TAG = ServiceRegistrationServerHandler.class.getSimpleName();
+
     public ServiceRegistrationServerHandler(DiscoveryManager discoveryManager) {
         super(discoveryManager);
     }
@@ -27,7 +29,7 @@ public class ServiceRegistrationServerHandler extends ServerHandler implements C
             String serviceKey = service.generateServiceKey();
             Service old = discoveryManagerImpl.serviceMap.put(serviceKey, service);
             if(old != null) {
-                LoggerHelper.logger.info("ServiceRegistrationServerHandler: Service is replaced by " + service + " old is " + old);
+                LoggerEx.info(TAG, "ServiceRegistrationServerHandler: Service is replaced by " + service + " old is " + old);
             }
             ConcurrentSkipListSet<Long> nodeServers = discoveryManagerImpl.serviceNodesMap.get(serviceKey);
             if(nodeServers == null) {

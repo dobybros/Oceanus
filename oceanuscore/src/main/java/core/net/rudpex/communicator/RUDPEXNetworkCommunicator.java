@@ -1,12 +1,12 @@
 package core.net.rudpex.communicator;
 
-import core.log.LoggerHelper;
+import chat.logs.LoggerEx;
 import core.net.NetworkCommunicator;
 import core.net.adapters.data.Packet;
 import core.net.rudpex.impl.PacketSendingTransmission;
 import core.net.rudpex.impl.PacketTransmissionManager;
-import core.utils.state.StateOperateRetryHandler;
 import script.utils.state.StateMachine;
+import script.utils.state.StateOperateRetryHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,7 +23,8 @@ import java.util.concurrent.CompletableFuture;
  * NetworkCommunicator just for manage the remote ip and port.
  */
 public class RUDPEXNetworkCommunicator extends NetworkCommunicator {
-    public static final boolean LOG_ENABLED = false;
+    public static final boolean DEBUG = false;
+    private static final String TAG = RUDPEXNetworkCommunicator.class.getSimpleName();
     private DatagramSocket datagramSocket;
     private int port;
     private String id; //6 bytes
@@ -39,7 +40,7 @@ public class RUDPEXNetworkCommunicator extends NetworkCommunicator {
     public void init() {
         super.init();
         connectStateMachine = new StateMachine<>("RUDPEXNetworkCommunicator#" + this.hashCode(), CONNECTIVITY_STATE_NONE, this);
-        StateOperateRetryHandler retryHandler = StateOperateRetryHandler.build(connectStateMachine, internalTools).setMaxRetry(2).setRetryInterval(1000L)
+        StateOperateRetryHandler retryHandler = StateOperateRetryHandler.build(connectStateMachine, internalTools.getScheduledExecutorService()).setMaxRetry(2).setRetryInterval(1000L)
                 .setOperateListener(this::handleRetryConnecting)
                 .setOperateFailedListener(this::handleRetryDisconnected);
 
@@ -143,9 +144,9 @@ public class RUDPEXNetworkCommunicator extends NetworkCommunicator {
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("rawDataReceived received failed, " + e.getMessage() + " for data length " + bytes.length + " address " + inetAddress + " port " + port + " serverIdCRC " + serverIdCRC);
+                    if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. error(TAG, "rawDataReceived received failed, " + e.getMessage() + " for data length " + bytes.length + " address " + inetAddress + " port " + port + " serverIdCRC " + serverIdCRC);
                 } finally {
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("rawDataReceived received Packet " + packet + " type " + type + " serverIdCRC " + serverIdCRC + " address " + inetAddress + " port " + port);
+                    if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "rawDataReceived received Packet " + packet + " type " + type + " serverIdCRC " + serverIdCRC + " address " + inetAddress + " port " + port);
                 }
                 break;
         }

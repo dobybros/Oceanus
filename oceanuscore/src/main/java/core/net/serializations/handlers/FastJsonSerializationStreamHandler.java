@@ -1,17 +1,20 @@
 package core.net.serializations.handlers;
 
+import chat.logs.LoggerEx;
 import com.alibaba.fastjson.JSON;
-import core.log.LoggerHelper;
+
 import core.net.serializations.SerializationStreamHandler;
 
 import java.io.*;
 import java.util.Arrays;
 
 public class FastJsonSerializationStreamHandler implements SerializationStreamHandler {
+    private static final String TAG = FastJsonSerializationStreamHandler.class.getSimpleName();
+
     @Override
     public <T> byte[] convert(T object) {
         if(object == null) {
-            LoggerHelper.logger.error("Convert object is null");
+            LoggerEx.error(TAG, "Convert object is null");
             return null;
         }
         String json = JSON.toJSONString(object);
@@ -19,7 +22,7 @@ public class FastJsonSerializationStreamHandler implements SerializationStreamHa
             return getBytes(json.getBytes("utf8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            LoggerHelper.logger.error("Unsupport utf8 encode, error " + e.getMessage() + " use default for decoding bytes to string.");
+            LoggerEx.error(TAG, "Unsupport utf8 encode, error " + e.getMessage() + " use default for decoding bytes to string.");
             return getBytes(json.getBytes());
         }
     }
@@ -34,7 +37,7 @@ public class FastJsonSerializationStreamHandler implements SerializationStreamHa
             return outputStream.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
-            LoggerHelper.logger.error("getBytes " + data.length + " failed, " + e.getMessage());
+            LoggerEx.error(TAG, "getBytes " + data.length + " failed, " + e.getMessage());
         }
         return null;
     }
@@ -48,7 +51,7 @@ public class FastJsonSerializationStreamHandler implements SerializationStreamHa
     @Override
     public <T> T convert(byte[] data, Class<T> clazz) {
         if(data == null || clazz == null) {
-            LoggerHelper.logger.error("Illegal parameter for converting data to object");
+            LoggerEx.error(TAG, "Illegal parameter for converting data to object");
             return null;
         }
         ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
@@ -61,12 +64,12 @@ public class FastJsonSerializationStreamHandler implements SerializationStreamHa
             return t;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            LoggerHelper.logger.error("Unsupport utf8 decode, error " + e.getMessage() + " use default for decoding bytes to object.");
+            LoggerEx.error(TAG, "Unsupport utf8 decode, error " + e.getMessage() + " use default for decoding bytes to object.");
             T t = JSON.parseObject(new String(theData), clazz);
             return t;
         } catch (Throwable t) {
             t.printStackTrace();
-            LoggerHelper.logger.error("Parse data for class " + clazz + " failed, " + t.getMessage() + " return null for this data, size " + theData.length + (theData.length < 1024 ? new String(theData) : new String(Arrays.copyOf(theData, 1024))));
+            LoggerEx.error(TAG, "Parse data for class " + clazz + " failed, " + t.getMessage() + " return null for this data, size " + theData.length + (theData.length < 1024 ? new String(theData) : new String(Arrays.copyOf(theData, 1024))));
             return null;
         }
     }
@@ -80,7 +83,7 @@ public class FastJsonSerializationStreamHandler implements SerializationStreamHa
             return theData;
         } catch (IOException e) {
             e.printStackTrace();
-            LoggerHelper.logger.error("getDataBytes failed, " + e.getMessage());
+            LoggerEx.error(TAG, "getDataBytes failed, " + e.getMessage());
         }
         return null;
     }
@@ -96,14 +99,14 @@ public class FastJsonSerializationStreamHandler implements SerializationStreamHa
             return t;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            LoggerHelper.logger.error("Unsupport utf8 decode, error " + e.getMessage() + " use default for decoding bytes to object.");
+            LoggerEx.error(TAG, "Unsupport utf8 decode, error " + e.getMessage() + " use default for decoding bytes to object.");
             T t = JSON.parseObject(new String(theData), clazz);
             return t;
         } catch (Throwable t) {
             t.printStackTrace();
-            LoggerHelper.logger.error("Parse data for class " + clazz + " failed, " + t.getMessage() + " return null for this data, size " + theData.length + (theData.length < 1024 ? new String(theData) : new String(Arrays.copyOf(theData, 1024))));
+            LoggerEx.error(TAG, "Parse data for class " + clazz + " failed, " + t.getMessage() + " return null for this data, size " + theData.length + (theData.length < 1024 ? new String(theData) : new String(Arrays.copyOf(theData, 1024))));
             try {
-                LoggerHelper.logger.error("errorData " + new String(theData, "utf8"));
+                LoggerEx.error(TAG, "errorData " + new String(theData, "utf8"));
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

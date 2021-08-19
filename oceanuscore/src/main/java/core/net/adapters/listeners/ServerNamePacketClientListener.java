@@ -1,7 +1,7 @@
 package core.net.adapters.listeners;//package core.net.adapters.listeners;
 //
 //import org.apache.commons.lang.RandomStringUtils;
-//import core.log.LoggerHelper;
+//
 //import core.net.NetRuntime;
 //import core.net.NetworkCommunicator;
 //import core.net.NetworkCommunicatorFactory;
@@ -27,7 +27,7 @@ package core.net.adapters.listeners;//package core.net.adapters.listeners;
 //        this.networkCommunicatorFactory = networkCommunicatorFactory;
 //
 //        this.networkCommunicatorFactory.registerClientNetworkCommunicator(this.clientName, networkCommunicator);
-//        LoggerHelper.logger.info("Start counting " + NetRuntime.serverNameTimeoutForServerAndClient() / 1000 + " seconds, will destroy if no server name received. " + networkCommunicator);
+//        LoggerEx.info(TAG, "Start counting " + NetRuntime.serverNameTimeoutForServerAndClient() / 1000 + " seconds, will destroy if no server name received. " + networkCommunicator);
 //        scheduledFuture = NetRuntime.getScheduledExecutorService().schedule(() -> {
 //            future.completeExceptionally(new IOException("serverName timeout for client, " + this.clientName));
 //            destroy();
@@ -36,7 +36,7 @@ package core.net.adapters.listeners;//package core.net.adapters.listeners;
 //            networkCommunicator.sendPacket(new ServerNamePacket(this.clientName));
 //        } catch (IOException e) {
 //            e.printStackTrace();
-//            LoggerHelper.logger.error("Client send server name " + this.clientName + " failed, " + ExceptionUtils.getFullStackTrace(e));
+//            LoggerEx.error(TAG, "Client send server name " + this.clientName + " failed, " + ExceptionUtils.getFullStackTrace(e));
 //            if(!scheduledFuture.isCancelled())
 //                scheduledFuture.cancel(true);
 //            future.completeExceptionally(new IOException("Send serverName " + this.clientName + " failed, " + e.getMessage()));
@@ -49,7 +49,7 @@ package core.net.adapters.listeners;//package core.net.adapters.listeners;
 //            case Packet.TYPE_SERVER_NAME:
 //                ServerNamePacket serverNamePacket = (ServerNamePacket) packet;
 //                String serverName = serverNamePacket.getServerName();
-//                LoggerHelper.logger.info("Counter will be canceled as received ServerNamePacket " + serverName);
+//                LoggerEx.info(TAG, "Counter will be canceled as received ServerNamePacket " + serverName);
 //                if(!scheduledFuture.isCancelled())
 //                    scheduledFuture.cancel(true);
 //                if(!serverName.isBlank()) {
@@ -67,7 +67,7 @@ package core.net.adapters.listeners;//package core.net.adapters.listeners;
 //        if(networkCommunicator != null) {
 //            boolean bool = networkCommunicator.removePacketListener(Packet.TYPE_SERVER_NAME, this);
 //            if(!bool) {
-//                LoggerHelper.logger.error("ServerNamePacketListener was not been removed as expected");
+//                LoggerEx.error(TAG, "ServerNamePacketListener was not been removed as expected");
 //            }
 //        }
 //    }

@@ -1,7 +1,8 @@
 package core.storage.rocksdb.handler.operation;
 
+import chat.logs.LoggerEx;
 import core.common.InternalTools;
-import core.log.LoggerHelper;
+
 import core.storage.adapters.assist.impl.queue.CommonSetOperation;
 import core.storage.rocksdb.data.structure.common.KeyExpireData;
 import core.storage.rocksdb.data.structure.set.KeyFieldData;
@@ -19,6 +20,7 @@ import java.util.concurrent.locks.ReadWriteLock;
  * Description：
  */
 public class RocksDBSetOperation extends CommonSetOperation {
+    private static final String TAG = RocksDBSetOperation.class.getSimpleName();
     private RocksDB rocksDB;
     public RocksDBSetOperation(RocksDB rocksDB, InternalTools internalTools){
         this.rocksDB = rocksDB;
@@ -522,7 +524,7 @@ public class RocksDBSetOperation extends CommonSetOperation {
                                             }
                                             Map<String, Object> map = new HashMap<>();
                                             if(shouldDelete){
-                                                LoggerHelper.getLogger().info(structure + " key: " + key + ",meta version: " + (keyMataData == null ? null : keyMataData.version) + ",will delete version: " + version + ", meta ttl: " + (keyMataData == null ? null : keyMataData.ttl) + ", will delete ttl: " + ttl);
+                                                LoggerEx.info(TAG, structure + " key: " + key + ",meta version: " + (keyMataData == null ? null : keyMataData.version) + ",will delete version: " + version + ", meta ttl: " + (keyMataData == null ? null : keyMataData.ttl) + ", will delete ttl: " + ttl);
                                                 byte[] theBytes = firstBytes;
                                                 while (!Arrays.equals(theBytes, KeyFieldData.BYTES_DEFAULT)){
                                                     byte[] valueBytes = rocksDB.get(genKeyFieldBytes(key, theBytes, version));
@@ -571,6 +573,6 @@ public class RocksDBSetOperation extends CommonSetOperation {
                 t.printStackTrace();
             }
         }
-        LoggerHelper.getLogger().info(structure + " finish clear , time: " + System.currentTimeMillis());
+        LoggerEx.info(TAG, structure + " finish clear , time: " + System.currentTimeMillis());
     }
 }

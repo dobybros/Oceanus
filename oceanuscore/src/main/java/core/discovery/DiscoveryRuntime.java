@@ -1,12 +1,13 @@
 package core.discovery;
 
+import chat.logs.LoggerEx;
 import core.common.CoreRuntime;
 import core.discovery.impl.server.DiscoveryManagerImpl;
 import core.discovery.impl.client.NodeRegistrationHandlerImpl;
-import core.log.LoggerHelper;
 import core.utils.SystemPropertyUtils;
 
 public final class DiscoveryRuntime extends CoreRuntime {
+    private static final String TAG = DiscoveryRuntime.class.getSimpleName();
     private static NodeRegistrationHandler nodeRegistrationHandler;
     private static DiscoveryManager discoveryManager;
 
@@ -25,10 +26,10 @@ public final class DiscoveryRuntime extends CoreRuntime {
                             nodeRegistrationHandler = nodeRegistrationHandlerClass.getConstructor().newInstance();
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
-                            LoggerHelper.logger.error("Class not found while read from system property \"starfish.discovery.registration.class\", " + nodeRegistrationHandlerClassStr);
+                            LoggerEx.error(TAG, "Class not found while read from system property \"starfish.discovery.registration.class\", " + nodeRegistrationHandlerClassStr);
                         } catch (Throwable t) {
                             t.printStackTrace();
-                            LoggerHelper.logger.error("Unknown error occurred while read from system property \"starfish.discovery.registration.class\", " + nodeRegistrationHandlerClassStr + " error " + t.getMessage());
+                            LoggerEx.error(TAG, "Unknown error occurred while read from system property \"starfish.discovery.registration.class\", " + nodeRegistrationHandlerClassStr + " error " + t.getMessage());
                         }
                     }
                     if(nodeRegistrationHandler == null) {
@@ -37,12 +38,12 @@ public final class DiscoveryRuntime extends CoreRuntime {
                             nodeRegistrationHandler = nodeRegistrationHandlerClass.getConstructor().newInstance();
                         } catch (Throwable t) {
                             t.printStackTrace();
-                            LoggerHelper.logger.error("Unknown error occurred while create NodeRegistrationHandler with NodeRegistrationHandlerImpl, error " + t.getMessage());
+                            LoggerEx.error(TAG, "Unknown error occurred while create NodeRegistrationHandler with NodeRegistrationHandlerImpl, error " + t.getMessage());
                         }
                     }
                     nodeRegistrationHandler.init(publicUdpPort);
                     nodeRegistrationHandler.internalTools = CoreRuntime.getInternalTools();
-                    LoggerHelper.logger.info("NodeRegistrationHandler created with starfish.discovery.registration.class " + nodeRegistrationHandlerClass);
+                    LoggerEx.info(TAG, "NodeRegistrationHandler created with starfish.discovery.registration.class " + nodeRegistrationHandlerClass);
                 }
             }
         }
@@ -61,10 +62,10 @@ public final class DiscoveryRuntime extends CoreRuntime {
                             discoveryManager = discoveryManagerClass.getConstructor().newInstance();
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
-                            LoggerHelper.logger.error("Class not found while read from system property \"starfish.discovery.class\", " + discoveryManagerClassStr);
+                            LoggerEx.error(TAG, "Class not found while read from system property \"starfish.discovery.class\", " + discoveryManagerClassStr);
                         } catch (Throwable t) {
                             t.printStackTrace();
-                            LoggerHelper.logger.error("Unknown error occurred while read from system property \"starfish.discovery.class\", " + discoveryManagerClassStr + " error " + t.getMessage());
+                            LoggerEx.error(TAG, "Unknown error occurred while read from system property \"starfish.discovery.class\", " + discoveryManagerClassStr + " error " + t.getMessage());
                         }
                     }
                     if(discoveryManager == null) {
@@ -73,11 +74,11 @@ public final class DiscoveryRuntime extends CoreRuntime {
                             discoveryManager = discoveryManagerClass.getConstructor().newInstance();
                         } catch (Throwable t) {
                             t.printStackTrace();
-                            LoggerHelper.logger.error("Unknown error occurred while create DiscoveryManager with DiscoveryManagerImpl, error " + t.getMessage());
+                            LoggerEx.error(TAG, "Unknown error occurred while create DiscoveryManager with DiscoveryManagerImpl, error " + t.getMessage());
                         }
                     }
                     discoveryManager.internalTools = CoreRuntime.getInternalTools();
-                    LoggerHelper.logger.info("DiscoveryManager created with starfish.discovery.class " + discoveryManagerClass);
+                    LoggerEx.info(TAG, "DiscoveryManager created with starfish.discovery.class " + discoveryManagerClass);
                 }
             }
         }

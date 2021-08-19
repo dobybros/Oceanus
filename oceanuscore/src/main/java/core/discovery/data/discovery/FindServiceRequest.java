@@ -1,6 +1,6 @@
 package core.discovery.data.discovery;
 
-import core.log.LoggerHelper;
+
 import core.net.data.RequestTransport;
 
 import java.util.Collection;

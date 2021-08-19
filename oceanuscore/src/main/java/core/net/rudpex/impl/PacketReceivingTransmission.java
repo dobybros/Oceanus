@@ -1,9 +1,10 @@
 package core.net.rudpex.impl;
 
+import chat.logs.LoggerEx;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
-import core.log.LoggerHelper;
+
 import core.net.rudpex.communicator.RUDPEXNetworkCommunicator;
 import core.utils.ByteUtils;
 
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PacketReceivingTransmission extends PacketTransmission {
 
+    private static final String TAG = PacketReceivingTransmission.class.getSimpleName();
     private boolean completed = false;
 
     // 接收到的包的sequences
@@ -88,13 +90,13 @@ public class PacketReceivingTransmission extends PacketTransmission {
         if(completed) {
             try {
 //                int requestCounter = readRequestCounter(theData);
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.warn("receivePacket has completed, will ignore for id " + id + " type " + typePacket + " sequence " + sequence);
+                if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. warn(TAG, "receivePacket has completed, will ignore for id " + id + " type " + typePacket + " sequence " + sequence);
                 if(typePacket != PacketTransmission.TYPE_CLIENT_CLOSED) {
                     sendCompleted();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Send completed packet to sender failed, " + e.getMessage() + " because the transmission has completed, id " + id + " sequence " + sequence);
+                if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. error(TAG, "Send completed packet to sender failed, " + e.getMessage() + " because the transmission has completed, id " + id + " sequence " + sequence);
             }
             return;
         }
@@ -110,7 +112,7 @@ public class PacketReceivingTransmission extends PacketTransmission {
                 byte completeStatus = readClientPacketCompleteStatus(theData);
                 int startSequenceClientPacket = readClientPacketStartSequence(theData);
                 int requestCounterClientPacket = readClientPacketRequestCounter(theData);
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("receivePacket TYPE_CLIENT_PACKET id " + id + " type " + typePacket + " sequence " + sequence + " completeStatus " + completeStatus + " startSequenceClientPacket " + startSequenceClientPacket + " requestCounterClientPacket " + requestCounterClientPacket);
+                if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "receivePacket TYPE_CLIENT_PACKET id " + id + " type " + typePacket + " sequence " + sequence + " completeStatus " + completeStatus + " startSequenceClientPacket " + startSequenceClientPacket + " requestCounterClientPacket " + requestCounterClientPacket);
                 if(sequence > this.sequence) {
                     this.sequence = sequence;
                 }
@@ -155,23 +157,23 @@ public class PacketReceivingTransmission extends PacketTransmission {
         List<Integer> missingSequences = findMissSequences(startSequence, sequence, sequencePacketSet);
         if(missingSequences == null || missingSequences.isEmpty()) {
             sequenceBytesCollector.completed();
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("receivePacket TYPE_CLIENT_PACKET_COMPLETED sendCompleted id " + id + " type " + typePacket + " sequence " + sequence + " startSequence " + startSequence + " requestCounterForCompleted " + requestCounterForCompleted);
+            if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "receivePacket TYPE_CLIENT_PACKET_COMPLETED sendCompleted id " + id + " type " + typePacket + " sequence " + sequence + " startSequence " + startSequence + " requestCounterForCompleted " + requestCounterForCompleted);
             try {
                 sendCompleted();
             } catch (IOException e) {
                 e.printStackTrace();
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("sendGatherPacket#sendCompleted failed, " + e.getMessage() + " to host " + socketAddress + " type " + typePacket);
+                if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. error(TAG, "sendGatherPacket#sendCompleted failed, " + e.getMessage() + " to host " + socketAddress + " type " + typePacket);
             }
             //TODO use single thread queue against every remote server.
             transmissionManager.invokeReceivedListener(typePacket, serverIdCRC, sequenceBytesCollector.collectAllBytes(), socketAddress, id);
             close();
         } else {
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("receivePacket TYPE_CLIENT_PACKET_COMPLETED sendGatherPacket id " + id + " type " + typePacket + " sequence " + sequence + " startSequence " + startSequence + " missingSequences " + missingSequences + " requestCounterForCompleted " + requestCounterForCompleted);
+            if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "receivePacket TYPE_CLIENT_PACKET_COMPLETED sendGatherPacket id " + id + " type " + typePacket + " sequence " + sequence + " startSequence " + startSequence + " missingSequences " + missingSequences + " requestCounterForCompleted " + requestCounterForCompleted);
             try {
                 sendGatherPacket(missingSequences, requestCounterForCompleted);
             } catch (Throwable e) {
                 e.printStackTrace();
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("sendGatherPacket failed, " + e.getMessage() + " to host " + socketAddress + " type " + typePacket);
+                if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. error(TAG, "sendGatherPacket failed, " + e.getMessage() + " to host " + socketAddress + " type " + typePacket);
             }
         }
     }
@@ -190,12 +192,12 @@ public class PacketReceivingTransmission extends PacketTransmission {
             }
         }
         List<Integer> missSequences = findMissSequences(startSequence, sequence, sequencePacketSet);
-        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("receivePacket TYPE_CLIENT_PACKET_PARTIAL_COMPLETED id " + id + " type " + typePacket + " sequence " + sequence + " startSequence " + startSequence + " partialMissingSequences " + missSequences + " requestCounterForPartial " + theRequestCounter);
+        if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "receivePacket TYPE_CLIENT_PACKET_PARTIAL_COMPLETED id " + id + " type " + typePacket + " sequence " + sequence + " startSequence " + startSequence + " partialMissingSequences " + missSequences + " requestCounterForPartial " + theRequestCounter);
         try {
             sendGatherPacket(missSequences, theRequestCounter);
         } catch (Throwable e) {
             e.printStackTrace();
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("sendGatherPacket failed, " + e.getMessage() + " to host " + socketAddress);
+            if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. error(TAG, "sendGatherPacket failed, " + e.getMessage() + " to host " + socketAddress);
         }
     }
 
@@ -264,7 +266,7 @@ public class PacketReceivingTransmission extends PacketTransmission {
 
         DatagramPacket packet = new DatagramPacket(packedByteArray, 0, packedByteArray.length, socketAddress);
         sendPacketWithRetries(-1, packedByteArray.length, packet);
-        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("sendGatherPacket id " + id + " len " + length + " sequence " + sequence + " address " + socketAddress + " serverIdCRC " + transmissionManager.serverIdCRC + " missLength " + missLength + " requestCounter " + requestCounter);
+        if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "sendGatherPacket id " + id + " len " + length + " sequence " + sequence + " address " + socketAddress + " serverIdCRC " + transmissionManager.serverIdCRC + " missLength " + missLength + " requestCounter " + requestCounter);
     }
 
     // 发送completed的静态方法
@@ -293,13 +295,13 @@ public class PacketReceivingTransmission extends PacketTransmission {
 
         try {
             transmissionManager.datagramSocket.send(packet);
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("send ServerCompleted id " + id + " len " + packedByteArray.length + " sequence " + -1 + " address " + socketAddress + " serverIdcCRC " + transmissionManager.serverIdCRC);
+            if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "send ServerCompleted id " + id + " len " + packedByteArray.length + " sequence " + -1 + " address " + socketAddress + " serverIdcCRC " + transmissionManager.serverIdCRC);
         } catch (IOException e) {
             e.printStackTrace();
-            LoggerHelper.logger.error("Send ServerCompleted id " + id + " length " + packedByteArray.length + " address " + socketAddress + " failed, IOException " + e.getMessage());
+            if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. error(TAG, "Send ServerCompleted id " + id + " length " + packedByteArray.length + " address " + socketAddress + " failed, IOException " + e.getMessage());
         } catch (Throwable t) {
             t.printStackTrace();
-            LoggerHelper.logger.error("Send ServerCompleted id " + id +  " length " + packedByteArray.length + " address " + socketAddress + " failed, Throwable " + t.getMessage());
+            if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. error(TAG, "Send ServerCompleted id " + id +  " length " + packedByteArray.length + " address " + socketAddress + " failed, Throwable " + t.getMessage());
         }
     }
 
@@ -327,7 +329,7 @@ public class PacketReceivingTransmission extends PacketTransmission {
 
         DatagramPacket packet = new DatagramPacket(packedByteArray, 0, packedByteArray.length, socketAddress);
         sendPacketWithRetries(sequence, packedByteArray.length, packet);
-        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("sendServerCompleted id " + id + " len " + length + " sequence " + sequence + " address " + socketAddress + " serverIdCRC " + transmissionManager.serverIdCRC);
+        if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "sendServerCompleted id " + id + " len " + length + " sequence " + sequence + " address " + socketAddress + " serverIdCRC " + transmissionManager.serverIdCRC);
     }
 
     @Override
@@ -349,9 +351,9 @@ public class PacketReceivingTransmission extends PacketTransmission {
         if(bool) {
             transmissionManager.getScheduledExecutorService().schedule(() -> {
                 receivingTransmissionMap.remove(id, this);
-//                LoggerHelper.logger.info("receivingTransmissionMap remove id " + id + " after 10 seconds reason " + reason);
+//                if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "receivingTransmissionMap remove id " + id + " after 10 seconds reason " + reason);
             }, 120000, TimeUnit.MILLISECONDS);
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("closed id " + id + " sequence " + sequence + " address " + socketAddress + " serverIdCRC " + transmissionManager.serverIdCRC + " reason " + reason + " id will be release after 120s");
+            if(RUDPEXNetworkCommunicator.DEBUG) LoggerEx. info(TAG, "closed id " + id + " sequence " + sequence + " address " + socketAddress + " serverIdCRC " + transmissionManager.serverIdCRC + " reason " + reason + " id will be release after 120s");
             if(sequenceBytesCollector != null) {
                 sequenceBytesCollector.clear();
             }

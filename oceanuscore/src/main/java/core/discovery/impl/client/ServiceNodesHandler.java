@@ -1,18 +1,18 @@
 package core.discovery.impl.client;
 
+import chat.logs.LoggerEx;
 import chat.utils.SingleThreadQueueEx;
 import core.common.CoreRuntime;
 import core.discovery.data.FailedResponse;
 import core.discovery.data.discovery.FindServiceRequest;
 import core.discovery.data.discovery.FindServiceResponse;
-import core.log.LoggerHelper;
 import core.net.NetworkCommunicator;
 import core.net.adapters.data.ContentPacket;
 import core.net.data.RequestTransport;
 import core.net.data.ResponseTransport;
-import core.utils.state.StateOperateRetryHandler;
 import script.utils.state.StateListener;
 import script.utils.state.StateMachine;
+import script.utils.state.StateOperateRetryHandler;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class ServiceNodesHandler {
+    private static final String TAG = ServiceNodesHandler.class.getSimpleName();
     private final String serviceKey;
     private final SingleThreadQueueEx<ContentPacketContainer<? extends ResponseTransport, ? extends RequestTransport<?>>> sendingQueue;
 
@@ -59,7 +60,7 @@ public class ServiceNodesHandler {
             }
         });
         stateMachine = new StateMachine<>("ServiceNodesHandler#" + serviceKey, STATE_NONE, this);
-        getServiceNodesHandler = StateOperateRetryHandler.build(stateMachine, serviceNodesManager.internalTools).setMaxRetry(5).setRetryInterval(2000L)
+        getServiceNodesHandler = StateOperateRetryHandler.build(stateMachine, serviceNodesManager.internalTools.getScheduledExecutorService()).setMaxRetry(5).setRetryInterval(2000L)
                 .setOperateListener(this::handleGetServicesNodes)
                 .setOperateFailedListener(this::handleGetServicesNodesFailed);
         stateMachine.configState(STATE_NONE, stateMachine.execute().nextStates(STATE_INITIALIZING, STATE_TERMINATED))
@@ -222,7 +223,7 @@ public class ServiceNodesHandler {
                 if(removed) {
                     this.future.completeExceptionally(new IOException("Timeout"));
                 } else {
-                    LoggerHelper.logger.warn("ContentPacketContainer didn't be removed when timeout, " + ContentPacketContainer.this);
+                    LoggerEx.warn(TAG, "ContentPacketContainer didn't be removed when timeout, " + ContentPacketContainer.this);
                 }
             }, CoreRuntime.SEND_PACKET_TIMEOUT, TimeUnit.MILLISECONDS);
             return this;

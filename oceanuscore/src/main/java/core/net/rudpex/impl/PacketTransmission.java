@@ -1,6 +1,7 @@
 package core.net.rudpex.impl;
 
-import core.log.LoggerHelper;
+
+import chat.logs.LoggerEx;
 import core.net.rudpex.communicator.RUDPEXNetworkCommunicator;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public abstract class PacketTransmission {
     public static final byte COMPLETE_STATUS_SENDING = 1;
     public static final byte COMPLETE_STATUS_PARTIAL_COMPLETED = 2;
     public static final byte COMPLETE_STATUS_COMPLETED = 4;
+    private static final String TAG = PacketTransmission.class.getSimpleName();
 
     protected InetSocketAddress socketAddress;
     protected int id;
@@ -45,18 +47,18 @@ public abstract class PacketTransmission {
             try {
                 transmissionManager.datagramSocket.send(packet);
                 if(exception != null) {
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("Send packet " + id + " at sequence " + currentSequence + " length " + length + " address " + socketAddress + " successfully after retries, IOException was " + exception.getMessage() + " have retried to i " + i);
+                    LoggerEx.info(TAG, "Send packet " + id + " at sequence " + currentSequence + " length " + length + " address " + socketAddress + " successfully after retries, IOException was " + exception.getMessage() + " have retried to i " + i);
                     exception = null;
                 }
                 break;
             } catch (IOException e) {
                 e.printStackTrace();
                 exception = e;
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Send packet " + id + " at sequence " + currentSequence + " length " + length + " address " + socketAddress + " failed, IOException " + e.getMessage() + " will continue retry from i " + i + " to " + times);
+                LoggerEx.error(TAG, "Send packet " + id + " at sequence " + currentSequence + " length " + length + " address " + socketAddress + " failed, IOException " + e.getMessage() + " will continue retry from i " + i + " to " + times);
             } catch (Throwable t) {
                 t.printStackTrace();
                 exception = t;
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Send packet " + id + " at sequence " + currentSequence + " length " + length + " address " + socketAddress + " failed, Throwable " + t.getMessage() + " will NOT retry from i " + i);
+                LoggerEx.error(TAG, "Send packet " + id + " at sequence " + currentSequence + " length " + length + " address " + socketAddress + " failed, Throwable " + t.getMessage() + " will NOT retry from i " + i);
                 break;
             }
         }

@@ -1,7 +1,7 @@
 package core.net.adapters.listeners;//package core.net.adapters.listeners;
 //
 //import org.apache.commons.lang.exception.ExceptionUtils;
-//import core.log.LoggerHelper;
+//
 //import core.net.NetRuntime;
 //import core.net.NetworkCommunicator;
 //import core.net.NetworkCommunicatorFactory;
@@ -39,14 +39,14 @@ package core.net.adapters.listeners;//package core.net.adapters.listeners;
 //                        try {
 //                            createdListener.created(networkCommunicator);
 //                        } catch (Throwable throwable) {
-//                            LoggerHelper.logger.error("networkCommunicator " + networkCommunicator + " created failed, " + ExceptionUtils.getFullStackTrace(throwable));
+//                            LoggerEx.error(TAG, "networkCommunicator " + networkCommunicator + " created failed, " + ExceptionUtils.getFullStackTrace(throwable));
 //                        }
 //                    }
 //                    try {
 //                        networkCommunicator.sendPacket(new ServerNamePacket(networkCommunicatorFactory.getServerName()));
 //                    } catch (IOException e) {
 //                        e.printStackTrace();
-//                        LoggerHelper.logger.error("Send back server name failed, " + e.getMessage());
+//                        LoggerEx.error(TAG, "Send back server name failed, " + e.getMessage());
 //                    }
 //                }
 //

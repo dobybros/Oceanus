@@ -1,9 +1,9 @@
 package core.storage;
 
+import chat.logs.LoggerEx;
 import core.storage.adapters.impl.RocksDBLocalStorage;
 import org.apache.commons.io.FileUtils;
 import core.common.CoreRuntime;
-import core.log.LoggerHelper;
 import core.storage.adapters.LocalStorage;
 import core.storage.adapters.LocalStorageFactory;
 import core.storage.serializations.SerializationDataFactory;
@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class StorageRuntime extends CoreRuntime {
+    private static final String TAG = StorageRuntime.class.getSimpleName();
     private static SerializationDataFactory serializationDataFactory = new SerializationDataFactory();
     private static Class<? extends SerializationDataHandler> serializationDataHandlerClass;
 
@@ -29,15 +30,15 @@ public class StorageRuntime extends CoreRuntime {
                     serializationDataHandlerClass = clazz;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
-                    LoggerHelper.logger.error("Class not found while read from system property \"starfish.serialization.data.class\", " + serializationHandlerClassStr);
+                    LoggerEx.error(TAG, "Class not found while read from system property \"starfish.serialization.data.class\", " + serializationHandlerClassStr);
                 } catch (Throwable t) {
                     t.printStackTrace();
-                    LoggerHelper.logger.error("Unknown error occurred while read from system property \"starfish.serialization.data.class\", " + serializationHandlerClassStr + " error " + t.getMessage());
+                    LoggerEx.error(TAG, "Unknown error occurred while read from system property \"starfish.serialization.data.class\", " + serializationHandlerClassStr + " error " + t.getMessage());
                 }
             }
             if(serializationDataHandlerClass == null)
                 serializationDataHandlerClass = FastJsonSerializationDataHandler.class;
-            LoggerHelper.logger.info("serializationHandlerClass is " + serializationDataHandlerClass);
+            LoggerEx.info(TAG, "serializationHandlerClass is " + serializationDataHandlerClass);
         }
         return serializationDataFactory.getSerializationDataHandler(serializationDataHandlerClass);
     }
@@ -51,10 +52,10 @@ public class StorageRuntime extends CoreRuntime {
                     localStorageClass = clazz;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
-                    LoggerHelper.logger.error("Class not found while read from system property \"starfish.local.storage.class\", " + localStorageClassStr);
+                    LoggerEx.error(TAG, "Class not found while read from system property \"starfish.local.storage.class\", " + localStorageClassStr);
                 } catch (Throwable t) {
                     t.printStackTrace();
-                    LoggerHelper.logger.error("Unknown error occurred while read from system property \"starfish.local.storage.class\", " + localStorageClassStr + " error " + t.getMessage());
+                    LoggerEx.error(TAG, "Unknown error occurred while read from system property \"starfish.local.storage.class\", " + localStorageClassStr + " error " + t.getMessage());
                 }
             }
             String localStoragePath = System.getProperty("starfish.local.storage.path");
@@ -65,12 +66,12 @@ public class StorageRuntime extends CoreRuntime {
                 FileUtils.forceMkdir(new File(localStoragePath));
             } catch (IOException e) {
                 e.printStackTrace();
-                LoggerHelper.logger.error("LocalStorageFactory init path " + localStoragePath + " failed, " + e.getMessage());
+                LoggerEx.error(TAG, "LocalStorageFactory init path " + localStoragePath + " failed, " + e.getMessage());
             }
             if(localStorageClass == null)
                 localStorageClass = RocksDBLocalStorage.class;
             localStorageFactory = new LocalStorageFactory(localStorageClass, localStoragePath, getInternalTools());
-            LoggerHelper.logger.info("LocalStorageFactory created with localStorageClass " + localStorageClass + " on path " + localStoragePath);
+            LoggerEx.info(TAG, "LocalStorageFactory created with localStorageClass " + localStorageClass + " on path " + localStoragePath);
         }
         return localStorageFactory;
     }

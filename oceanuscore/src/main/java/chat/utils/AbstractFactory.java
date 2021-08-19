@@ -19,7 +19,7 @@ public abstract class AbstractFactory<T> {
                 t = tClass.getConstructor().newInstance();
                 T old = classTMap.putIfAbsent(tClass, t);
                 if(old != null) {
-//                    LoggerHelper.logger.warn("Already existing, " + tClass + " obj " + old + " new " + t + " will be obsoleted");
+//                    LoggerEx.warn(TAG, "Already existing, " + tClass + " obj " + old + " new " + t + " will be obsoleted");
                     t = old;
                 }
             } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {

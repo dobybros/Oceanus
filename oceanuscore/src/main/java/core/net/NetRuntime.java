@@ -1,7 +1,7 @@
 package core.net;
 
+import chat.logs.LoggerEx;
 import core.common.CoreRuntime;
-import core.log.LoggerHelper;
 import core.net.rudpex.communicator.RUDPEXNetworkCommunicator;
 import core.net.serializations.SerializationStreamFactory;
 import core.net.serializations.SerializationStreamHandler;
@@ -10,6 +10,7 @@ import core.net.serializations.handlers.FastJsonSerializationStreamHandler;
 import java.util.concurrent.ScheduledExecutorService;
 
 public final class NetRuntime extends CoreRuntime {
+    private static final String TAG = NetRuntime.class.getSimpleName();
     private static SerializationStreamFactory serializationStreamFactory = new SerializationStreamFactory();
     private static Class<? extends SerializationStreamHandler> serializationStreamHandlerClass;
 
@@ -27,15 +28,15 @@ public final class NetRuntime extends CoreRuntime {
                             serializationStreamHandlerClass = clazz;
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
-                            LoggerHelper.logger.error("Class not found while read from system property \"starfish.serialization.stream.class\", " + serializationHandlerClassStr);
+                            LoggerEx.error(TAG, "Class not found while read from system property \"starfish.serialization.stream.class\", " + serializationHandlerClassStr);
                         } catch (Throwable t) {
                             t.printStackTrace();
-                            LoggerHelper.logger.error("Unknown error occurred while read from system property \"starfish.serialization.stream.class\", " + serializationHandlerClassStr + " error " + t.getMessage());
+                            LoggerEx.error(TAG, "Unknown error occurred while read from system property \"starfish.serialization.stream.class\", " + serializationHandlerClassStr + " error " + t.getMessage());
                         }
                     }
                     if(serializationStreamHandlerClass == null)
                         serializationStreamHandlerClass = FastJsonSerializationStreamHandler.class;
-                    LoggerHelper.logger.info("starfish.serialization.stream.class is " + serializationStreamHandlerClass);
+                    LoggerEx.info(TAG, "starfish.serialization.stream.class is " + serializationStreamHandlerClass);
                 }
             }
         }
@@ -53,17 +54,17 @@ public final class NetRuntime extends CoreRuntime {
                             networkCommunicatorClass = clazz;
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
-                            LoggerHelper.logger.error("Class not found while read from system property \"starfish.network.class\", " + networkCommunicatorClassStr);
+                            LoggerEx.error(TAG, "Class not found while read from system property \"starfish.network.class\", " + networkCommunicatorClassStr);
                         } catch (Throwable t) {
                             t.printStackTrace();
-                            LoggerHelper.logger.error("Unknown error occurred while read from system property \"starfish.network.class\", " + networkCommunicatorClassStr + " error " + t.getMessage());
+                            LoggerEx.error(TAG, "Unknown error occurred while read from system property \"starfish.network.class\", " + networkCommunicatorClassStr + " error " + t.getMessage());
                         }
                     }
                     if(networkCommunicatorClass == null)
                         networkCommunicatorClass = RUDPEXNetworkCommunicator.class;
                     networkCommunicatorFactory = new NetworkCommunicatorFactory(networkCommunicatorClass);
                     networkCommunicatorFactory.internalTools = CoreRuntime.getInternalTools();
-                    LoggerHelper.logger.info("NetworkCommunicatorFactory created with starfish.network.class " + networkCommunicatorClass);
+                    LoggerEx.info(TAG, "NetworkCommunicatorFactory created with starfish.network.class " + networkCommunicatorClass);
                 }
             }
         }

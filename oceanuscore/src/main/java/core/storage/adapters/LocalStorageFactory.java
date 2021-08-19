@@ -1,13 +1,14 @@
 package core.storage.adapters;
 
+import chat.logs.LoggerEx;
 import core.common.AbstractFactory;
 import core.common.CoreRuntime;
 import core.common.InternalTools;
-import core.log.LoggerHelper;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LocalStorageFactory extends AbstractFactory<LocalStorage> {
+    private static final String TAG = LocalStorageFactory.class.getSimpleName();
     private String path;
     private Class<? extends LocalStorage> localStorageClass;
     private final byte[] localStorageClassLock = new byte[0];
@@ -37,12 +38,12 @@ public class LocalStorageFactory extends AbstractFactory<LocalStorage> {
                     }
                 }
             } catch (Throwable t) {
-                LoggerHelper.logger.error("LocalStorage " + localStorageClass + " on " + path + "#" + name + " init failed, " + t.getMessage());
+                LoggerEx.error(TAG, "LocalStorage " + localStorageClass + " on " + path + "#" + name + " init failed, " + t.getMessage());
             }
             if(localStorage == null) {
                 localStorage = nameLocalStorageMap.get(name);
             }
-            LoggerHelper.logger.info("localStorage for name " + name + " is " + localStorage + " on path " + path);
+            LoggerEx.info(TAG, "localStorage for name " + name + " is " + localStorage + " on path " + path);
         }
         return localStorage;
     }

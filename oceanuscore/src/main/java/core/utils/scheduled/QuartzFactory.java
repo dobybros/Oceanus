@@ -1,6 +1,7 @@
 package core.utils.scheduled;
 
-import core.log.LoggerHelper;
+
+import chat.logs.LoggerEx;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -110,7 +111,7 @@ public class QuartzFactory {
                 // 启动
                 if (!sched.isShutdown()) {
                     sched.start();
-                    LoggerHelper.getLogger().info(QuartzFactory.class.getSimpleName(), "The period task " + task.getId() + " add successful");
+                    LoggerEx.info(TAG, "The period task " + task.getId() + " add successful");
                 }
             }
     }

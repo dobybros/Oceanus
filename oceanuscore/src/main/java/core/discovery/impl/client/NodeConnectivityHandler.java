@@ -1,5 +1,6 @@
 package core.discovery.impl.client;
 
+import chat.logs.LoggerEx;
 import core.common.CoreRuntime;
 import core.discovery.data.FailedResponse;
 import core.discovery.data.discovery.GetNodeByServerCRCIdRequest;
@@ -8,14 +9,14 @@ import core.discovery.data.discovery.LatencyCheckRequest;
 import core.discovery.data.discovery.LatencyCheckResponse;
 import core.discovery.node.Node;
 import core.discovery.node.NodeConnectivity;
-import core.log.LoggerHelper;
+
 import core.net.NetworkCommunicator;
 import core.net.adapters.data.ContentPacket;
 import core.net.data.RequestTransport;
 import core.net.data.ResponseTransport;
-import core.utils.state.StateOperateRetryHandler;
 import script.utils.state.StateListener;
 import script.utils.state.StateMachine;
+import script.utils.state.StateOperateRetryHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -25,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class NodeConnectivityHandler {
+    private static final String TAG = NodeConnectivityHandler.class.getSimpleName();
     private final ServiceNodesManager serviceNodesManager;
     private NodeConnectivity nodeConnectivity;
     private final Long serverCRCId;
@@ -46,10 +48,10 @@ public class NodeConnectivityHandler {
         this.serviceNodesManager = serviceNodesManager;
         this.serverCRCId = serverCRCId;
         stateMachine = new StateMachine<>("NodeConnectivityHandler#" + serverCRCId, STATE_NONE, this);
-        getNodeHandler = StateOperateRetryHandler.build(stateMachine, serviceNodesManager.internalTools).setMaxRetry(5).setRetryInterval(2000L)
+        getNodeHandler = StateOperateRetryHandler.build(stateMachine, serviceNodesManager.internalTools.getScheduledExecutorService()).setMaxRetry(5).setRetryInterval(2000L)
                 .setOperateListener(this::handleGetNode)
                 .setOperateFailedListener(this::handleGetNodeFailed);
-        findBestIPHandler = StateOperateRetryHandler.build(stateMachine, serviceNodesManager.internalTools).setMaxRetry(5).setRetryInterval(2000L)
+        findBestIPHandler = StateOperateRetryHandler.build(stateMachine, serviceNodesManager.internalTools.getScheduledExecutorService()).setMaxRetry(5).setRetryInterval(2000L)
                 .setOperateListener(this::handleFindBestIP).setOperateFailedListener(this::handleFindBestIPFailed);
         stateMachine
                 .configState(STATE_NONE, stateMachine.execute().nextStates(STATE_INITIALIZING))
@@ -112,10 +114,10 @@ public class NodeConnectivityHandler {
                             if(nodeConnectivity.getIp() == null) {
                                 nodeConnectivity.registerIp(ip, takes);
                                 stateMachine.gotoState(STATE_CONNECTED, "Found first IP " + ip + " which takes " + takes);
-                                LoggerHelper.logger.info("Found major IP " + ip + " which takes " + takes + " to serverCRCId " + serverCRCId);
+                                LoggerEx.info(TAG, "Found major IP " + ip + " which takes " + takes + " to serverCRCId " + serverCRCId);
                             } else {
                                 nodeConnectivity.registerIp(ip, takes);
-                                LoggerHelper.logger.info("Found backup IP " + ip + " which takes " + takes + " to serverCRCId " + serverCRCId);
+                                LoggerEx.info(TAG, "Found backup IP " + ip + " which takes " + takes + " to serverCRCId " + serverCRCId);
                             }
                         }
                     }

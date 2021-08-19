@@ -19,7 +19,7 @@ public class MemorySequenceBytesCollector implements SequenceBytesCollector {
 //        int i = 0;
 //        for(Integer key : keys) {
 //            if(key != i++) {
-//                LoggerHelper.logger.error("");
+//                LoggerEx.error(TAG, "");
 //            }
 //        }
         Collection<byte[]> values = sequenceBytesMap.values();

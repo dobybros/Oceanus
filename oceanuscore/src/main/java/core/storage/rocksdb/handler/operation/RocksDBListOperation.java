@@ -1,7 +1,8 @@
 package core.storage.rocksdb.handler.operation;
 
+import chat.logs.LoggerEx;
 import core.common.InternalTools;
-import core.log.LoggerHelper;
+
 import core.storage.adapters.assist.impl.queue.CommonListOperation;
 import core.storage.rocksdb.data.structure.common.KeyExpireData;
 import core.storage.rocksdb.data.structure.list.KeyMetaData;
@@ -19,6 +20,7 @@ import java.util.concurrent.locks.ReadWriteLock;
  * Description：
  */
 public class RocksDBListOperation extends CommonListOperation {
+    private static final String TAG = RocksDBListOperation.class.getSimpleName();
     private RocksDB rocksDB;
     private final long TTL_DEFAULT = -1L;
     private final long SEQ_DEFAULT = -1L;
@@ -664,7 +666,7 @@ public class RocksDBListOperation extends CommonListOperation {
 
                                             Map<String, Object> map = new HashMap<>();
                                             if(shouldDelete){
-                                                LoggerHelper.getLogger().info(structure + " key: " + key + ",meta version: " + (keyMataData == null ? null : keyMataData.version) + ",will delete version: " + version + ", meta ttl: " + (keyMataData == null ? null : keyMataData.ttl) + ", will delete ttl: " + ttl);
+                                                LoggerEx.info(TAG, structure + " key: " + key + ",meta version: " + (keyMataData == null ? null : keyMataData.version) + ",will delete version: " + version + ", meta ttl: " + (keyMataData == null ? null : keyMataData.ttl) + ", will delete ttl: " + ttl);
                                                 long seq = firstSeq;
                                                 while (seq != SEQ_DEFAULT){
                                                     byte[] valueBytes = rocksDB.get(genKeySeqBytes(key, seq, version));
@@ -706,6 +708,6 @@ public class RocksDBListOperation extends CommonListOperation {
                 t.printStackTrace();
             }
         }
-        LoggerHelper.getLogger().info(structure + " finish clear, time: " + System.currentTimeMillis());
+        LoggerEx.info(TAG, structure + " finish clear, time: " + System.currentTimeMillis());
     }
 }

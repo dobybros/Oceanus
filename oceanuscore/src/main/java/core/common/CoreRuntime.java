@@ -1,6 +1,6 @@
 package core.common;
 
-import core.log.LoggerHelper;
+import chat.logs.LoggerEx;
 import core.utils.scheduled.Timer;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -21,6 +21,8 @@ public abstract class CoreRuntime {
     private static InternalTools internalTools;
     private static HardwareAbstractionLayer hardwareAbstractionLayer;
 
+    private static final String TAG = CoreRuntime.class.getSimpleName();
+
     static {
         internalTools = new InternalTools();
         internalTools.setTimer(new Timer());
@@ -32,7 +34,7 @@ public abstract class CoreRuntime {
         int cores = centralProcessor.getLogicalProcessorCount();
         if(cores <= 0) {
             cpuCores = 4;
-            LoggerHelper.logger.warn("Failed to detect cpuCore, make it default to 4 cores, wrong cpuCores is " + cores);
+            LoggerEx.warn(TAG, "Failed to detect cpuCore, make it default to 4 cores, wrong cpuCores is " + cores);
         } else {
             cpuCores = cores;
         }

@@ -1,13 +1,16 @@
 package core.security.sign;
 
+import chat.logs.LoggerEx;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import core.log.LoggerHelper;
+
 
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class ECDSASignListener implements SignListener {
+    private static final String TAG = ECDSASignListener.class.getSimpleName();
+
     @Override
     public KeyPair generateKeyPair() {
         try {
@@ -15,7 +18,7 @@ public class ECDSASignListener implements SignListener {
             keyPairGenerator.initialize(256); //key长度设置
             return keyPairGenerator.generateKeyPair();
         } catch (Throwable throwable) {
-            LoggerHelper.logger.error("generateKeyPair failed, " + ExceptionUtils.getFullStackTrace(throwable));
+            LoggerEx.error(TAG, "generateKeyPair failed, " + ExceptionUtils.getFullStackTrace(throwable));
         }
         return  null;
     }
@@ -28,7 +31,7 @@ public class ECDSASignListener implements SignListener {
                 builder.append("data is null; ");
             if(privateKey == null)
                 builder.append("privateKey is null.");
-            LoggerHelper.logger.error(builder.toString());
+            LoggerEx.error(TAG, builder.toString());
             return null;
         }
         try {
@@ -40,7 +43,7 @@ public class ECDSASignListener implements SignListener {
             signature.update(data);
             return signature.sign();
         } catch (Throwable throwable) {
-            LoggerHelper.logger.error("sign dataLen " + data.length + " failed, " + ExceptionUtils.getFullStackTrace(throwable));
+            LoggerEx.error(TAG, "sign dataLen " + data.length + " failed, " + ExceptionUtils.getFullStackTrace(throwable));
         }
         return null;
     }
@@ -55,7 +58,7 @@ public class ECDSASignListener implements SignListener {
                 builder.append("signature is null; ");
             if(publicKey == null)
                 builder.append("privateKey is null.");
-            LoggerHelper.logger.error(builder.toString());
+            LoggerEx.error(TAG, builder.toString());
             return false;
         }
         try {
@@ -67,7 +70,7 @@ public class ECDSASignListener implements SignListener {
             theSignature.update(data);
             return theSignature.verify(signature);
         } catch (Throwable throwable) {
-            LoggerHelper.logger.error("verify dataLen " + data.length + " failed, " + ExceptionUtils.getFullStackTrace(throwable));
+            LoggerEx.error(TAG, "verify dataLen " + data.length + " failed, " + ExceptionUtils.getFullStackTrace(throwable));
         }
         return false;
     }

@@ -1,8 +1,9 @@
 package core.net.data;
 
+import chat.logs.LoggerEx;
 import core.discovery.data.FailedResponse;
 import core.discovery.data.TimeoutResponse;
-import core.log.LoggerHelper;
+
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class RequestTransport<R extends ResponseTransport> extends Transport {
     private static final AtomicLong counter = new AtomicLong(0);
+    private static final String TAG = RequestTransport.class.getSimpleName();
 
     private static ConcurrentHashMap<Class<?>, Class<? extends ResponseTransport>> cachedMap = new ConcurrentHashMap<>();
 
@@ -58,7 +60,7 @@ public class RequestTransport<R extends ResponseTransport> extends Transport {
             return r;
         } catch (Throwable e) {
             e.printStackTrace();
-            LoggerHelper.logger.error("Generate response failed, " + e.getMessage() + " for transportId " + transportId + " this " + this);
+            LoggerEx.error(TAG, "Generate response failed, " + e.getMessage() + " for transportId " + transportId + " this " + this);
             return null;
         }
     }

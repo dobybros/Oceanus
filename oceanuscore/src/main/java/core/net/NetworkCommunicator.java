@@ -1,9 +1,9 @@
 package core.net;
 
+import chat.logs.LoggerEx;
 import core.common.InternalTools;
 import core.discovery.data.FailedResponse;
 import core.discovery.errors.DiscoveryErrorCodes;
-import core.log.LoggerHelper;
 import core.net.adapters.data.*;
 import core.net.data.RequestTransport;
 import core.net.data.ResponseTransport;
@@ -36,6 +36,7 @@ public abstract class NetworkCommunicator {
     public static final int STATE_SERVER = 1;
     public static final int STATE_CLIENT = 2;
     public static final int STATE_SHUTDOWN = 3;
+    private static final String TAG = NetworkCommunicator.class.getSimpleName();
     protected int state = STATE_NONE;
 
     public static final int CONNECTIVITY_STATE_NONE = 1;
@@ -82,11 +83,11 @@ public abstract class NetworkCommunicator {
         addContentPacketListener(FailedResponse.class, (contentPacket, serverIdCRC, address) -> {
             FailedResponse response = contentPacket.getContent();
             if(response.getTransportId() == null) {
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.warn("response.getTransportId() is null for contentPacket " + contentPacket + " from " + address);
+                LoggerEx.warn(TAG, "response.getTransportId() is null for contentPacket " + contentPacket + " from " + address);
                 return null;
             }
             if(!sendingRequestMap.containsKey(response.getTransportId())) {
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.warn("Unexpected ResponseTransport received, " + response + " as transportId " + response.getTransportId() + " is not in sendingMap, ignore...");
+                LoggerEx.warn(TAG, "Unexpected ResponseTransport received, " + response + " as transportId " + response.getTransportId() + " is not in sendingMap, ignore...");
             } else {
                 invokeContentPacketListener(response, null, contentPacket, address, serverIdCRC);
 //                boolean done = false;
@@ -95,7 +96,7 @@ public abstract class NetworkCommunicator {
 //                    synchronized (contentPacketContainer) {
 //                        contentPacketContainer = sendingRequestMap.remove(response.getTransportId());
 //                        if(contentPacketContainer != null) {
-//                            LoggerHelper.logger.info("ContentPacketListener address " + address + " sendingRequestMap remove id " + response.getTransportId() + " contentPacket " + contentPacket + " failedContentPacket " + failedContentPacket);
+//                            LoggerEx.info(TAG, "ContentPacketListener address " + address + " sendingRequestMap remove id " + response.getTransportId() + " contentPacket " + contentPacket + " failedContentPacket " + failedContentPacket);
 //                            done = contentPacketContainer.done();
 //                        }
 //                    }
@@ -106,7 +107,7 @@ public abstract class NetworkCommunicator {
 //                            contentPacketContainer.responseListener.responseReceived(null, contentPacket, serverIdCRC);
 //                        } catch(Throwable t) {
 //                            t.printStackTrace();
-//                            LoggerHelper.logger.error("Invoke responseReceived for ensureResponseContentPacketListener failed, " + t.getMessage() + " contentPacket " + contentPacket + " address " + address);
+//                            LoggerEx.error(TAG, "Invoke responseReceived for ensureResponseContentPacketListener failed, " + t.getMessage() + " contentPacket " + contentPacket + " address " + address);
 //                        }
 //                    }
 //                }
@@ -126,7 +127,7 @@ public abstract class NetworkCommunicator {
 //                    if(failedContentPacket != null) {
 //                        System.out.print("");
 //                    }
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("ContentPacketListener address " + address + " sendingRequestMap remove id " + response.getTransportId() + " contentPacket " + contentPacket + " failedContentPacket " + failedContentPacket);
+                    LoggerEx.info(TAG, "ContentPacketListener address " + address + " sendingRequestMap remove id " + response.getTransportId() + " contentPacket " + contentPacket + " failedContentPacket " + failedContentPacket);
                     done = contentPacketContainer.done();
                 }
             }
@@ -137,7 +138,7 @@ public abstract class NetworkCommunicator {
                     contentPacketContainer.responseListener.responseReceived(contentPacket, failedContentPacket, serverIdCRC, address);
                 } catch(Throwable t) {
                     t.printStackTrace();
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Invoke responseReceived for ensureResponseContentPacketListener failed, " + t.getMessage() + " contentPacket " + contentPacket + " address " + address);
+                    LoggerEx.error(TAG, "Invoke responseReceived for ensureResponseContentPacketListener failed, " + t.getMessage() + " contentPacket " + contentPacket + " address " + address);
                 }
             }
         }
@@ -153,12 +154,12 @@ public abstract class NetworkCommunicator {
 
     public void registerPacketType(short type, Class<? extends Packet> packetClass) {
         if(packetClass == null) {
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("packetClass is null while registerPacketType, type " + type);
+            LoggerEx.error(TAG, "packetClass is null while registerPacketType, type " + type);
             return;
         }
 
         typePacketMap.put(type, packetClass);
-//        LoggerHelper.logger.info("registerPacketType " + type + " packetClass " + packetClass + " for " + this);
+//        LoggerEx.info(TAG, "registerPacketType " + type + " packetClass " + packetClass + " for " + this);
     }
 
     public void unregisterPacketType(short type) {
@@ -203,10 +204,10 @@ public abstract class NetworkCommunicator {
                         if(content != null) {
                             return ContentPacket.buildWithTypeAndContentAndServiceKey(contentType, content, serviceKey);
                         } else {
-                            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("resurrectPacket failed, because of content can not be parsed from contentClass " + contentClass + " contentType " + contentType + " type " + type);
+                            LoggerEx.error(TAG, "resurrectPacket failed, because of content can not be parsed from contentClass " + contentClass + " contentType " + contentType + " type " + type);
                         }
                     } else {
-                        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("resurrectPacket failed, because of contentClass is not found for contentType " + contentType + " type " + type);
+                        LoggerEx.error(TAG, "resurrectPacket failed, because of contentClass is not found for contentType " + contentType + " type " + type);
                     }
                     break;
 //                case PACKET_TYPE_SERVER_NAME:
@@ -215,7 +216,7 @@ public abstract class NetworkCommunicator {
 //                    return NetRuntime.getSerializationStreamHandler().convert(is, packetClass);
                 default:
                     return NetRuntime.getSerializationStreamHandler().convert(is, packetClass);
-//                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("resurrectPacket failed, because of packetType is illegal, contentType " + contentType + " type " + type);
+//                    LoggerEx.error(TAG, "resurrectPacket failed, because of packetType is illegal, contentType " + contentType + " type " + type);
 //                    break;
             }
         }
@@ -340,13 +341,13 @@ public abstract class NetworkCommunicator {
         }
         RequestTransport<?> requestTransport = packet.getContent();
         if(sendingRequestMap.containsKey(requestTransport.getTransportId())) {
-//            LoggerHelper.logger.warn("ContentPacket is sending " + packet + " ignore...");
+//            LoggerEx.warn(TAG, "ContentPacket is sending " + packet + " ignore...");
             if(responseListener != null) {
                 try {
                     responseListener.responseReceived(null, ContentPacket.buildWithContent(requestTransport.generateFailedResponse(DiscoveryErrorCodes.ERROR_PACKET_IS_SENDING, "packet is sending")), null, address);
                 } catch(Throwable t) {
                     t.printStackTrace();
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Invoke responseReceived for sendContentPacket failed, " + t.getMessage() + " packet " + packet + " address " + address + " timeout " + timeout);
+                    LoggerEx.error(TAG, "Invoke responseReceived for sendContentPacket failed, " + t.getMessage() + " packet " + packet + " address " + address + " timeout " + timeout);
                 }
             }
             return;
@@ -359,18 +360,18 @@ public abstract class NetworkCommunicator {
 //                synchronized (contentPacketContainer) {
 //                    if(contentPacketContainer.taskStatus == ContentPacketContainer.TASK_STATUS_PENDING) {
 //                        sendingRequestMap.remove(contentPacketContainer.transportId);
-//                        LoggerHelper.logger.info("Timeout sendingRequestMap remove transportId " + contentPacketContainer.transportId);
+//                        LoggerEx.info(TAG, "Timeout sendingRequestMap remove transportId " + contentPacketContainer.transportId);
 //                        contentPacketContainer.timeout();
 //                        if(contentPacketContainer.responseListener != null) {
 //                            try {
 //                                contentPacketContainer.responseListener.responseReceived(null, ContentPacket.buildWithContent(new TimeoutResponse(DiscoveryErrorCodes.ERROR_TIMEOUT, "timeout")), null);
 //                            } catch(Throwable t) {
 //                                t.printStackTrace();
-//                                LoggerHelper.logger.error("Invoke responseReceived for sendContentPacket failed, " + t.getMessage() + " packet " + packet + " address " + address + " timeout " + timeout);
+//                                LoggerEx.error(TAG, "Invoke responseReceived for sendContentPacket failed, " + t.getMessage() + " packet " + packet + " address " + address + " timeout " + timeout);
 //                            }
 //                        }
 //                    } else {
-//                        LoggerHelper.logger.warn("This scheduleTask shall be canceled already, should not run here. transportId " + contentPacketContainer.transportId);
+//                        LoggerEx.warn(TAG, "This scheduleTask shall be canceled already, should not run here. transportId " + contentPacketContainer.transportId);
 //                    }
 //                }
 //            }
@@ -378,11 +379,11 @@ public abstract class NetworkCommunicator {
         ContentPacketContainer<?> old = sendingRequestMap.putIfAbsent(requestTransport.getTransportId(), contentPacketContainer);
         if(old != null) {
             contentPacketContainer.cancel();
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.warn("sendingRequestMap put requestTransport id " + requestTransport.getTransportId() + " already exists, scheduleTask id " + contentPacketContainer.scheduleTask + " has been be cancelled");
+            LoggerEx.warn(TAG, "sendingRequestMap put requestTransport id " + requestTransport.getTransportId() + " already exists, scheduleTask id " + contentPacketContainer.scheduleTask + " has been be cancelled");
         } else {
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("sendContentPacket packet " + packet + " address " + address + " sendingRequestMap put id " + requestTransport.getTransportId());
+            LoggerEx.info(TAG, "sendContentPacket packet " + packet + " address " + address + " sendingRequestMap put id " + requestTransport.getTransportId());
             sendPacket(packet, address).whenComplete((aVoid, throwable) -> {
-                if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("sendContentPacket completed " + packet + " address " + address + " id " + requestTransport.getTransportId() + " will wait response. timeout " + timeout);
+                LoggerEx.info(TAG, "sendContentPacket completed " + packet + " address " + address + " id " + requestTransport.getTransportId() + " will wait response. timeout " + timeout);
                 contentPacketContainer.scheduleTask = internalTools.getScheduledExecutorService().schedule(() -> {
                     handleContentPacketFailed(contentPacketContainer, requestTransport, requestTransport.generateTimeoutResponse(NetErrorCodes.ERROR_TIMEOUT, "Timeout after " + timeout), address);
                 }, timeout, TimeUnit.MILLISECONDS);
@@ -401,14 +402,14 @@ public abstract class NetworkCommunicator {
                 if(contentPacketContainer.taskStatus == ContentPacketContainer.TASK_STATUS_PENDING) {
                     boolean removed = sendingRequestMap.remove(contentPacketContainer.transportId, contentPacketContainer);
                     if(removed) {
-                        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("Timeout sendingRequestMap remove transportId " + contentPacketContainer.transportId);
+                        LoggerEx.info(TAG, "Timeout sendingRequestMap remove transportId " + contentPacketContainer.transportId);
                         contentPacketContainer.timeout();
                         bool = true;
                     } else {
-                        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.warn("contentPacketContainer shall be removed by transportId " + contentPacketContainer.transportId + " but removed is false, ignore... contentPacketContainer " + contentPacketContainer);
+                        LoggerEx.warn(TAG, "contentPacketContainer shall be removed by transportId " + contentPacketContainer.transportId + " but removed is false, ignore... contentPacketContainer " + contentPacketContainer);
                     }
                 } else {
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.warn("This scheduleTask shall be canceled already, should not run here. transportId " + contentPacketContainer.transportId);
+                    LoggerEx.warn(TAG, "This scheduleTask shall be canceled already, should not run here. transportId " + contentPacketContainer.transportId);
                 }
             }
             if(bool) {
@@ -417,7 +418,7 @@ public abstract class NetworkCommunicator {
                         contentPacketContainer.responseListener.responseReceived(null, ContentPacket.buildWithContent(failedResponse), null, address);
                     } catch(Throwable t) {
                         t.printStackTrace();
-                        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Invoke responseReceived for sendContentPacket failed, " + t.getMessage() + " requestTransport " + requestTransport);
+                        LoggerEx.error(TAG, "Invoke responseReceived for sendContentPacket failed, " + t.getMessage() + " requestTransport " + requestTransport);
                     }
                 }
             }
@@ -430,7 +431,7 @@ public abstract class NetworkCommunicator {
             ContentPacketListener<R> contentPacketListener = (contentPacket, serverIdCRC, address) -> {
                 R response = contentPacket.getContent();
                 if(response.getTransportId() == null || !sendingRequestMap.containsKey(response.getTransportId())) {
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.warn("Unexpected ResponseTransport received, " + response + " as transportId " + response.getTransportId() + " is not in sendingMap, ignore...");
+                    LoggerEx.warn(TAG, "Unexpected ResponseTransport received, " + response + " as transportId " + response.getTransportId() + " is not in sendingMap, ignore...");
                 } else {
                     invokeContentPacketListener(response, contentPacket, null, address, serverIdCRC);
 //                    boolean done = false;
@@ -439,7 +440,7 @@ public abstract class NetworkCommunicator {
 //                        synchronized (contentPacketContainer) {
 //                            contentPacketContainer = (ContentPacketContainer<R>) sendingRequestMap.remove(response.getTransportId());
 //                            if(contentPacketContainer != null) {
-//                                LoggerHelper.logger.info("ContentPacketListener address " + address + " sendingRequestMap remove id " + response.getTransportId() + " contentPacket " + contentPacket + " failedContentPacket " + failedContentPacket);
+//                                LoggerEx.info(TAG, "ContentPacketListener address " + address + " sendingRequestMap remove id " + response.getTransportId() + " contentPacket " + contentPacket + " failedContentPacket " + failedContentPacket);
 //                                done = contentPacketContainer.done();
 //                            }
 //                        }
@@ -450,14 +451,14 @@ public abstract class NetworkCommunicator {
 //                                contentPacketContainer.responseListener.responseReceived(contentPacket, null, serverIdCRC);
 //                            } catch(Throwable t) {
 //                                t.printStackTrace();
-//                                LoggerHelper.logger.error("Invoke responseReceived for ensureResponseContentPacketListener failed, " + t.getMessage() + " contentPacket " + contentPacket + " address " + address);
+//                                LoggerEx.error(TAG, "Invoke responseReceived for ensureResponseContentPacketListener failed, " + t.getMessage() + " contentPacket " + contentPacket + " address " + address);
 //                            }
 //                        }
 //                    }
                 }
                 return null;
             };
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("responseListenerMap put responseTransportClass " + responseTransportClass + " contentPacketListener " + contentPacketListener);
+            LoggerEx.info(TAG, "responseListenerMap put responseTransportClass " + responseTransportClass + " contentPacketListener " + contentPacketListener);
             ContentPacketListener<?> old = responseListenerMap.putIfAbsent(responseTransportClass, contentPacketListener);
             if(old == null) {
                 addContentPacketListener(responseTransportClass, contentPacketListener);
@@ -467,7 +468,7 @@ public abstract class NetworkCommunicator {
 
     public void close() {
         state = STATE_SHUTDOWN;
-        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("NetworkCommunicator closed for " + this);
+        LoggerEx.info(TAG, "NetworkCommunicator closed for " + this);
         allPacketListeners.clear();
         typePacketListeners.clear();
         closedListeners.clear();
@@ -482,7 +483,7 @@ public abstract class NetworkCommunicator {
     public NetworkCommunicator addAllPacketListener(PacketListener packetListener) {
         if(!allPacketListeners.contains(packetListener)) {
             allPacketListeners.add(packetListener);
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("addPacketListener " + packetListener + " for " + this);
+            LoggerEx.info(TAG, "addPacketListener " + packetListener + " for " + this);
         }
         return this;
     }
@@ -495,7 +496,7 @@ public abstract class NetworkCommunicator {
     public NetworkCommunicator addPingListener(PingListener pingListener) {
         if(!pingListeners.contains(pingListener)) {
             pingListeners.add(pingListener);
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("pingListeners " + pingListener + " for " + this);
+            LoggerEx.info(TAG, "pingListeners " + pingListener + " for " + this);
         }
         return this;
     }
@@ -514,7 +515,7 @@ public abstract class NetworkCommunicator {
                 try {
                     packetListener.packetReceived(packet, serverIdCRC, inetAddress);
                 } catch (Throwable t) {
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Packet received for allPacketListener " + packetListener + " failed, " + t.getMessage() + " ignore the error to next listeners");
+                    LoggerEx.error(TAG, "Packet received for allPacketListener " + packetListener + " failed, " + t.getMessage() + " ignore the error to next listeners");
                 }
             }
             short type = packet.getType();
@@ -528,9 +529,9 @@ public abstract class NetworkCommunicator {
                     if(!contentPacket.isCommitted() && transport instanceof RequestTransport) {
                         RequestTransport<?> requestTransport = (RequestTransport<?>) transport;
                         ResponseTransport responseTransport = requestTransport.generateFailedResponse(DiscoveryErrorCodes.ERROR_NO_RESULT, "No result");
-                        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("Send back response " + responseTransport + " for request " + requestTransport + " id " + requestTransport.getTransportId());
+                        LoggerEx.info(TAG, "Send back response " + responseTransport + " for request " + requestTransport + " id " + requestTransport.getTransportId());
                         sendPacket(requestTransport, responseTransport, inetAddress).exceptionally(e -> {
-                            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Send back (packetReceived) " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetAddress + " request " + requestTransport + " response " + responseTransport + " id " + requestTransport.getTransportId());
+                            LoggerEx.error(TAG, "Send back (packetReceived) " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetAddress + " request " + requestTransport + " response " + responseTransport + " id " + requestTransport.getTransportId());
                             return null;
                         });
                     }
@@ -560,14 +561,14 @@ public abstract class NetworkCommunicator {
                                 if(responseTransport != null && !contentPacket.isCommitted()) {
                                     contentPacket.setCommitted(true);
                                     sendPacket((RequestTransport) transport, responseTransport, inetAddress).exceptionally(e -> {
-                                        if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Send back (executeServiceContentPacketListener) " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetAddress + " request " + transport + " response " + responseTransport);
+                                        LoggerEx.error(TAG, "Send back (executeServiceContentPacketListener) " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetAddress + " request " + transport + " response " + responseTransport);
                                         return null;
                                     });
                                 }
                             }
                         } catch(Throwable t) {
                             t.printStackTrace();
-                            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Receive ContentPacket failed, " + t.getMessage() + " for ContentPacketListener " + listener + " packet " + contentPacket);
+                            LoggerEx.error(TAG, "Receive ContentPacket failed, " + t.getMessage() + " for ContentPacketListener " + listener + " packet " + contentPacket);
                         }
                     }
                 }
@@ -584,20 +585,20 @@ public abstract class NetworkCommunicator {
             for (ContentPacketListener listener : listeners) {
 //                try {
                 T transport = contentPacket.getContent();
-//                    LoggerHelper.logger.info("contentPacketReceived transport " + transport);
+//                    LoggerEx.info(TAG, "contentPacketReceived transport " + transport);
                 ResponseTransport responseTransport = listener.contentPacketReceived(contentPacket, serverIdCRC, inetAddress);
                 if(transport instanceof RequestTransport) {
                     if(responseTransport != null && !contentPacket.isCommitted()) {
                         contentPacket.setCommitted(true);
                         sendPacket((RequestTransport) transport, responseTransport, inetAddress).exceptionally(e -> {
-                            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Send back (executeContentPacketListener) " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetAddress + " request " + transport + " response " + responseTransport);
+                            LoggerEx.error(TAG, "Send back (executeContentPacketListener) " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetAddress + " request " + transport + " response " + responseTransport);
                             return null;
                         });
                     }
                 }
 //                } catch(Throwable t) {
 //                    t.printStackTrace();
-//                    LoggerHelper.logger.error("Receive ContentPacket failed, " + t.getMessage() + " for ContentPacketListener " + listener + " packet " + contentPacket);
+//                    LoggerEx.error(TAG, "Receive ContentPacket failed, " + t.getMessage() + " for ContentPacketListener " + listener + " packet " + contentPacket);
 //                }
             }
         }
@@ -613,13 +614,13 @@ public abstract class NetworkCommunicator {
 //
 //        } catch (IOException e) {
 //            e.printStackTrace();
-//            LoggerHelper.logger.error("Send back " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetSocketAddress + " response " + responseTransport);
+//            LoggerEx.error(TAG, "Send back " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetSocketAddress + " response " + responseTransport);
 //            responseTransport = requestTransport.generateFailedResponse(DiscoveryErrorCodes.ERROR_IO, "send response failed");
 //            try {
 //                this.sendPacket(ContentPacket.buildWithContent(responseTransport), inetSocketAddress);
 //            } catch (IOException ex) {
 //                ex.printStackTrace();
-//                LoggerHelper.logger.error("Send back FailedResponse for " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetSocketAddress + " response " + responseTransport);
+//                LoggerEx.error(TAG, "Send back FailedResponse for " + responseTransport.getClass().getSimpleName() + " failed, " + e.getMessage() + " to address " + inetSocketAddress + " response " + responseTransport);
 //            }
 //        }
 //        return null;
@@ -633,7 +634,7 @@ public abstract class NetworkCommunicator {
                 try {
                     packetListener.packetReceived(packet, serverIdCRC, inetAddress);
                 } catch(Throwable t) {
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Receive ContentPacket failed, " + t.getMessage() + " for PacketListener " + packetListener + " packet " + packet);
+                    LoggerEx.error(TAG, "Receive ContentPacket failed, " + t.getMessage() + " for PacketListener " + packetListener + " packet " + packet);
                 }
             }
         }
@@ -646,7 +647,7 @@ public abstract class NetworkCommunicator {
                 try {
                     pingListener.pingReceived(serverIdCRC, inetAddress);
                 } catch(Throwable t) {
-                    if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.error("Receive ping failed, " + t.getMessage() + " for PingListener " + pingListener);
+                    LoggerEx.error(TAG, "Receive ping failed, " + t.getMessage() + " for PingListener " + pingListener);
                 }
             }
         }
@@ -779,7 +780,7 @@ public abstract class NetworkCommunicator {
     public NetworkCommunicator addConnectedListener(ConnectedListener connectedListener) {
         if(!connectedListeners.contains(connectedListener)) {
             connectedListeners.add(connectedListener);
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("addConnectedListener " + connectedListener + " for " + this);
+            LoggerEx.info(TAG, "addConnectedListener " + connectedListener + " for " + this);
         }
         return this;
     }
@@ -792,7 +793,7 @@ public abstract class NetworkCommunicator {
     public NetworkCommunicator addClosedListener(ClosedListener closedListener) {
         if(!closedListeners.contains(closedListener)) {
             closedListeners.add(closedListener);
-            if(RUDPEXNetworkCommunicator.LOG_ENABLED) LoggerHelper.logger.info("addClosedListener " + closedListener + " for " + this);
+            LoggerEx.info(TAG, "addClosedListener " + closedListener + " for " + this);
         }
         return this;
     }

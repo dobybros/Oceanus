@@ -1,9 +1,10 @@
 package core.security.asymmetricalencryption;
 
+import chat.logs.LoggerEx;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.tools.ant.taskdefs.Pack;
-import core.log.LoggerHelper;
+
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -18,6 +19,8 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class RSAAsymmetricalEncryption implements AsymmetricalEncryptionListener {
+    private static final String TAG = RSAAsymmetricalEncryption.class.getSimpleName();
+
     @Override
     public KeyPair generateKeyPair() {
         try {
@@ -28,7 +31,7 @@ public class RSAAsymmetricalEncryption implements AsymmetricalEncryptionListener
             // 生成一个密钥对，保存在keyPair中
             return keyPairGen.generateKeyPair();
         } catch(Throwable throwable) {
-            LoggerHelper.logger.error("generateKeyPair failed, " + ExceptionUtils.getFullStackTrace(throwable));
+            LoggerEx.error(TAG, "generateKeyPair failed, " + ExceptionUtils.getFullStackTrace(throwable));
             return null;
         }
     }
@@ -41,11 +44,11 @@ public class RSAAsymmetricalEncryption implements AsymmetricalEncryptionListener
                 builder.append("data is null; ");
             if(publicKey == null)
                 builder.append("publicKey is null.");
-            LoggerHelper.logger.error(builder.toString());
+            LoggerEx.error(TAG, builder.toString());
             return null;
         }
         if(data.length > 117) {
-            LoggerHelper.logger.error("Data must not be longer than 117 bytes");
+            LoggerEx.error(TAG, "Data must not be longer than 117 bytes");
             return null;
         }
         try {
@@ -55,7 +58,7 @@ public class RSAAsymmetricalEncryption implements AsymmetricalEncryptionListener
             cipher.init(Cipher.ENCRYPT_MODE, pubKey);
             return cipher.doFinal(data);
         } catch(Throwable throwable) {
-            LoggerHelper.logger.error("encrypt byteLen " + data.length + " failed, " + ExceptionUtils.getFullStackTrace(throwable));
+            LoggerEx.error(TAG, "encrypt byteLen " + data.length + " failed, " + ExceptionUtils.getFullStackTrace(throwable));
             return null;
         }
     }
@@ -68,7 +71,7 @@ public class RSAAsymmetricalEncryption implements AsymmetricalEncryptionListener
             cipher.init(Cipher.DECRYPT_MODE, priKey);
             return cipher.doFinal(data);
         } catch (Throwable throwable) {
-            LoggerHelper.logger.error("decrypt byteLen " + data.length + " failed, " + ExceptionUtils.getFullStackTrace(throwable));
+            LoggerEx.error(TAG, "decrypt byteLen " + data.length + " failed, " + ExceptionUtils.getFullStackTrace(throwable));
             return null;
         }
     }

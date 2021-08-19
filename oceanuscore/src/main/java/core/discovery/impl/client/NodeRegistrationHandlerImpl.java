@@ -9,7 +9,6 @@ import core.discovery.errors.DiscoveryErrorCodes;
 import core.discovery.node.Node;
 import core.discovery.node.Service;
 import core.discovery.node.ServiceNodeResult;
-import core.log.LoggerHelper;
 import core.net.NetRuntime;
 import core.net.NetworkCommunicator;
 import core.net.adapters.data.ContentPacket;
@@ -142,7 +141,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         }
         LinkedHashSet<String> ipSet = new LinkedHashSet<>();
         for(NetworkIF networkIF : networkIFS) {
-            LoggerHelper.logger.info("Find network interface " + networkIF);
+            LoggerEx.info(TAG, "Find network interface " + networkIF);
             String[] ipv4s = networkIF.getIPv4addr();
             if(ipv4s != null && ipv4s.length > 0) {
                 for(String ipv4 : ipv4s) {
@@ -213,10 +212,10 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
                     networkCommunicator.ping(discoveryHostManager.getUsingAddress());
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    LoggerHelper.logger.error("Ping aquamanAddress " + discoveryHostManager.getUsingAddress() + " failed, " + e.getMessage());
+                    LoggerEx.error(TAG, "Ping aquamanAddress " + discoveryHostManager.getUsingAddress() + " failed, " + e.getMessage());
                 }
             } else {
-                LoggerHelper.logger.warn("Ping will be canceled as current state is not connected, expected " + CONNECTIVITY_STATE_CONNECTED + " actual " + connectivityState.getCurrentState());
+                LoggerEx.warn(TAG, "Ping will be canceled as current state is not connected, expected " + CONNECTIVITY_STATE_CONNECTED + " actual " + connectivityState.getCurrentState());
                 pingTask.cancel(true);
                 pingTask = null;
             }
@@ -244,7 +243,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
                     connectivityState.gotoState(CONNECTIVITY_STATE_TERMINATED, "Aquaman report ErrorPacket to current node, Node termination. Will not reconnect...");
                     break;
                 default:
-                    LoggerHelper.logger.error("Unknown error code " + errorPacket.getCode() + " message " + errorPacket.getMessage());
+                    LoggerEx.error(TAG, "Unknown error code " + errorPacket.getCode() + " message " + errorPacket.getMessage());
                     break;
             }
         });
@@ -283,7 +282,7 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         }
         retryTimes++;
         long waitTime = (errorPacket != null && errorPacket.getWaitSeconds() != null && errorPacket.getWaitSeconds() > 0) ? errorPacket.getWaitSeconds() * 1000 : 5000L;
-        LoggerHelper.logger.info("Will wait " + waitTime / 1000 + " seconds to reconnect. retryTimes " + retryTimes + " maxRetries " + maxRetries);
+        LoggerEx.info(TAG, "Will wait " + waitTime / 1000 + " seconds to reconnect. retryTimes " + retryTimes + " maxRetries " + maxRetries);
         try {
             Thread.sleep(waitTime);
         } catch (InterruptedException e) {

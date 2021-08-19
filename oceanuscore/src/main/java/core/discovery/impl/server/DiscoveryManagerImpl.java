@@ -8,7 +8,6 @@ import core.discovery.data.discovery.*;
 import core.discovery.errors.DiscoveryErrorCodes;
 import core.discovery.node.Node;
 import core.discovery.node.Service;
-import core.log.LoggerHelper;
 import core.net.ContentPacketListener;
 import core.net.NetRuntime;
 import core.net.NetworkCommunicator;
@@ -133,7 +132,7 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
                             tentaclePingTimeMap.remove(serverIdCRC1);
                             networkCommunicator.sendPacket(new ErrorPacket(DiscoveryErrorCodes.ERROR_UNKNOWN_NODE, "Unknown node").waitSeconds(10), address1).exceptionally(throwable -> {
                                 throwable.printStackTrace();
-                                LoggerHelper.logger.error("Send back ErrorPacket for ERROR_UNKNOWN_NODE failed, " + throwable.getMessage() + " to address " + address1);
+                                LoggerEx.error(TAG, "Send back ErrorPacket for ERROR_UNKNOWN_NODE failed, " + throwable.getMessage() + " to address " + address1);
                                 return null;
                             });
                         } else {
@@ -146,7 +145,7 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
                                 networkCommunicator.ping(address1);
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                LoggerHelper.logger.error("Send back Ping failed, " + e.getMessage() + " to address " + address1);
+                                LoggerEx.error(TAG, "Send back Ping failed, " + e.getMessage() + " to address " + address1);
                             }
                         }
                     });
