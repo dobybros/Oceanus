@@ -1,10 +1,10 @@
 package com.docker.utils;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.json.Result;
 import chat.logs.LoggerEx;
 import com.alibaba.fastjson.JSON;
+import oceanus.apis.CoreException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.HttpEntity;

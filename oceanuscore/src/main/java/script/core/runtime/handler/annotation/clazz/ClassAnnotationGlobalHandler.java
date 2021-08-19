@@ -1,9 +1,7 @@
 package script.core.runtime.handler.annotation.clazz;
 
 
-import chat.errors.CoreException;
-import script.Runtime;
-import script.RuntimeContext;
+import oceanus.apis.CoreException;
 import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.handler.AbstractClassAnnotationHandler;
 

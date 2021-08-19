@@ -1,6 +1,6 @@
 package script.core.runtime.handler.annotation.clazz;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 import script.core.annotation.RegisterClassAnnotation;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 

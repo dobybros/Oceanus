@@ -1,10 +1,10 @@
 package chat.scheduled;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.QuartzJob;
 import chat.utils.TimerTaskEx;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;

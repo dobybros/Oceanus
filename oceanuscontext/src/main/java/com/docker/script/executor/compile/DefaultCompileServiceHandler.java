@@ -2,10 +2,9 @@ package com.docker.script.executor.compile;
 
 import chat.config.Configuration;
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
-import com.docker.script.BaseRuntimeContext;
 import com.docker.script.executor.classloader.DependencyPrepareClassLoaderHandler;
 import com.docker.script.executor.classloader.SourcePrepareClassLoaderHandler;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.ParseServiceHandler;

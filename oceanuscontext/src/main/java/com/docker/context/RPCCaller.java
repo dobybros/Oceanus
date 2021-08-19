@@ -1,6 +1,6 @@
 package com.docker.context;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 
 import java.util.concurrent.CompletableFuture;
 

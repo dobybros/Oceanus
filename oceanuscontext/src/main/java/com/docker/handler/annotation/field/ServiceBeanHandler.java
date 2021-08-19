@@ -1,9 +1,9 @@
 package com.docker.handler.annotation.field;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.docker.annotations.ServiceBean;
 import com.docker.script.BaseRuntimeContext;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.StringUtils;
 import script.core.runtime.handler.AbstractFieldAnnotationHandler;
 

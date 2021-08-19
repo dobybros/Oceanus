@@ -1,9 +1,9 @@
 package script.core.servlets;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.main.ServerStart;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.StringUtils;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.servlets.GroovyServletManager.PermissionIntercepter;

@@ -1,6 +1,6 @@
 package script.utils;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 
 public interface ShutdownListener {
     void shutdown() throws CoreException;

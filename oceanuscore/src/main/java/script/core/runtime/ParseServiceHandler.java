@@ -1,8 +1,6 @@
 package script.core.runtime;
 
-import chat.errors.CoreException;
-import script.Runtime;
-import script.RuntimeContext;
+import oceanus.apis.CoreException;
 
 /**
  * Created by lick on 2019/5/15.

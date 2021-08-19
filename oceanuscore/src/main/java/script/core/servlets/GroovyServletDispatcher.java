@@ -1,8 +1,8 @@
 package script.core.servlets;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.servlet.annotation.WebServlet;

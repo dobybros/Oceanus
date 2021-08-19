@@ -1,6 +1,6 @@
 package chat.config;
 
-import core.net.NetRuntime;
+import oceanus.sdk.core.net.NetRuntime;
 import script.core.runtime.AbstractRuntimeContext;
 
 import java.util.Map;

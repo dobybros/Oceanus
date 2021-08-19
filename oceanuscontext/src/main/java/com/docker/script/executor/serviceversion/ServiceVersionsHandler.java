@@ -1,8 +1,8 @@
 package com.docker.script.executor.serviceversion;
 
-import chat.errors.CoreException;
 import chat.config.BaseConfiguration;
 import chat.config.Configuration;
+import oceanus.apis.CoreException;
 
 import java.util.Map;
 

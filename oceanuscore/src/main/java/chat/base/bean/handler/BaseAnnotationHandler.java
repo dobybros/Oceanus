@@ -1,6 +1,6 @@
 package chat.base.bean.handler;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 
 /**
  * Created by lick on 2021/1/2.

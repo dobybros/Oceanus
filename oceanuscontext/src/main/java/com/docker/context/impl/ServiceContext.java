@@ -1,12 +1,13 @@
 package com.docker.context.impl;
 
-import chat.errors.CoreException;
 import com.docker.context.Context;
 import com.docker.context.RPCCaller;
 import com.docker.context.ServiceGenerator;
 import com.docker.context.config.ServerConfig;
-import com.docker.rpc.remote.stub.RemoteServersManager;
 import com.docker.script.BaseRuntimeContext;
+import oceanus.apis.CoreException;
+import oceanus.sdk.rpc.remote.stub.RemoteServersManager;
+import org.apache.commons.lang.NotImplementedException;
 import script.core.runtime.groovy.object.AbstractObject;
 
 import java.util.ArrayList;
@@ -73,7 +74,8 @@ public class ServiceContext implements Context {
 
                 @Override
                 public <T> CompletableFuture<T> callAsync(String service, String className, String method, String onlyCallOneServer, Class<T> returnClass, Object... args) throws CoreException {
-                    return runtimeContext.getServiceStubManagerFactory().get(this.lanId).callAsync(service, className, method, onlyCallOneServer, returnClass, args);
+//                    return runtimeContext.getServiceStubManagerFactory().get(this.lanId).callAsync(service, className, method, onlyCallOneServer, returnClass, args);
+                    throw new NotImplementedException("Don't support Async now");
                 }
             };
             lanRpcCallCacheMap.putIfAbsent(lanId, rpcCaller);

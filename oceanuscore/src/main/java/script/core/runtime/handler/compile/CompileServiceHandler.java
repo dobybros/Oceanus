@@ -1,6 +1,6 @@
 package script.core.runtime.handler.compile;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 
 /**
  * Created by lick on 2020/12/21.

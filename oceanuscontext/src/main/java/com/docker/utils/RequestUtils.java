@@ -1,7 +1,7 @@
 package com.docker.utils;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
+import oceanus.apis.CoreException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

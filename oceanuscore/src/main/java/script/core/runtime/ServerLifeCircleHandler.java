@@ -1,7 +1,7 @@
 package script.core.runtime;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
+import oceanus.apis.CoreException;
 import script.core.annotation.ServerLifeCircle;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;

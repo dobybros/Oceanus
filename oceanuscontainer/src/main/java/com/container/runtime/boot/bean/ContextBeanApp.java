@@ -2,14 +2,12 @@ package com.container.runtime.boot.bean;
 
 import chat.config.BaseConfiguration;
 import chat.utils.IPHolder;
-import com.docker.context.impl.DefaultContextFactory;
-import com.docker.http.MyHttpParameters;
-import com.docker.rpc.impl.RMIServerHandler;
-import com.docker.rpc.impl.RMIServerImplWrapper;
-//import com.docker.rpc.queue.KafkaSimplexListener;
-import com.docker.server.OnlineServer;
 import com.container.runtime.boot.manager.BootManager;
 import com.container.runtime.executor.DefaultRuntimeExecutor;
+import com.docker.context.impl.DefaultContextFactory;
+import com.docker.http.MyHttpParameters;
+import com.docker.server.OnlineServer;
+import oceanus.sdk.rpc.impl.RMIServerHandler;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -23,7 +21,6 @@ import script.file.FileAdapter;
 import script.file.LocalFileHandler;
 import script.filter.JsonFilterFactory;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,12 +50,7 @@ class ContextBeanApp {
     private RequestPermissionHandler requestPermissionHandler;
     private BootManager scriptManager;
     private OnlineServer onlineServer;
-    private RMIServerImplWrapper rpcServer;
-    private RMIServerImplWrapper rpcServerSsl;
-    private RMIServerImplWrapper dockerRpcServer;
     private RMIServerHandler dockerRpcServerAdapter;
-    private RMIServerImplWrapper dockerRpcServerSsl;
-    private RMIServerHandler dockerRpcServerAdapterSsl;
 
 //    private KafkaSimplexListener queueSimplexListener;
 //
@@ -98,39 +90,6 @@ class ContextBeanApp {
         return classLoaderFactory;
     }
 
-    synchronized RMIServerHandler getDockerRpcServerAdapter() {
-        if (dockerRpcServerAdapter == null) {
-            dockerRpcServerAdapter = new RMIServerHandler();
-            dockerRpcServerAdapter.setServerImpl(getDockerRpcServer());
-            dockerRpcServerAdapter.setIpHolder(getIpHolder());
-            dockerRpcServerAdapter.setRmiPort(baseConfiguration.getRpcPort());
-        }
-        return dockerRpcServerAdapter;
-    }
-
-    synchronized RMIServerImplWrapper getDockerRpcServer() {
-        if (dockerRpcServer == null) {
-            try {
-                dockerRpcServer = getRpcServer();
-//                dockerRpcServer = new com.docker.rpc.impl.RMIServerImplWrapper(Integer.valueOf(getRpcPort()));
-                dockerRpcServer.setRmiServerHandler(getDockerRpcServerAdapter());
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-        return dockerRpcServer;
-    }
-
-    synchronized RMIServerImplWrapper getRpcServerSsl() {
-        if (rpcServerSsl == null) {
-            try {
-                rpcServerSsl = new RMIServerImplWrapper(baseConfiguration.getSslRpcPort());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-        return rpcServerSsl;
-    }
     BaseConfiguration getBaseConfiguration(){
         return baseConfiguration;
     }
@@ -141,17 +100,6 @@ class ContextBeanApp {
         }
         return contextFactory;
     }
-    synchronized RMIServerImplWrapper getRpcServer() {
-        if (rpcServer == null) {
-            try {
-                rpcServer = new RMIServerImplWrapper(baseConfiguration.getRpcPort());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-        return rpcServer;
-    }
-
     synchronized OnlineServer getOnlineServer() {
         if (onlineServer == null) {
             onlineServer = new OnlineServer();

@@ -1,8 +1,8 @@
 package script.core.runtime.impl;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
+import oceanus.apis.CoreException;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
@@ -12,7 +12,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import script.RuntimeContext;
 import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.ParseServiceHandler;
 import script.core.runtime.classloader.ClassHolder;

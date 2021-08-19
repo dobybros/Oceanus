@@ -1,6 +1,6 @@
 package script.core.runtime.java;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 import script.Runtime;
 import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.handler.compile.CompileServiceHandler;

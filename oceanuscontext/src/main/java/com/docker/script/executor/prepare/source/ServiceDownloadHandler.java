@@ -1,7 +1,7 @@
 package com.docker.script.executor.prepare.source;
 
-import chat.errors.CoreException;
 import chat.config.Configuration;
+import oceanus.apis.CoreException;
 
 import java.io.IOException;
 

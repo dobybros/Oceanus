@@ -1,7 +1,7 @@
 package script.core.runtime.handler.annotation.clazz;
 
-import chat.errors.CoreException;
 import com.google.common.collect.Maps;
+import oceanus.apis.CoreException;
 import org.apache.commons.collections.MapUtils;
 import script.core.annotation.condition.ConditionalOnProperty;
 import script.core.annotation.condition.OnPropertyCondition;

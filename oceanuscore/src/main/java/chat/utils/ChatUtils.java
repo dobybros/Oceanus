@@ -1,6 +1,6 @@
 package chat.utils;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

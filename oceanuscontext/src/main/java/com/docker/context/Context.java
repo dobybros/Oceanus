@@ -1,8 +1,8 @@
 package com.docker.context;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import com.docker.context.config.ServerConfig;
+import oceanus.apis.CoreException;
 
 import java.util.Collection;
 import java.util.List;

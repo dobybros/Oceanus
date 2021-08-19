@@ -1,7 +1,6 @@
 package com.container.runtime.boot.bean;
 
 import chat.base.bean.annotation.OceanusBean;
-import com.docker.rpc.impl.RMIServerHandler;
 
 /**
  * @Auther: lick
@@ -14,16 +13,6 @@ public class RpcBean {
 
     public RpcBean() {
         instance = BeanApp.getInstance();
-    }
-
-    @OceanusBean
-    public com.docker.rpc.impl.RMIServerImplWrapper dockerRpcServer() {
-        return instance.getDockerRpcServer();
-    }
-
-    @OceanusBean
-    public RMIServerHandler dockerRpcServerAdapter() {
-        return instance.getDockerRpcServerAdapter();
     }
 
 }

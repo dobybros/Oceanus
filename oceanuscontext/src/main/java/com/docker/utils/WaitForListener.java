@@ -1,7 +1,7 @@
 package com.docker.utils;
 
-import chat.errors.CoreException;
 
+import oceanus.apis.CoreException;
 
 public abstract class WaitForListener {
 	public abstract boolean waitFor() throws Throwable;

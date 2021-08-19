@@ -2,9 +2,9 @@ package com.docker.script.executor.classloader;
 
 import chat.config.Configuration;
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.docker.oceansbean.BeanFactory;
+import oceanus.apis.CoreException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import script.core.runtime.AbstractRuntimeContext;

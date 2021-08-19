@@ -1,6 +1,6 @@
 package script.core.servlets;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 
 import java.io.IOException;

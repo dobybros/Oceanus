@@ -1,15 +1,9 @@
 package script.core.runtime.groovy;
 
 
-import chat.errors.CoreException;
-import chat.logs.LoggerEx;
-import groovy.lang.GroovyObject;
-import script.core.runtime.AbstractRuntimeContext;
+import oceanus.apis.CoreException;
 import script.core.runtime.RuntimeBeanFactory;
 import script.core.runtime.groovy.object.AbstractObject;
-import script.core.runtime.groovy.object.GroovyObjectEx;
-
-import java.util.Collection;
 
 /**
  * Created by lick on 2020/12/18.

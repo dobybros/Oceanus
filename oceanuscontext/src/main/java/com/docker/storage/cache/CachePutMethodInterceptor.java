@@ -1,24 +1,18 @@
 package com.docker.storage.cache;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ReflectionUtil;
 import com.docker.data.CacheObj;
-import com.docker.rpc.async.AsyncCallbackHandler;
-import com.docker.rpc.async.AsyncRpcFuture;
-import com.docker.rpc.method.RPCMethodInvocation;
-import com.docker.rpc.remote.MethodMapping;
-import com.docker.rpc.remote.stub.RpcCacheManager;
 import com.docker.storage.cache.handlers.CacheStorageAdapter;
+import oceanus.apis.CoreException;
+import oceanus.sdk.rpc.interceptor.MethodInterceptor;
+import oceanus.sdk.rpc.interceptor.MethodInvocation;
+import oceanus.sdk.rpc.method.RPCMethodInvocation;
+import oceanus.sdk.rpc.remote.MethodMapping;
 import org.apache.commons.lang.StringUtils;
 import script.core.runtime.AbstractRuntimeContext;
-import script.core.runtime.MethodInterceptor;
-import script.core.runtime.groovy.object.MethodInvocation;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -66,15 +60,15 @@ public class CachePutMethodInterceptor implements MethodInterceptor {
                         Object result = cacheStorageAdapter.getCacheData(cacheObj.getPrefix(), (String) key, returnType);
                         if (result != null) {
                             if (rpcMethodInvocation.getAsync()) {
-                                AsyncRpcFuture asyncRpcFuture = RpcCacheManager.getInstance().getAsyncRpcFuture(((RPCMethodInvocation) methodInvocation).getRemoteServerHandler().getCallbackFutureId());
-                                if (asyncRpcFuture != null && asyncRpcFuture.getFuture() != null) {
-                                    List<String> list = new ArrayList<>();
-                                    list.add(CacheAsyncCallbackHandler.class.getSimpleName());
-                                    asyncRpcFuture.handleAsyncHandler(result, list);
-                                    CompletableFuture completableFuture = asyncRpcFuture.getFuture();
-                                    completableFuture.complete(result);
-                                    return completableFuture;
-                                }
+//                                AsyncRpcFuture asyncRpcFuture = RpcCacheManager.getInstance().getAsyncRpcFuture(((RPCMethodInvocation) methodInvocation).getRemoteServerHandler().getCallbackFutureId());
+//                                if (asyncRpcFuture != null && asyncRpcFuture.getFuture() != null) {
+//                                    List<String> list = new ArrayList<>();
+//                                    list.add(CacheAsyncCallbackHandler.class.getSimpleName());
+//                                    asyncRpcFuture.handleAsyncHandler(result, list);
+//                                    CompletableFuture completableFuture = asyncRpcFuture.getFuture();
+//                                    completableFuture.complete(result);
+//                                    return completableFuture;
+//                                }
                             } else {
                                 return result;
                             }
@@ -89,17 +83,17 @@ public class CachePutMethodInterceptor implements MethodInterceptor {
                                     }
                                 }
                             } else {
-                                Map<String, Object> map = new HashMap<>();
-                                map.put(CACHE_METHODMAP, cacheMethodMap);
-                                map.put(CRC, String.valueOf(rpcMethodInvocation.getMethodRequest().getCrc()));
-                                map.put(CACHE_HOST, cacheHost);
-                                map.put(CACHE_KEY, key);
-                                map.put(CACHE_PREFIX, cacheObj.getPrefix());
-                                map.put(CACHE_EXPIRD, cacheObj.getExpired());
-                                CacheAsyncCallbackHandler cacheAsyncCallbackHandler = new CacheAsyncCallbackHandler(map);
-
-                                RpcCacheManager.getInstance().getAsyncRpcFuture(((RPCMethodInvocation) methodInvocation).getRemoteServerHandler().getCallbackFutureId()).addHandler(cacheAsyncCallbackHandler);
-                                result = rpcMethodInvocation.handleAsync();
+//                                Map<String, Object> map = new HashMap<>();
+//                                map.put(CACHE_METHODMAP, cacheMethodMap);
+//                                map.put(CRC, String.valueOf(rpcMethodInvocation.getMethodRequest().getCrc()));
+//                                map.put(CACHE_HOST, cacheHost);
+//                                map.put(CACHE_KEY, key);
+//                                map.put(CACHE_PREFIX, cacheObj.getPrefix());
+//                                map.put(CACHE_EXPIRD, cacheObj.getExpired());
+//                                CacheAsyncCallbackHandler cacheAsyncCallbackHandler = new CacheAsyncCallbackHandler(map);
+//
+//                                RpcCacheManager.getInstance().getAsyncRpcFuture(((RPCMethodInvocation) methodInvocation).getRemoteServerHandler().getCallbackFutureId()).addHandler(cacheAsyncCallbackHandler);
+//                                result = rpcMethodInvocation.handleAsync();
                             }
                             return result;
                         }
@@ -111,28 +105,28 @@ public class CachePutMethodInterceptor implements MethodInterceptor {
     }
 
 
-    private class CacheAsyncCallbackHandler extends AsyncCallbackHandler {
-
-        public CacheAsyncCallbackHandler(Map map) {
-            super(map);
-        }
-
-        @Override
-        public void handle() {
-            Map<String, CacheObj> cacheObjMap = (Map<String, CacheObj>) map.get(CACHE_METHODMAP);
-            CacheObj cacheObj = cacheObjMap.get(map.get(CRC));
-            CacheStorageAdapter cacheStorageAdapter = CacheStorageFactory.getInstance().getCacheStorageAdapter(cacheObj.getCacheMethod(), (String) map.get(CACHE_HOST));
-            String key = (String) map.get(CACHE_KEY);
-            String prefix = (String) map.get(CACHE_PREFIX);
-            if (key != null && result != null && cacheStorageAdapter != null) {
-                try {
-                    cacheStorageAdapter.addCacheData(prefix, key, result, (Long) map.get(CACHE_EXPIRD));
-                } catch (CoreException coreException) {
-                    LoggerEx.error(TAG, "Add cache data failed on async call class is service_class_method:reason is " + coreException.getMessage());
-                }
-            }
-        }
-    }
+//    private class CacheAsyncCallbackHandler extends AsyncCallbackHandler {
+//
+//        public CacheAsyncCallbackHandler(Map map) {
+//            super(map);
+//        }
+//
+//        @Override
+//        public void handle() {
+//            Map<String, CacheObj> cacheObjMap = (Map<String, CacheObj>) map.get(CACHE_METHODMAP);
+//            CacheObj cacheObj = cacheObjMap.get(map.get(CRC));
+//            CacheStorageAdapter cacheStorageAdapter = CacheStorageFactory.getInstance().getCacheStorageAdapter(cacheObj.getCacheMethod(), (String) map.get(CACHE_HOST));
+//            String key = (String) map.get(CACHE_KEY);
+//            String prefix = (String) map.get(CACHE_PREFIX);
+//            if (key != null && result != null && cacheStorageAdapter != null) {
+//                try {
+//                    cacheStorageAdapter.addCacheData(prefix, key, result, (Long) map.get(CACHE_EXPIRD));
+//                } catch (CoreException coreException) {
+//                    LoggerEx.error(TAG, "Add cache data failed on async call class is service_class_method:reason is " + coreException.getMessage());
+//                }
+//            }
+//        }
+//    }
 
     public void setCacheAnnotationHandler(CacheAnnotationHandler cacheAnnotationHandler) {
         this.cacheAnnotationHandler = cacheAnnotationHandler;

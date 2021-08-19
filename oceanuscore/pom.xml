@@ -11,6 +11,10 @@
 	<version>1.0</version>
 	<name>OceanusCore</name>
 	<dependencies>
-
+		<dependency>
+			<groupId>oceanus</groupId>
+			<artifactId>OceanusSDK</artifactId>
+			<version>1.0.4</version>
+		</dependency>
 	</dependencies>
 </project>

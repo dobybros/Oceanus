@@ -1,8 +1,8 @@
 package com.docker.script;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.docker.script.annotations.ServiceMemory;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.runtime.groovy.object.AbstractObject;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;

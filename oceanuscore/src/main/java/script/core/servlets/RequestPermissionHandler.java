@@ -1,7 +1,7 @@
 package script.core.servlets;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
+import oceanus.apis.CoreException;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 import script.core.servlet.annotation.RequestPermission;

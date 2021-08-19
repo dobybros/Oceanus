@@ -1,8 +1,6 @@
 package script.core.runtime.handler.compile.classloader;
 
-import chat.errors.CoreException;
-import script.Runtime;
-import script.RuntimeContext;
+import oceanus.apis.CoreException;
 import script.core.runtime.AbstractRuntimeContext;
 
 /**

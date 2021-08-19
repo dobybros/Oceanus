@@ -1,7 +1,7 @@
 package com.container.runtime.boot.handler;
 
-import chat.errors.CoreException;
 import com.container.runtime.boot.manager.DefaultOceansBeanManager;
+import oceanus.apis.CoreException;
 import org.junit.jupiter.api.Test;
 
 /**

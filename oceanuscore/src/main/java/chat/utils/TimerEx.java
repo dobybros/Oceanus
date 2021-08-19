@@ -1,8 +1,8 @@
 package chat.utils;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.scheduled.QuartzFactory;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.memodb.ObjectId;
 

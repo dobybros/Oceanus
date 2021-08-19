@@ -1,8 +1,8 @@
 package com.docker.utils;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import com.docker.errors.CoreErrorCodes;
+import oceanus.apis.CoreException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;

@@ -1,10 +1,10 @@
 package script.core.runtime.groovy;
 
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.Runtime;
 import script.core.runtime.AbstractRuntimeContext;

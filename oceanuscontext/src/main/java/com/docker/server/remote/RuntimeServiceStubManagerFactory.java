@@ -1,11 +1,11 @@
 package com.docker.server.remote;
 
-import chat.errors.CoreException;
 import com.docker.context.impl.ServiceContext;
 import com.docker.errors.CoreErrorCodes;
 import com.docker.script.BaseRuntimeContext;
-import com.docker.rpc.remote.stub.ServiceStubManager;
-import com.docker.rpc.remote.stub.ServiceStubManagerFactory;
+import oceanus.apis.CoreException;
+import oceanus.sdk.rpc.remote.stub.ServiceStubManager;
+import oceanus.sdk.rpc.remote.stub.ServiceStubManagerFactory;
 import script.core.runtime.classloader.ClassHolder;
 import script.core.runtime.classloader.MyGroovyClassLoader;
 

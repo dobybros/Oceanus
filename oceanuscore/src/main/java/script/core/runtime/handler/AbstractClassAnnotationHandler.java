@@ -1,9 +1,7 @@
 package script.core.runtime.handler;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.StringUtils;
-import script.Runtime;
-import script.RuntimeContext;
 import script.core.runtime.AbstractRuntimeContext;
 
 import java.lang.annotation.Annotation;

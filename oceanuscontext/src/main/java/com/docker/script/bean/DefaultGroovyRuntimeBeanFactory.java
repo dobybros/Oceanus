@@ -1,12 +1,12 @@
 package com.docker.script.bean;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.errors.GroovyErrorCodes;
 import chat.logs.LoggerEx;
 import chat.utils.ReflectionUtil;
 import com.google.common.collect.Sets;
 import groovy.lang.GroovyObject;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.annotation.Bean;

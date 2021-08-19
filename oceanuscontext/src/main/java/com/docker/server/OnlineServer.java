@@ -1,19 +1,21 @@
 package com.docker.server;
 
-import chat.errors.CoreException;
+import chat.config.BaseConfiguration;
 import chat.logs.LoggerEx;
 import chat.main.ServerStart;
 import chat.utils.IPHolder;
-import chat.config.BaseConfiguration;
 import com.docker.oceansbean.BeanFactory;
 import com.docker.storage.cache.CacheStorageFactory;
 import com.docker.storage.cache.CacheStorageMethod;
 import com.docker.tasks.Task;
-import core.discovery.DiscoveryRuntime;
-import core.discovery.NodeRegistrationHandler;
-import core.discovery.errors.DiscoveryErrorCodes;
-import core.discovery.impl.client.ServiceRuntime;
-import core.discovery.node.Service;
+import groovy.lang.GroovyObject;
+import oceanus.apis.CoreException;
+import oceanus.sdk.core.discovery.DiscoveryRuntime;
+import oceanus.sdk.core.discovery.NodeRegistrationHandler;
+import oceanus.sdk.core.discovery.errors.DiscoveryErrorCodes;
+import oceanus.sdk.core.discovery.impl.client.ServiceRuntime;
+import oceanus.sdk.core.discovery.node.Service;
+import oceanus.sdk.integration.OceanusInternalIntegration;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.util.Collection;
@@ -174,6 +176,14 @@ public class OnlineServer {
 
     public void start() {
         try {
+            OceanusInternalIntegration.methodStringInvocationListener = (target, method, arguments) ->  {
+                if(method != null && target instanceof GroovyObject) {
+                    GroovyObject gObj = (GroovyObject) target;
+                    //TODO Bind GroovyClassLoader base on current thread.
+                    return gObj.invokeMethod(method, arguments);
+                }
+                return null;
+            };
 //            if (dockerStatusService != null) {
 //                dockerStatus = generateDockerStatus(baseConfiguration.getServerPort());
 //                try {

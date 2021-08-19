@@ -1,9 +1,9 @@
 package script.core.runtime.handler.annotation.clazz;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.TimerEx;
 import chat.utils.TimerTaskEx;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.annotation.TimerTask;

@@ -2,8 +2,8 @@ package script.core.runtime;
 
 import chat.config.Configuration;
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.Runtime;
@@ -15,7 +15,6 @@ import script.core.runtime.handler.AbstractFieldAnnotationHandler;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by lick on 2020/12/22.

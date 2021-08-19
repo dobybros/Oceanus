@@ -11,6 +11,7 @@
         <module>oceanuscore</module>
         <module>oceanuscontext</module>
         <module>oceanuscontainer</module>
+        <module>OceanusSDK</module>
     </modules>
 
     <properties>

@@ -1,7 +1,7 @@
 package com.docker.storage.cache.handlers;
 
-import chat.errors.CoreException;
 import com.docker.storage.cache.CacheStorageMethod;
+import oceanus.apis.CoreException;
 
 import java.lang.reflect.Type;
 

@@ -1,20 +1,17 @@
 package script.core.runtime.impl;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import script.core.runtime.AbstractRuntimeContext;
 import script.core.runtime.ParseServiceHandler;
 import script.core.runtime.classloader.MyJavaClassLoader;
 
-import java.io.*;
+import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -40,7 +37,7 @@ public class JavaParseServiceHandler implements ParseServiceHandler {
         boot(runtimeContext, myJavaClassLoader);
     }
 
-    private void boot(AbstractRuntimeContext runtimeContext, MyJavaClassLoader javaClassLoader) throws CoreException{
+    private void boot(AbstractRuntimeContext runtimeContext, MyJavaClassLoader javaClassLoader) throws CoreException {
         try {
             File jarFile = new File(runtimeContext.getConfiguration().getLocalPath() + File.separator + runtimeContext.getConfiguration().getFileName());
             Properties properties = manifestReaderFromJar(jarFile);

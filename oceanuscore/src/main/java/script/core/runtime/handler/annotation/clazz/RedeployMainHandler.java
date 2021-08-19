@@ -1,8 +1,8 @@
 package script.core.runtime.handler.annotation.clazz;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ConcurrentHashSet;
+import oceanus.apis.CoreException;
 import script.core.annotation.RedeployMain;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 

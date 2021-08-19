@@ -119,13 +119,9 @@ public class LocalFileHandler extends FileAdapter {
         if (!file.exists())
             return false;
 //			throw new IOException(path + " is not exists");
-        FileInputStream fis = null;
-        try {
-            fis = FileUtils.openInputStream(file);
+        try (FileInputStream fis = FileUtils.openInputStream(file)) {
 //			 IOUtils.copyLarge(fis, os);
             copy(path, fis, os, READWRITE.READ);
-        } finally {
-            IOUtils.closeQuietly(fis);
         }
         return true;
     }
@@ -136,12 +132,8 @@ public class LocalFileHandler extends FileAdapter {
         if (!file.exists())
             return false;
 //			throw new IOException(path + " is not exists");
-        FileInputStream fis = null;
-        try {
-            fis = FileUtils.openInputStream(file);
+        try (FileInputStream fis = FileUtils.openInputStream(file)) {
             copyStream(fis, os, offset, length);
-        } finally {
-            IOUtils.closeQuietly(fis);
         }
         return true;
     }
@@ -229,12 +221,8 @@ public class LocalFileHandler extends FileAdapter {
             } else
                 throw new IOException("Save file failed, target path is a directory or can not write, " + getAbsolutePath(path.getPath()));
         }
-        FileOutputStream fos = null;
-        try {
-            fos = FileUtils.openOutputStream(targetFile);
+        try (FileOutputStream fos = FileUtils.openOutputStream(targetFile)) {
             IOUtils.copyLarge(is, fos);
-        } finally {
-            IOUtils.closeQuietly(fos);
         }
         //	File savedFile = new File(getAbsolutePath(path));
         FileEntity entity = new FileEntity();

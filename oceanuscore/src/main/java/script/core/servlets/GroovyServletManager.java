@@ -1,10 +1,10 @@
 package script.core.servlets;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ChatUtils;
 import chat.utils.HashTree;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.StringUtils;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;

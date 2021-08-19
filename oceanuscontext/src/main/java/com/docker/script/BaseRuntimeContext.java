@@ -1,10 +1,10 @@
 package com.docker.script;
 
 import chat.config.Configuration;
-import chat.errors.CoreException;
 import com.docker.context.config.ServerConfig;
-import com.docker.rpc.remote.stub.ServiceStubManagerFactory;
 import com.docker.server.remote.RuntimeServiceStubManagerFactory;
+import oceanus.apis.CoreException;
+import oceanus.sdk.rpc.remote.stub.ServiceStubManagerFactory;
 import script.core.runtime.AbstractRuntimeContext;
 
 /**

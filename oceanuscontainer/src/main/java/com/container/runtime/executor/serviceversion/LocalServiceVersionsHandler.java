@@ -15,7 +15,6 @@ import com.docker.script.executor.serviceversion.ServiceVersionsHandler;
 
 import chat.config.BaseConfiguration;
 import chat.config.Configuration;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 
 /**

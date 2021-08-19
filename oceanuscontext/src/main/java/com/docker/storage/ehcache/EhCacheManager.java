@@ -1,10 +1,9 @@
 package com.docker.storage.ehcache;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.PropertiesContainer;
-import com.docker.errors.CoreErrorCodes;
+import oceanus.apis.CoreException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
@@ -65,7 +64,7 @@ public class EhCacheManager {
         resourcePools = resourcePoolsBuilder.build();
     }
 
-    public Cache getEhCacheObj(@Nullable Long expired, String tableName) throws CoreException{
+    public Cache getEhCacheObj(@Nullable Long expired, String tableName) throws CoreException {
         Cache cache = ehCacheObjMap.get(tableName);
         if (cache == null) {
             if (expired != null) {

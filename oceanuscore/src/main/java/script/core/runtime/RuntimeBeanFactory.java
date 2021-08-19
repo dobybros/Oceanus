@@ -1,8 +1,6 @@
 package script.core.runtime;
 
-import chat.errors.CoreException;
-
-import java.util.Collection;
+import oceanus.apis.CoreException;
 
 /**
  * Created by lick on 2020/12/18.

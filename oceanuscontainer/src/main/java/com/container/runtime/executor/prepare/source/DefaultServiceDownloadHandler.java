@@ -1,7 +1,6 @@
 package com.container.runtime.executor.prepare.source;
 
 import chat.errors.ChatErrorCodes;
-import chat.errors.CoreException;
 import chat.config.Configuration;
 import com.docker.oceansbean.BeanFactory;
 import com.container.runtime.DefaultRuntimeContext;

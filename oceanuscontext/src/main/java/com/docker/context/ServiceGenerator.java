@@ -1,6 +1,6 @@
 package com.docker.context;
 
-import chat.errors.CoreException;
+import oceanus.apis.CoreException;
 
 public abstract class ServiceGenerator {
     protected String lanId;

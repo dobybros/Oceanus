@@ -1,13 +1,13 @@
 package com.docker.storage.cache;
 
-import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ReflectionUtil;
 import com.docker.annotations.CacheClass;
 import com.docker.annotations.CacheEvict;
 import com.docker.annotations.CachePut;
 import com.docker.data.CacheObj;
-import com.docker.rpc.remote.stub.RPCInterceptorFactory;
+import oceanus.apis.CoreException;
+import oceanus.sdk.rpc.interceptor.RPCInterceptorFactory;
 import org.apache.commons.lang.StringUtils;
 import script.core.runtime.groovy.object.GroovyObjectEx;
 import script.core.runtime.handler.annotation.clazz.ClassAnnotationHandler;
@@ -102,7 +102,7 @@ public class CacheAnnotationHandler extends ClassAnnotationHandler {
             cacheObj.setParamNames(ReflectionUtil.getParamNames(method));
             cacheObj.setMethod(method);
             cacheMethodMap.put(methodKey, cacheObj);
-            RPCInterceptorFactory.getInstance().addMethodInterceptor(runtimeContext.getConfiguration().getServiceVersion(), methodKey, cacheEvictMethodInterceptor);
+            RPCInterceptorFactory.getInstance().addMethodInterceptor(methodKey, cacheEvictMethodInterceptor);
             LoggerEx.info("SCAN", "Mapping cacheEvict method key " + methodKey + " for class " + clazz.getName() + " method " + method.getName());
         }
 
@@ -126,7 +126,7 @@ public class CacheAnnotationHandler extends ClassAnnotationHandler {
             cacheObj.setParamNames(ReflectionUtil.getParamNames(method));
             cacheObj.setMethod(method);
             cacheMethodMap.put(methodKey, cacheObj);
-            RPCInterceptorFactory.getInstance().addMethodInterceptor(runtimeContext.getConfiguration().getServiceVersion(), methodKey, cachePutMethodInterceptor);
+            RPCInterceptorFactory.getInstance().addMethodInterceptor(methodKey, cachePutMethodInterceptor);
             LoggerEx.info("SCAN", "Mapping cachePut method key " + methodKey + " for class " + clazz.getName() + " method " + method.getName());
         }
     }
