@@ -17,6 +17,10 @@ public interface Context {
     int ERROR_SERVER_DISCONNECTED = ChatErrorCodes.ERROR_RPC_DISCONNECTED;
     int ERROR_TARGET_SERVER_NOT_FOUND = ChatErrorCodes.ERROR_SERVER_NOT_FOUND;
     int ERROR_SERVERS_NOT_FOUND = ChatErrorCodes.ERROR_LANSERVERS_NOSERVERS;
+    /**
+     * 服务暂停使用
+     */
+    int ERROR_SERVERS_PAUSE = ChatErrorCodes.ERROR_SERVER_PAUSE;
 
     int ERROR_SERVER_CONNECT_TIMEOUT = ChatErrorCodes.ERROR_RMICALL_TIMEOUT;
 
@@ -25,12 +29,15 @@ public interface Context {
     ServerConfig getServerConfig();
 
     RPCCaller getRPCCaller();
+
     RPCCaller getRPCCaller(String lanId);
 
     ServiceGenerator getServiceGenerator();
+
     ServiceGenerator getServiceGenerator(String lanId);
 
     Object getAndCreateBean(Class<?> clazz);
+
     Object getAndCreateBean(String beanName, Class<?> clazz);
 
     void injectBean(Object obj) throws CoreException;

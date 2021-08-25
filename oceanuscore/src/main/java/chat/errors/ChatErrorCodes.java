@@ -101,6 +101,10 @@ public interface ChatErrorCodes {
     int ERROR_QUARTZ_CANCELEDFAILED = -10210;
     int ERROR_SERVER_CONNECT_FAILED = -10211;
     int ERROR_SERVER_NOT_FOUND = -10212;
+    /**
+     * 服务暂停使用
+     */
+    int ERROR_SERVER_PAUSE = -10213;
     /*******************ehcache******************/
     int ERROR_CACHE_ILLEGAL_PARAMETER = -10213;
     int ERROR_CACHE_PUT = -10214;
