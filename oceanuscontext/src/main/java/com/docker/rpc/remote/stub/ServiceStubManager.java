@@ -30,20 +30,23 @@ public class ServiceStubManager {
 
     private ConcurrentHashMap<String, RemoteServerHandler> remoteServerHandlerMap = new ConcurrentHashMap<>();
 
-    public ServiceStubManager(){
+    public ServiceStubManager() {
 
     }
+
     public ServiceStubManager(String fromService) {
         if (fromService != null) {
             this.fromService = fromService;
         }
     }
+
     public ServiceStubManager(String host, String fromService) {
         if (fromService != null) {
             this.fromService = fromService;
         }
         this.host = host;
     }
+
     public void init() {
 //        if(this.lanType != null && this.lanType.equals(Lan.TYPE_http)){
 //            if (this.host == null) {
@@ -58,6 +61,7 @@ public class ServiceStubManager {
 //            handle();
 //        }
     }
+
     public void clearCache() {
         methodMap.clear();
     }
@@ -170,6 +174,11 @@ public class ServiceStubManager {
         return (T) Proxy.getReturnObject(request, response);
     }
 
+    public void callBroadcast(String service, String className, String method, Object... args) throws CoreException {
+        MethodRequest request = getMethodRequest(service, className, method, null, args);
+        getRemoteServerHandler(service, null).callBroadcast(request);
+    }
+
     public <T> T getService(String service, Class<T> adapterClass) {
         return getService(service, adapterClass, null);
     }
@@ -179,14 +188,14 @@ public class ServiceStubManager {
             throw new NullPointerException("Service or adapterClass can not be null, service " + service + " class " + adapterClass);
 
         String key = service + "_" + adapterClass.getName();
-        if(onlyCallOneServer != null) {
+        if (onlyCallOneServer != null) {
             key = key + "_" + onlyCallOneServer;
         }
         T adapterService = (T) serviceClassProxyCacheMap.get(key);
-        if(adapterService == null) {
+        if (adapterService == null) {
             synchronized (this) {
                 adapterService = (T) serviceClassProxyCacheMap.get(key);
-                if(adapterService == null) {
+                if (adapterService == null) {
                     //TODO should cache adapterService. class as Key, value is adapterService,every class -> adaService
                     scanClass(adapterClass, service);
                     if (serviceStubProxyClass != null) {
@@ -213,7 +222,7 @@ public class ServiceStubManager {
                         }
                     }
                     Object old = serviceClassProxyCacheMap.putIfAbsent(key, adapterService);
-                    if(old != null) {
+                    if (old != null) {
                         adapterService = (T) old;
                     }
                 }
@@ -221,10 +230,12 @@ public class ServiceStubManager {
         }
         return adapterService;
     }
-    private RemoteServerHandler getRemoteServerHandler(String service, String onlyCallOneServer){
+
+    private RemoteServerHandler getRemoteServerHandler(String service, String onlyCallOneServer) {
         RemoteServerHandler remoteServerHandler = new RemoteServerHandler(service, this, onlyCallOneServer);
         return remoteServerHandler;
     }
+
     public String getHost() {
         return host;
     }

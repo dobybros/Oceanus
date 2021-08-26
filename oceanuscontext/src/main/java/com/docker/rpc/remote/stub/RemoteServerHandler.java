@@ -28,7 +28,7 @@ public class RemoteServerHandler {
     protected BaseConfiguration baseConfiguration = (BaseConfiguration) BeanFactory.getBean(BaseConfiguration.class.getName());
     private Random random = new Random();
     private long touch;
-//    private RemoteServers remoteServers;
+    //    private RemoteServers remoteServers;
     private ServiceStubManager serviceStubManager;
     private String toService;
     private String callbackFutureId;
@@ -104,21 +104,21 @@ public class RemoteServerHandler {
                 throw new CoreException(ChatErrorCodes.ERROR_LANSERVERS_NOSERVERS, "RemoteServers doesn't be found! service:" + toService);
             }*/
         RemoteServersManager.ServiceNodesMonitor serviceNodesMonitor = RemoteServersManager.getInstance().getServers(toService);
-        if(serviceNodesMonitor == null)
+        if (serviceNodesMonitor == null)
             throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + toService + " not found while onlyCallOneServer " + onlyCallOneServer + " for request " + request);
 
-        if(onlyCallOneServer != null) {
+        if (onlyCallOneServer != null) {
             Node node = serviceNodesMonitor.getNodeByServerCRC(onlyCallOneServer);
 //            RemoteServers.Server server = remoteServers.getServers().get(onlyCallOneServer);
-            if(node == null) {
+            if (node == null) {
                 throw new CoreException(ChatErrorCodes.ERROR_SERVER_NOT_FOUND, "onlyCallOneServer " + onlyCallOneServer + " is not found for request " + request);
             }
             CompletableFuture<?> future = sendAsyncMethodRequest(request, node, Collections.singletonList(node.getServerNameCRC()));
-            if(future != null)
+            if (future != null)
                 return future;
         } else {
             List<Long> keptSortedServers = serviceNodesMonitor.getNodeServerCRCIds();
-            if(keptSortedServers == null || keptSortedServers.isEmpty()) {
+            if (keptSortedServers == null || keptSortedServers.isEmpty()) {
                 throw new CoreException(ChatErrorCodes.ERROR_LANSERVERS_NOSERVERS, "RemoteServers doesn't be found! service:" + toService);
             }
 
@@ -140,7 +140,7 @@ public class RemoteServerHandler {
                     break;
                 try {
                     CompletableFuture<?> future = sendAsyncMethodRequest(request, server, keptSortedServers);
-                    if(future != null)
+                    if (future != null)
                         return future;
                 } catch (Throwable t) {
                     if (t instanceof CoreException) {
@@ -163,7 +163,7 @@ public class RemoteServerHandler {
     private CompletableFuture<?> sendAsyncMethodRequest(MethodRequest request, Node server, List<Long> keptSortedServers) throws CoreException {
         String ip = server.getRpcIp();
 
-        if(ip == null) {
+        if (ip == null) {
             throw new CoreException(ChatErrorCodes.ERROR_NODE_IP_NOT_FOUND, "Node ip doesn't be found, " + server + " request " + request);
         }
         Integer port = null;
@@ -234,7 +234,7 @@ public class RemoteServerHandler {
     private MethodResponse sendMethodRequest(MethodRequest request, Node server) throws CoreException {
         String ip = server.getRpcIp();
 
-        if(ip == null) {
+        if (ip == null) {
             throw new CoreException(ChatErrorCodes.ERROR_NODE_IP_NOT_FOUND, "Node ip doesn't be found, " + server + " request " + request);
         }
 
@@ -266,23 +266,55 @@ public class RemoteServerHandler {
         return null;
     }
 
+    /**
+     * 向所有服务器广播
+     *
+     * @param request
+     * @throws CoreException
+     */
+    public void callBroadcast(MethodRequest request) throws CoreException {
+//        check(request);
+        RemoteServersManager.ServiceNodesMonitor serviceNodesMonitor = RemoteServersManager.getInstance().getServers(toService);
+        if (serviceNodesMonitor == null)
+            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + toService + " not found while onlyCallOneServer " + onlyCallOneServer + " for request " + request);
+
+        List<Long> keptSortedServers = serviceNodesMonitor.getNodeServerCRCIds();
+        if (keptSortedServers == null || keptSortedServers.isEmpty()) {
+            throw new CoreException(ChatErrorCodes.ERROR_LANSERVERS_NOSERVERS, "RemoteServers doesn't be found! service:" + toService);
+        }
+        int size = keptSortedServers.size();
+        for (int i = 0; i < size; i++) {
+            Long serverCRC = keptSortedServers.get(i);
+            Node server = serviceNodesMonitor.getNodeByServerCRC(serverCRC);
+            if (server == null)
+                continue;
+            try {
+                MethodResponse response = sendMethodRequest(request, server);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                LoggerEx.error(TAG, "Fail to callBroadcast Method " + request.getCrc() + "#" + request.getService() + " args " + Arrays.toString(request.getArgs()) + " on server " + server + " " + " available size " + keptSortedServers.size() + " error " + ExceptionUtils.getFullStackTrace(t) + " exception " + t);
+            }
+        }
+    }
+
+
     public MethodResponse call(MethodRequest request) throws CoreException {
 //        check(request);
         RemoteServersManager.ServiceNodesMonitor serviceNodesMonitor = RemoteServersManager.getInstance().getServers(toService);
-        if(serviceNodesMonitor == null)
+        if (serviceNodesMonitor == null)
             throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + toService + " not found while onlyCallOneServer " + onlyCallOneServer + " for request " + request);
-        if(onlyCallOneServer != null) {
+        if (onlyCallOneServer != null) {
             Node node = serviceNodesMonitor.getNodeByServerCRC(onlyCallOneServer);
 //            RemoteServers.Server server = remoteServers.getServers().get(onlyCallOneServer);
-            if(node == null) {
+            if (node == null) {
                 throw new CoreException(ChatErrorCodes.ERROR_SERVER_NOT_FOUND, "onlyCallOneServer " + onlyCallOneServer + " is not found for request " + request);
             }
             MethodResponse response = sendMethodRequest(request, node);
-            if(response != null)
+            if (response != null)
                 return response;
         } else {
             List<Long> keptSortedServers = serviceNodesMonitor.getNodeServerCRCIds();
-            if(keptSortedServers == null || keptSortedServers.isEmpty()) {
+            if (keptSortedServers == null || keptSortedServers.isEmpty()) {
                 throw new CoreException(ChatErrorCodes.ERROR_LANSERVERS_NOSERVERS, "RemoteServers doesn't be found! service:" + toService);
             }
 //            List<RemoteServers.Server> keptSortedServers = this.remoteServers.getSortedServers();
@@ -304,7 +336,7 @@ public class RemoteServerHandler {
                     break;
                 try {
                     MethodResponse response = sendMethodRequest(request, server);
-                    if(response != null)
+                    if (response != null)
                         return response;
                 } catch (Throwable t) {
                     t.printStackTrace();

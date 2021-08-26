@@ -1,6 +1,7 @@
 package com.docker.context.impl;
 
 import chat.errors.CoreException;
+import chat.logs.LoggerEx;
 import com.docker.context.Context;
 import com.docker.context.RPCCaller;
 import com.docker.context.ServiceGenerator;
@@ -21,8 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Description：
  */
 public class ServiceContext implements Context {
-    public static final String LAN_ID_DEFAULT = "default";
+    private static final String TAG = ServiceContext.class.getSimpleName();
 
+    public static final String LAN_ID_DEFAULT = "default";
     private BaseRuntimeContext runtimeContext;
 
     private ConcurrentHashMap<String, RPCCaller> lanRpcCallCacheMap = new ConcurrentHashMap<>();
@@ -50,15 +52,27 @@ public class ServiceContext implements Context {
 
     @Override
     public RPCCaller getRPCCaller(String lanId) {
-        if(lanId == null) {
+        if (lanId == null) {
             lanId = LAN_ID_DEFAULT;
         }
         RPCCaller rpcCaller = lanRpcCallCacheMap.get(lanId);
-        if(rpcCaller == null) {
+        if (rpcCaller == null) {
             rpcCaller = new RPCCaller(lanId) {
                 @Override
                 public <T> T call(String service, String className, String method, Class<T> returnClass, Object... args) throws CoreException {
                     return call(service, className, method, null, returnClass, args);
+                }
+
+                @Override
+                public void broadcast(List<String> serviceList, String className, String method, Object... args) throws CoreException {
+                    for (String service : serviceList) {
+                        try {
+                            runtimeContext.getServiceStubManagerFactory().get(this.lanId).callBroadcast(service, className, method, args);
+                        } catch (CoreException e) {
+                            e.printStackTrace();
+                            LoggerEx.error(TAG, "Fail to callBroadcast service:" + service + "exception:" + e);
+                        }
+                    }
                 }
 
                 @Override
@@ -86,11 +100,11 @@ public class ServiceContext implements Context {
     }
 
     public ServiceGenerator getServiceGenerator(String lanId) {
-        if(lanId == null) {
+        if (lanId == null) {
             lanId = LAN_ID_DEFAULT;
         }
         ServiceGenerator serviceGenerator = lanServiceGeneratorCacheMap.get(lanId);
-        if(serviceGenerator == null) {
+        if (serviceGenerator == null) {
             serviceGenerator = new ServiceGenerator(lanId) {
                 @Override
                 public <T> T getService(String service, Class<T> clazz) throws CoreException {
@@ -121,7 +135,7 @@ public class ServiceContext implements Context {
     public Object getAndCreateBean(Class<?> clazz) {
         try {
             Object obj = this.runtimeContext.getRuntimeBeanFactory().get(null, runtimeContext.getRuntime().path(clazz));
-            if(obj instanceof AbstractObject) {
+            if (obj instanceof AbstractObject) {
                 return ((AbstractObject) obj).getObject();
             }
             return obj;
@@ -135,7 +149,7 @@ public class ServiceContext implements Context {
     public Object getAndCreateBean(String beanName, Class<?> clazz) {
         try {
             Object obj = this.runtimeContext.getRuntimeBeanFactory().get(beanName, runtimeContext.getRuntime().path(clazz));
-            if(obj instanceof AbstractObject) {
+            if (obj instanceof AbstractObject) {
                 return ((AbstractObject) obj).getObject();
             }
             return obj;
@@ -160,15 +174,15 @@ public class ServiceContext implements Context {
 //        return dockerStatusService.getServersByService(service);
         RemoteServersManager remoteServersManager = RemoteServersManager.getInstance();
         RemoteServersManager.ServiceNodesMonitor serviceNodesMonitor = RemoteServersManager.getInstance().getServers(service);
-        if(serviceNodesMonitor == null) {
+        if (serviceNodesMonitor == null) {
             remoteServersManager.initService(service);
             serviceNodesMonitor = RemoteServersManager.getInstance().getServers(service);
         }
-        if(serviceNodesMonitor != null) {
+        if (serviceNodesMonitor != null) {
             List<Long> serverCRCIds = serviceNodesMonitor.getNodeServerCRCIds();
-            if(serverCRCIds != null) {
+            if (serverCRCIds != null) {
                 List<String> servers = new ArrayList<>();
-                for(Long serverCRCId : serverCRCIds) {
+                for (Long serverCRCId : serverCRCIds) {
                     servers.add(String.valueOf(serverCRCId));
                 }
                 return servers;
