@@ -71,6 +71,7 @@ public final class DiscoveryManagerImpl extends DiscoveryManager {
         registerContentPacketClass(GetNodeByServerCRCIdRequest.class, GetNodeByServerCRCIdHandler.class);
         registerContentPacketClass(LatencyCheckRequest.class, LatencyCheckHandler.class);
         registerContentPacketClass(NodeRegistrationRequest.class, NodeRegistrationServerHandler.class);
+        registerContentPacketClass(GetAllServicesRequest.class, GetAllServicesHandler.class);
     }
     public DiscoveryManager addStateListener(StateListener<Integer, NetworkCommunicator> stateListener) {
         if(networkCommunicator != null) {
