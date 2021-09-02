@@ -51,11 +51,15 @@ public class GroovyServletDispatcher extends HttpServlet {
             String[] uriStrs = uri.split("/");
             String matchStr = uriStrs.length > 1 ? uriStrs[1] : null;
             if (matchStr != null) {
-                GroovyServletManager servletManagerEx = groovyServletMap.get(matchStr);
+                int index = matchStr.lastIndexOf("_v");
+                String service;
+                if (index > 0)
+                    service = matchStr.substring(0, index);
+                else
+                    service = matchStr;
+                GroovyServletManager servletManagerEx = groovyServletMap.get(service);
                 if (servletManagerEx != null) {
-                    int index = matchStr.lastIndexOf("_v");
-                    if (index > 0)
-                        uriStrs[1] = matchStr.substring(0, index);
+                    uriStrs[1] = service;
                     holder = servletManagerEx.parseUri(request, response, uriStrs);
                 }
             }
@@ -78,8 +82,8 @@ public class GroovyServletDispatcher extends HttpServlet {
             LoggerEx.info(TAG, "RequestURI " + uri + " method " + request.getMethod() + " from " + request.getRemoteAddr(), System.currentTimeMillis() - time);
         } catch (Throwable e) {
             boolean moveServer = false;
-            if(e instanceof CoreException){
-                if(((CoreException) e).getCode() == ChatErrorCodes.ERROR_GROOVYSERVLET_SERVLET_NOT_INITIALIZED){
+            if (e instanceof CoreException) {
+                if (((CoreException) e).getCode() == ChatErrorCodes.ERROR_GROOVYSERVLET_SERVLET_NOT_INITIALIZED) {
                     try {
                         response.sendError(504, e.getMessage());
                         moveServer = true;
@@ -89,7 +93,7 @@ public class GroovyServletDispatcher extends HttpServlet {
                 }
             }
             LoggerEx.error(TAG, "Request url " + request.getRequestURL().toString() + " occur error " + ExceptionUtils.getFullStackTrace(e));
-            if(!moveServer){
+            if (!moveServer) {
                 try {
                     response.sendError(500, e.getMessage());
                 } catch (IOException e1) {
