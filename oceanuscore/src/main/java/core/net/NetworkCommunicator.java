@@ -9,7 +9,6 @@ import core.net.data.RequestTransport;
 import core.net.data.ResponseTransport;
 import core.net.data.Transport;
 import core.net.errors.NetErrorCodes;
-import core.net.rudpex.communicator.RUDPEXNetworkCommunicator;
 import core.net.serializations.SerializationStreamHandler;
 import script.utils.state.StateListener;
 import script.utils.state.StateMachine;
@@ -127,7 +126,7 @@ public abstract class NetworkCommunicator {
 //                    if(failedContentPacket != null) {
 //                        System.out.print("");
 //                    }
-                    LoggerEx.info(TAG, "ContentPacketListener address " + address + " sendingRequestMap remove id " + response.getTransportId() + " contentPacket " + contentPacket + " failedContentPacket " + failedContentPacket);
+//                    LoggerEx.info(TAG, "ContentPacketListener address " + address + " sendingRequestMap remove id " + response.getTransportId() + " contentPacket " + contentPacket + " failedContentPacket " + failedContentPacket);
                     done = contentPacketContainer.done();
                 }
             }
@@ -379,11 +378,11 @@ public abstract class NetworkCommunicator {
         ContentPacketContainer<?> old = sendingRequestMap.putIfAbsent(requestTransport.getTransportId(), contentPacketContainer);
         if(old != null) {
             contentPacketContainer.cancel();
-            LoggerEx.warn(TAG, "sendingRequestMap put requestTransport id " + requestTransport.getTransportId() + " already exists, scheduleTask id " + contentPacketContainer.scheduleTask + " has been be cancelled");
+//            LoggerEx.warn(TAG, "sendingRequestMap put requestTransport id " + requestTransport.getTransportId() + " already exists, scheduleTask id " + contentPacketContainer.scheduleTask + " has been be cancelled");
         } else {
-            LoggerEx.info(TAG, "sendContentPacket packet " + packet + " address " + address + " sendingRequestMap put id " + requestTransport.getTransportId());
+//            LoggerEx.info(TAG, "sendContentPacket packet " + packet + " address " + address + " sendingRequestMap put id " + requestTransport.getTransportId());
             sendPacket(packet, address).whenComplete((aVoid, throwable) -> {
-                LoggerEx.info(TAG, "sendContentPacket completed " + packet + " address " + address + " id " + requestTransport.getTransportId() + " will wait response. timeout " + timeout);
+//                LoggerEx.info(TAG, "sendContentPacket completed " + packet + " address " + address + " id " + requestTransport.getTransportId() + " will wait response. timeout " + timeout);
                 contentPacketContainer.scheduleTask = internalTools.getScheduledExecutorService().schedule(() -> {
                     handleContentPacketFailed(contentPacketContainer, requestTransport, requestTransport.generateTimeoutResponse(NetErrorCodes.ERROR_TIMEOUT, "Timeout after " + timeout), address);
                 }, timeout, TimeUnit.MILLISECONDS);

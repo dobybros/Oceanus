@@ -8,9 +8,6 @@ import core.discovery.node.ServiceNodeResult;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Created by lick on 2019/6/26.
@@ -27,7 +24,29 @@ public class RemoteServersManager implements Runnable {
 
     private ScheduledExecutorService scheduledExecutorService;
 
+    public ConcurrentHashMap<Long, Node> getNodeMap() {
+        return nodeMap;
+    }
 
+    public void setNodeMap(ConcurrentHashMap<Long, Node> nodeMap) {
+        this.nodeMap = nodeMap;
+    }
+
+    public ConcurrentHashMap<String, ServiceNodesMonitor> getServiceServerCRCIdMap() {
+        return serviceServerCRCIdMap;
+    }
+
+    public void setServiceServerCRCIdMap(ConcurrentHashMap<String, ServiceNodesMonitor> serviceServerCRCIdMap) {
+        this.serviceServerCRCIdMap = serviceServerCRCIdMap;
+    }
+
+    public ScheduledExecutorService getScheduledExecutorService() {
+        return scheduledExecutorService;
+    }
+
+    public void setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
+        this.scheduledExecutorService = scheduledExecutorService;
+    }
 
     public class ServiceNodesMonitor {
         public ServiceNodesMonitor() {
@@ -82,21 +101,23 @@ public class RemoteServersManager implements Runnable {
 
     public RemoteServersManager() {
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.schedule(this, 10L, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(this, 20L, 20L, TimeUnit.SECONDS);
     }
     @Override
     public void run() {
-        OnlineServer.getInstance().getNodeRegistrationHandler().getNodesWithServices(serviceServerCRCIdMap.keySet(), nodeMap.keySet(), false).whenComplete((serviceNodeResult, throwable) -> {
-            try {
+        try {
+            OnlineServer.getInstance().getNodeRegistrationHandler().getNodesWithServices(serviceServerCRCIdMap.keySet(), nodeMap.keySet(), false).whenComplete((serviceNodeResult, throwable) -> {
                 if(serviceNodeResult != null) {
                     updateServiceNodeResult(serviceNodeResult);
                 } else if(throwable != null) {
                     LoggerEx.error(TAG, "Periodic check service nodes failed, " + throwable.getMessage());
                 }
-            } finally {
-                scheduledExecutorService.schedule(this, 10L, TimeUnit.SECONDS);
-            }
-        });
+            });
+        } catch(Throwable throwable) {
+            throwable.printStackTrace();
+            LoggerEx.error(TAG, "getNodesWithServices for " + serviceServerCRCIdMap.keySet() + " failed, " + throwable.getMessage());
+        }
+
     }
     private void updateServiceNodeResult(ServiceNodeResult serviceNodeResult) {
         Map<String, List<Node>> serviceNodes = serviceNodeResult.getServiceNodes();
