@@ -218,9 +218,9 @@ public class RMIClientHandler extends RPCClientAdapter {
                 setSslProp();
                 registry = LocateRegistry.getRegistry(serverHost, rmiPort, new SslRMIClientSocketFactory());
             } else {
-                registry = LocateRegistry.getRegistry(serverHost, rmiPort);
+                registry = LocateRegistry.getRegistry(serverHost, rmiPort);//获取服务器注册表（主机+端口号）
             }
-            server = (RMIServer) registry.lookup(rmiId);
+            server = (RMIServer) registry.lookup(rmiId);//通过rmiId在注册表上面找到对应的的远程对象
 
 //            serverImpl.initClient(server);
 
