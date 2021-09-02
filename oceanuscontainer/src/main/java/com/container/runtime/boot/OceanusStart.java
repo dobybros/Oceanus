@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import script.core.servlets.GroovyServletDispatcher;
+import script.core.servlets.ServerServlet;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -48,6 +49,7 @@ public class OceanusStart {
             ServletHandler servletHandler = new ServletHandler();
             server.setHandler(servletHandler);
             servletHandler.addServletWithMapping(GroovyServletDispatcher.class, "/rest/*");
+            servletHandler.addServletWithMapping(ServerServlet.class, "/*");
 //            servletHandler.addServletWithMapping(GroovyServletScriptDispatcher.class, "/base/*");
             server.start();
             init();

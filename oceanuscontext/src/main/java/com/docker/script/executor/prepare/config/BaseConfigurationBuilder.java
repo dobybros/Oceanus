@@ -17,7 +17,8 @@ public class BaseConfigurationBuilder {
     private final String TAG = BaseConfigurationBuilder.class.getName();
     public BaseConfiguration build(){
         try {
-            try (InputStream inStream = BaseConfiguration.class.getClassLoader().getResourceAsStream(BaseConfiguration.getOceanusConfigPath())){
+            try (InputStream inStream = BaseConfiguration.class.getClassLoader().getResourceAsStream(BaseConfiguration.getOceanusConfigPath());
+                    InputStream envConfigInputStream = BaseConfiguration.class.getClassLoader().getResourceAsStream(BaseConfiguration.getEnvConfigPath())){
                 Properties prop = new Properties();
 //                Properties kafkaProducerProp = new Properties();
                 Assert.assertNotNull(inStream);
@@ -122,6 +123,11 @@ public class BaseConfigurationBuilder {
                     baseConfiguration.setMaxUserNumber(Long.parseLong(maxUserNumber));
                 }
                 baseConfiguration.setExtraProperties(prop);
+                if(envConfigInputStream != null) {
+                    Properties configProperties = new Properties();
+                    configProperties.load(envConfigInputStream);
+                    baseConfiguration.setEnvConfigProperties(configProperties);
+                }
                 return baseConfiguration;
             }
         }catch (IOException e){

@@ -86,10 +86,10 @@ public class DefaultRuntimeHandler implements RuntimeHandler {
         if (enableGroovyMVC != null && enableGroovyMVC.trim().equals("true")) {
             GroovyServletManagerEx servletManagerEx = new GroovyServletManagerEx(runtimeContext.getConfiguration().getService(), runtimeContext.getConfiguration().getVersion());
             runtimeContext.addClassAnnotationHandler(servletManagerEx);
-            GroovyServletDispatcher.addGroovyServletManagerEx(runtimeContext.getConfiguration().getServiceVersion(), servletManagerEx);
+            GroovyServletDispatcher.addGroovyServletManagerEx(runtimeContext.getConfiguration().getService(), servletManagerEx);
 //            runtimeContext.addClassAnnotationHandler(new WebServiceAnnotationHandler());
         } else {
-            GroovyServletDispatcher.removeGroovyServletManagerEx(runtimeContext.getConfiguration().getServiceVersion());
+            GroovyServletDispatcher.removeGroovyServletManagerEx(runtimeContext.getConfiguration().getService());
         }
 
 

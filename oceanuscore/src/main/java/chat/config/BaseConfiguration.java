@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class BaseConfiguration {
     private final String TAG = BaseConfiguration.class.getName();
     private static String oceanusConfigPath = "oceanus.properties";
+    private static String envConfigPath = "config.properties";
     private static int httpThreadPoolSize = 500;
 
     private String server = String.valueOf(NetRuntime.getServerNameCRC());
@@ -94,6 +95,7 @@ public class BaseConfiguration {
     private Boolean useProxy;
     private Long maxUserNumber;
     private Properties extraProperties;
+    private Properties envConfigProperties;
     public String getDefaultConfigFileName(){
         return "config.properties";
     }
@@ -541,6 +543,14 @@ public class BaseConfiguration {
         this.extraProperties = extraProperties;
     }
 
+    public static String getEnvConfigPath() {
+        return envConfigPath;
+    }
+
+    public static void setEnvConfigPath(String envConfigPath) {
+        BaseConfiguration.envConfigPath = envConfigPath;
+    }
+
     public static String getOceanusConfigPath() {
         return oceanusConfigPath;
     }
@@ -563,6 +573,14 @@ public class BaseConfiguration {
 
     public void setDiscoveryHost(String discoveryHost) {
         this.discoveryHost = discoveryHost;
+    }
+
+    public Properties getEnvConfigProperties() {
+        return envConfigProperties;
+    }
+
+    public void setEnvConfigProperties(Properties envConfigProperties) {
+        this.envConfigProperties = envConfigProperties;
     }
 
     @Override
@@ -617,7 +635,9 @@ public class BaseConfiguration {
                 ", useProxy=" + useProxy +
                 ", maxUserNumber=" + maxUserNumber +
                 ", extraProperties=" + extraProperties +
+                ", envConfigProperties=" + envConfigProperties +
                 ", oceanusConfigPath=" + BaseConfiguration.oceanusConfigPath +
+                ", envConfigPath=" + BaseConfiguration.envConfigPath +
                 ", httpThreadPoolSize=" + BaseConfiguration.httpThreadPoolSize +
                 '}';
     }
