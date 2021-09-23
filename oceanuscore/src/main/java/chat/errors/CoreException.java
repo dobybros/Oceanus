@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class CoreException extends Exception {
+public class CoreException extends RuntimeException {
     private static final long serialVersionUID = -3101325177490138661L;
     private List<CoreException> moreExceptions;
     private HashMap<String, Object> infoMap;
