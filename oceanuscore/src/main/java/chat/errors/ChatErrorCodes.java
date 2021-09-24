@@ -124,4 +124,5 @@ public interface ChatErrorCodes {
     int ERROR_RMICALL_TIMEOUT = -10226;
     int ERROR_CREATE_CACHE = -10227;
     int ERROR_NOT_IMPLEMENTED = -10228;
+    int ERROR_SENSITIVE_WORD_CONFIG_EMPTY = -10229;
 }
