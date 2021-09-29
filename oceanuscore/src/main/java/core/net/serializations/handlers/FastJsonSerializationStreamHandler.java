@@ -3,6 +3,7 @@ package core.net.serializations.handlers;
 import chat.logs.LoggerEx;
 import com.alibaba.fastjson.JSON;
 
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import core.net.serializations.SerializationStreamHandler;
 
 import java.io.*;
@@ -17,7 +18,7 @@ public class FastJsonSerializationStreamHandler implements SerializationStreamHa
             LoggerEx.error(TAG, "Convert object is null");
             return null;
         }
-        String json = JSON.toJSONString(object);
+        String json = JSON.toJSONString(object, SerializerFeature.DisableCircularReferenceDetect);
         try {
             return getBytes(json.getBytes("utf8"));
         } catch (UnsupportedEncodingException e) {

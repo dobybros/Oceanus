@@ -2,6 +2,7 @@ package core.storage.serializations.handlers;
 
 import chat.logs.LoggerEx;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import core.storage.serializations.SerializationDataHandler;
 
 import java.io.UnsupportedEncodingException;
@@ -28,7 +29,7 @@ public class FastJsonSerializationDataHandler implements SerializationDataHandle
                 return ((String) object).getBytes();
             }
         }
-        String json = JSON.toJSONString(object);
+        String json = JSON.toJSONString(object, SerializerFeature.DisableCircularReferenceDetect);
         try {
             return json.getBytes("utf8");
         } catch (UnsupportedEncodingException e) {

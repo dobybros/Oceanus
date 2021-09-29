@@ -8,6 +8,7 @@ import chat.utils.DataOutputStreamEx;
 import chat.utils.GZipUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.docker.rpc.RPCRequest;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.stub.RpcCacheManager;
@@ -140,7 +141,7 @@ public class AsyncCallbackRequest extends RPCRequest {
                     byte[] returnBytes = null;
                     String returnStr = null;
                     if (dataObject != null) {
-                        returnStr = JSON.toJSONString(dataObject);
+                        returnStr = JSON.toJSONString(dataObject, SerializerFeature.DisableCircularReferenceDetect);
                         try {
                             returnBytes = GZipUtils.compress(returnStr.getBytes("utf8"));
                         } catch (IOException e) {
@@ -160,7 +161,7 @@ public class AsyncCallbackRequest extends RPCRequest {
                         JSONObject json = new JSONObject();
                         json.put("code", ((CoreException) exception).getCode());
                         json.put("message", exception.getMessage());
-                        String errorStr = json.toJSONString();//JSON.toJSONString(exception);
+                        String errorStr = exception.getMessage();
                         try {
                             exceptionBytes = GZipUtils.compress(errorStr.getBytes("utf8"));
                         } catch (IOException e) {

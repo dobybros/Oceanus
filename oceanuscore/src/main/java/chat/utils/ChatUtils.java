@@ -201,8 +201,8 @@ public class ChatUtils {
 
     private static boolean isStartWith(String str, String faceStartWith) {
         if (faceStartWith != null && str != null) {
-            if (faceStartWith.contains("|")) {
-                String[] compares = faceStartWith.split("|");
+            if (faceStartWith.contains("\\|")) {
+                String[] compares = faceStartWith.split("\\|");
                 for (String compare : compares) {
                     if (str.startsWith(compare)) {
                         return true;

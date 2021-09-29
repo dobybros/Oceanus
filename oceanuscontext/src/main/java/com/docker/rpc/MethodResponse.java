@@ -8,6 +8,7 @@ import chat.utils.DataOutputStreamEx;
 import chat.utils.GZipUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.docker.rpc.remote.MethodMapping;
 import com.docker.rpc.remote.stub.RpcCacheManager;
 import com.docker.rpc.remote.stub.ServiceStubManager;
@@ -160,7 +161,7 @@ public class MethodResponse extends RPCResponse {
                     if (returnObject != null) {
                         String returnStr = null;
                         if (returnTmpStr == null)
-                            returnStr = JSON.toJSONString(returnObject);
+                            returnStr = JSON.toJSONString(returnObject, SerializerFeature.DisableCircularReferenceDetect);
                         else
                             returnStr = returnTmpStr;
                         try {

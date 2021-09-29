@@ -5,6 +5,7 @@ import chat.errors.CoreException;
 import chat.logs.LoggerEx;
 import chat.utils.ReflectionUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.docker.rpc.MethodRequest;
 import com.docker.rpc.MethodResponse;
 import com.docker.rpc.remote.MethodMapping;
@@ -181,7 +182,7 @@ public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandler {
             response.setEncode(MethodResponse.ENCODE_JAVABINARY);
             response.setCrc(crc);
             if (returnObj != null)
-                response.setReturnTmpStr(JSON.toJSONString(returnObj));
+                response.setReturnTmpStr(JSON.toJSONString(returnObj, SerializerFeature.DisableCircularReferenceDetect));
 //            builder.append(" $$returnobj:: " + response.getReturnTmpStr());
 //            if (error)
 //                AnalyticsLogger.error(TAG, builder.toString());
