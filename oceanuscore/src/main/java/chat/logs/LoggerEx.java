@@ -130,7 +130,7 @@ public class LoggerEx {
                 append(" $$tag:: " + tag).
                 append(" [" + msg + "]").
                 append(" $$env:: " + PropertiesContainer.getInstance().getProperty("lan.id")).
-                append(" $$spendTime:: " + spendTime);
+                append(" $$takes:: " + spendTime);
 
         return builder.toString();
     }
