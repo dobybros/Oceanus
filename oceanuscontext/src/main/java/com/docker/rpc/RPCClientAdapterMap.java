@@ -1,7 +1,7 @@
 package com.docker.rpc;
 
 import chat.logs.LoggerEx;
-import com.docker.rpc.impl.RMIClientHandlerEx;
+import com.docker.rpc.impl.RMIClientHandler;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -56,7 +56,7 @@ public class RPCClientAdapterMap {
         if (clientAdapter == null) {
             if (ip == null)
                 return null;
-            RMIClientHandlerEx rmiClient = new RMIClientHandlerEx();
+            RMIClientHandler rmiClient = new RMIClientHandler();
             rmiClient.setRmiPort(rmiPort);
             rmiClient.setServerHost(ip);
             rmiClient.setRmiId(serverName);

@@ -179,6 +179,7 @@ public class ServiceSkeletonAnnotationHandler extends ClassAnnotationHandler {
             }
             MethodResponse response = new MethodResponse(returnObj, exception);
             response.setRequest(request);
+            response.setVersion(request.getVersion());
             response.setEncode(MethodResponse.ENCODE_JAVABINARY);
             response.setCrc(crc);
             if (returnObj != null)

@@ -18,8 +18,7 @@ public class RPCServerMethodInvocation extends RPCServerAdapter<MethodRequest, M
     @Override
     public MethodResponse onCall(MethodRequest request) throws CoreException {
         ServiceSkeletonAnnotationHandler.SkelectonMethodMapping methodMapping = getMethodMapping(request);
-        MethodResponse response = methodMapping.invoke(request);
-        return response;
+        return methodMapping.invoke(request);
     }
 
     @Override

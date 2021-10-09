@@ -21,4 +21,6 @@ public abstract class RPCRequest extends RPCBase {
     public boolean canRetry() {
         return retryTimes < MAXRETRYTIMES;
     }
+
+
 }

@@ -22,7 +22,7 @@ import java.io.IOException;
 
 public class MethodResponse extends RPCResponse {
     private static final String TAG = MethodResponse.class.getSimpleName();
-    private byte version = 1;
+    private byte version = 2;
     private Long crc;
     private Object returnObject;
     private CoreException exception;
@@ -62,6 +62,15 @@ public class MethodResponse extends RPCResponse {
                             bais = new ByteArrayInputStream(bytes);
                             dis = new DataInputStreamEx(bais);
                             version = dis.readByte();
+                            switch (version) {
+                                case 1:
+                                    resurrectVersionOne(dis);
+                                    break;
+                                case 2:
+                                    break;
+                                default:
+                                    throw new CoreException(ChatErrorCodes.ERROR_ILLEGAL_METHOD_RESPONSE_VERSION, "Illegal method response version " + version);
+                            }
                             crc = dis.readLong();
                             if (crc == null || crc == 0 || crc == -1)
                                 throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_CRC_ILLEGAL, "CRC is illegal for MethodRequest,service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
@@ -140,6 +149,10 @@ public class MethodResponse extends RPCResponse {
                 }
             }
         }
+    }
+
+    private void resurrectVersionOne(DataInputStreamEx dis) {
+
     }
 
     @Override

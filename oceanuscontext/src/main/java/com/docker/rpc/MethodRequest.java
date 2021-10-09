@@ -30,7 +30,7 @@ public class MethodRequest extends RPCRequest {
 
     public static final String RPCTYPE = "mthd";
     private static final String TAG = MethodRequest.class.getSimpleName();
-    private byte version = 1;
+    private byte version = 2;
 
     /**
      * generated from classname and method name and parameters
@@ -89,72 +89,17 @@ public class MethodRequest extends RPCRequest {
                             bais = new ByteArrayInputStream(bytes);
                             dis = new DataInputStreamEx(bais);
                             version = dis.readByte();
-                            crc = dis.readLong();
-                            service = dis.readUTF();
-                            fromServerName = dis.readUTF();
-                            fromService = dis.readUTF();
-                            sourceIp = dis.readUTF();
-                            sourcePort = dis.readInt();
-                            if (crc == null || crc == 0 || crc == -1)
-                                throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_CRC_ILLEGAL, "CRC is illegal for MethodRequest,crc: " + crc);
-
-                            if (service == null)
-                                throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NULL, "Service is null for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                            BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(service);
-                            if (runtimeContext == null) {
-                                throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + service + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                            }
-                            ServiceSkeletonAnnotationHandler serviceSkeletonAnnotationHandler = (ServiceSkeletonAnnotationHandler) runtimeContext.getClassAnnotationHandler(ServiceSkeletonAnnotationHandler.class);
-                            if (serviceSkeletonAnnotationHandler == null)
-                                throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SKELETON_NULL, "Skeleton handler is not for service " + service + " on method service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                            MethodMapping methodMapping = serviceSkeletonAnnotationHandler.getMethodMapping(crc);
-                            if (methodMapping == null) {
-                                LoggerEx.error(TAG, "All methodMappings: " + JSON.toJSONString(serviceSkeletonAnnotationHandler.getMethodMap().keySet()));
-                                throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_METHODNOTFOUND, "Method doesn't be found by service_class_method " + RpcCacheManager.getInstance().getMethodByCrc(crc) + ",crc: " + crc);
+                            switch (version) {
+                                case 1:
+                                    resurrectVersionOne(dis);
+                                    break;
+                                case 2:
+                                    resurrectVersionTwo(dis);
+                                    break;
+                                default:
+                                    throw new CoreException(ChatErrorCodes.ERROR_ILLEGAL_METHOD_REQUEST_VERSION, "Unsupported version for method request");
                             }
 
-                            argCount = dis.readInt();
-                            if (argCount > 0) {
-                                Integer length = dis.readInt();
-                                byte[] argsData = new byte[length];
-                                dis.readFully(argsData);
-//                            Class<?>[] parameterTypes = methodMapping.getParameterTypes();
-                                Type[] parameterTypes = methodMapping.getGenericParameterTypes();
-                                if (parameterTypes != null && parameterTypes.length > 0) {
-                                    if (parameterTypes.length > argCount) {
-                                        LoggerEx.debug(TAG, "Parameter types not equal actual is " + parameterTypes.length + " but expected " + argCount + ". Cut off,service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                                        Type[] newParameterTypes = new Type[argCount];
-                                        System.arraycopy(parameterTypes, 0, newParameterTypes, 0, argCount);
-                                        parameterTypes = newParameterTypes;
-                                    } else if (parameterTypes.length < argCount) {
-                                        LoggerEx.debug(TAG, "Parameter types not equal actual is " + parameterTypes.length + " but expected " + argCount + ". Fill with Object.class,service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                                        Type[] newParameterTypes = new Type[argCount];
-                                        for (int i = 0; i < parameterTypes.length; i++) {
-                                            newParameterTypes[i] = parameterTypes[i];
-                                        }
-                                        for (int i = parameterTypes.length; i < argCount; i++) {
-                                            newParameterTypes[i] = Object.class;
-                                        }
-                                        parameterTypes = newParameterTypes;
-                                    }
-                                    try {
-                                        byte[] rawData = argsData;
-                                        if (rawData.length > 0) {
-                                            byte[] data = GZipUtils.decompress(rawData);
-                                            String json = new String(data, "utf8");
-                                            argsTmpStr = json;
-                                            List<Object> array = parseArray(json, parameterTypes, ParserConfig.global);
-                                            if (array != null)
-                                                args = array.toArray();
-                                        }
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                        LoggerEx.error(TAG, "Parse bytes failed, " + ExceptionUtils.getFullStackTrace(e) + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                                    }
-                                }
-                            }
-
-                            trackId = dis.readUTF();
 //						boolean hasTrackId = dis.readBoolean();
 //						if(hasTrackId) {
 //                            trackId = dis.readUTF();
@@ -177,6 +122,117 @@ public class MethodRequest extends RPCRequest {
         }
     }
 
+    private MethodMapping resurrectVersionForOneAndTwo(DataInputStreamEx dis) throws IOException {
+        crc = dis.readLong();
+        service = dis.readUTF();
+        fromServerName = dis.readUTF();
+        fromService = dis.readUTF();
+        sourceIp = dis.readUTF();
+        sourcePort = dis.readInt();
+        if (crc == null || crc == 0 || crc == -1)
+            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_CRC_ILLEGAL, "CRC is illegal for MethodRequest,crc: " + crc);
+
+        if (service == null)
+            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NULL, "Service is null for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+        BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(service);
+        if (runtimeContext == null) {
+            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + service + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+        }
+        ServiceSkeletonAnnotationHandler serviceSkeletonAnnotationHandler = (ServiceSkeletonAnnotationHandler) runtimeContext.getClassAnnotationHandler(ServiceSkeletonAnnotationHandler.class);
+        if (serviceSkeletonAnnotationHandler == null)
+            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SKELETON_NULL, "Skeleton handler is not for service " + service + " on method service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+        MethodMapping methodMapping = serviceSkeletonAnnotationHandler.getMethodMapping(crc);
+        if (methodMapping == null) {
+            LoggerEx.error(TAG, "All methodMappings: " + JSON.toJSONString(serviceSkeletonAnnotationHandler.getMethodMap().keySet()));
+            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_METHODNOTFOUND, "Method doesn't be found by service_class_method " + RpcCacheManager.getInstance().getMethodByCrc(crc) + ",crc: " + crc);
+        }
+
+        argCount = dis.readInt();
+        return methodMapping;
+    }
+    private void resurrectVersionOne(DataInputStreamEx dis) throws IOException {
+        MethodMapping methodMapping = resurrectVersionForOneAndTwo(dis);
+        if (argCount > 0) {
+            Integer length = dis.readInt();
+            byte[] argsData = new byte[length];
+            dis.readFully(argsData);
+
+            Type[] parameterTypes = getParameterTypes(methodMapping);
+            if (parameterTypes != null && parameterTypes.length > 0) {
+                try {
+                    if (argsData.length > 0) {
+                        byte[] data = GZipUtils.decompress(argsData);
+                        String json = new String(data, "utf8");
+                        argsTmpStr = json;
+                        List<Object> array = parseArray(json, parameterTypes, ParserConfig.global);
+                        if (array != null)
+                            args = array.toArray();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    LoggerEx.error(TAG, "Parse bytes failed, " + ExceptionUtils.getFullStackTrace(e) + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+                }
+            }
+        }
+
+        trackId = dis.readUTF();
+    }
+
+    private Type[] getParameterTypes(MethodMapping methodMapping) {
+        Type[] parameterTypes = methodMapping.getGenericParameterTypes();
+        if (parameterTypes != null && parameterTypes.length > 0) {
+            if (parameterTypes.length > argCount) {
+                LoggerEx.debug(TAG, "Parameter types not equal actual is " + parameterTypes.length + " but expected " + argCount + ". Cut off,service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+                Type[] newParameterTypes = new Type[argCount];
+                System.arraycopy(parameterTypes, 0, newParameterTypes, 0, argCount);
+                parameterTypes = newParameterTypes;
+            } else if (parameterTypes.length < argCount) {
+                LoggerEx.debug(TAG, "Parameter types not equal actual is " + parameterTypes.length + " but expected " + argCount + ". Fill with Object.class,service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+                Type[] newParameterTypes = new Type[argCount];
+                for (int i = 0; i < parameterTypes.length; i++) {
+                    newParameterTypes[i] = parameterTypes[i];
+                }
+                for (int i = parameterTypes.length; i < argCount; i++) {
+                    newParameterTypes[i] = Object.class;
+                }
+                parameterTypes = newParameterTypes;
+            }
+        }
+        return parameterTypes;
+    }
+
+    private void resurrectVersionTwo(DataInputStreamEx dis) throws IOException {
+        MethodMapping methodMapping = resurrectVersionForOneAndTwo(dis);
+        if (argCount > 0) {
+            Type[] parameterTypes = getParameterTypes(methodMapping);
+            if (parameterTypes != null && parameterTypes.length > 0) {
+                args = new Object[argCount];
+                for(int i = 0; i < argCount; i++) {
+                    byte argumentType = dis.readByte();
+                    switch (argumentType) {
+                        case ARGUMENT_TYPE_BYTES:
+                            int length = dis.readInt();
+                            byte[] bytes = new byte[length];
+                            dis.readFully(bytes);
+                            args[i] = bytes;
+                            break;
+                        case ARGUMENT_TYPE_JSON:
+                            String jsonString = dis.readUTF();
+                            if(jsonString != null && parameterTypes[i] != null) {
+                                Object value = parseObject(jsonString, parameterTypes[i], ParserConfig.global);
+                                args[i] = value;
+                            }
+                            break;
+                        case ARGUMENT_TYPE_NONE:
+                            break;
+                    }
+                }
+            }
+        }
+
+        trackId = dis.readUTF();
+    }
+
     @Override
     public void persistent() throws CoreException {
         Byte encode = getEncode();
@@ -189,54 +245,18 @@ public class MethodRequest extends RPCRequest {
                 try {
                     baos = new ByteArrayOutputStream();
                     dis = new DataOutputStreamEx(baos);
-                    dis.writeByte(version);
-                    dis.writeLong(crc);
-                    dis.writeUTF(service);
-                    dis.writeUTF(fromServerName);
-                    dis.writeUTF(fromService);
-                    dis.writeUTF(sourceIp);
-                    dis.writeInt(sourcePort);
-
-                    ServiceStubManager serviceStubManager = this.serviceStubManager;
-                    if (serviceStubManager == null) {
-                        BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(fromService);
-                        if (runtimeContext == null) {
-                            throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + fromService + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                        }
-                        serviceStubManager = runtimeContext.getServiceStubManagerFactory().get();
+                    switch (version) {
+                        case 1:
+                            persistentVersionOne(dis);
+                            break;
+                        case 2:
+                            persistentVersionTwo(dis);
+                            break;
+                        default:
+                            throw new CoreException(ChatErrorCodes.ERROR_ILLEGAL_METHOD_REQUEST_VERSION, "Unsupported version for method request");
                     }
 
-                    MethodMapping methodMapping = serviceStubManager.getMethodMapping(crc);
-                    if (methodMapping != null) {
-                        Class<?>[] parameterTypes = methodMapping.getParameterTypes();
-                        if (parameterTypes != null) {
-                            argCount = parameterTypes.length;
-                        } else {
-                            argCount = 0;
-                        }
-                    } else {
-                        if (args != null)
-                            argCount = args.length;
-                        else
-                            argCount = 0;
-                    }
-                    dis.writeInt(argCount);
-                    if (argCount > 0) {
-                        String json = null;
-                        if (argsTmpStr == null)
-                            json = JSON.toJSONString(args, SerializerFeature.DisableCircularReferenceDetect);
-                        else
-                            json = argsTmpStr;
-                        try {
-                            byte[] data = GZipUtils.compress(json.getBytes("utf8"));
-                            dis.writeInt(data.length);
-                            dis.write(data);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            LoggerEx.error(TAG, "Generate " + json + " to bytes failed, " + ExceptionUtils.getFullStackTrace(e) + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                        }
-                    }
-                    dis.writeUTF(trackId);
+
 //                if(trackId != null) {
 //                    dis.writeBoolean(true);
 //                    dis.writeUTF(trackId);
@@ -260,6 +280,85 @@ public class MethodRequest extends RPCRequest {
             default:
                 throw new CoreException(ChatErrorCodes.ERROR_RPC_ENCODER_NOTFOUND, "Encoder type doesn't be found for persistent,service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
         }
+    }
+
+    private void persistentVersionOneAndTwo(DataOutputStreamEx dis) throws IOException {
+        dis.writeByte(version);
+        dis.writeLong(crc);
+        dis.writeUTF(service);
+        dis.writeUTF(fromServerName);
+        dis.writeUTF(fromService);
+        dis.writeUTF(sourceIp);
+        dis.writeInt(sourcePort);
+
+        ServiceStubManager serviceStubManager = this.serviceStubManager;
+        if (serviceStubManager == null) {
+            BaseRuntimeContext runtimeContext = (BaseRuntimeContext) baseConfiguration.getRuntimeContext(fromService);
+            if (runtimeContext == null) {
+                throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_SERVICE_NOTFOUND, "Service " + fromService + " not found for service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+            }
+            serviceStubManager = runtimeContext.getServiceStubManagerFactory().get();
+        }
+
+        MethodMapping methodMapping = serviceStubManager.getMethodMapping(crc);
+        if (methodMapping != null) {
+            Class<?>[] parameterTypes = methodMapping.getParameterTypes();
+            if (parameterTypes != null) {
+                argCount = parameterTypes.length;
+            } else {
+                argCount = 0;
+            }
+        } else {
+            if (args != null)
+                argCount = args.length;
+            else
+                argCount = 0;
+        }
+        dis.writeInt(argCount);
+    }
+    private static final byte ARGUMENT_TYPE_BYTES = 1;
+    private static final byte ARGUMENT_TYPE_JSON = 2;
+    private static final byte ARGUMENT_TYPE_NONE = 10;
+    private void persistentVersionTwo(DataOutputStreamEx dis) throws IOException {
+        persistentVersionOneAndTwo(dis);
+        if (argCount > 0 && args != null) {
+            for(Object arg : args) {
+                if(arg == null) {
+                    dis.writeByte(ARGUMENT_TYPE_NONE);
+                    continue;
+                }
+                if(arg instanceof byte[]) {
+                    dis.writeByte(ARGUMENT_TYPE_BYTES);
+                    byte[] bytes = (byte[]) arg;
+                    dis.writeInt(bytes.length);
+                    dis.write((byte[]) arg);
+                } else {
+                    dis.writeByte(ARGUMENT_TYPE_JSON);
+                    dis.writeUTF(JSON.toJSONString(arg, SerializerFeature.DisableCircularReferenceDetect));
+                }
+            }
+        }
+        dis.writeUTF(trackId);
+    }
+
+    private void persistentVersionOne(DataOutputStreamEx dis) throws IOException {
+        persistentVersionOneAndTwo(dis);
+        if (argCount > 0 && args != null) {
+            String json = null;
+            if (argsTmpStr == null)
+                json = JSON.toJSONString(args, SerializerFeature.DisableCircularReferenceDetect);
+            else
+                json = argsTmpStr;
+            try {
+                byte[] data = GZipUtils.compress(json.getBytes("utf8"));
+                dis.writeInt(data.length);
+                dis.write(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                LoggerEx.error(TAG, "Generate " + json + " to bytes failed, " + ExceptionUtils.getFullStackTrace(e) + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+            }
+        }
+        dis.writeUTF(trackId);
     }
 
     public Long getCrc() {
@@ -397,5 +496,21 @@ public class MethodRequest extends RPCRequest {
         parser.close();
 
         return list;
+    }
+
+    private Object parseObject(String text, Type types, ParserConfig config) {
+        if (text == null) {
+            return null;
+        }
+
+        DefaultJSONParser parser = new DefaultJSONParser(text, config);
+        parser.lexer.setFeatures(JSON.DEFAULT_PARSER_FEATURE & ~Feature.UseBigDecimal.getMask());
+        Object object = parser.parse();
+
+        parser.handleResovleTask(object);
+
+        parser.close();
+
+        return object;
     }
 }
