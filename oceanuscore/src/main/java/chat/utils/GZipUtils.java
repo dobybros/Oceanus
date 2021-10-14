@@ -29,20 +29,14 @@ public abstract class GZipUtils {
      * @throws Exception 
      */  
     public static byte[] compress(byte[] data) throws IOException {  
-        ByteArrayInputStream bais = new ByteArrayInputStream(data);  
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();  
-  
-        // 压缩  
-        compress(bais, baos);  
-  
-        byte[] output = baos.toByteArray();  
-  
-        baos.flush();  
-        baos.close();  
-  
-        bais.close();  
-  
-        return output;  
+        try(ByteArrayInputStream bais = new ByteArrayInputStream(data);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            // 压缩
+            compress(bais, baos);
+
+            return baos.toByteArray();
+        }
+
     }  
   
     /** 
@@ -64,19 +58,16 @@ public abstract class GZipUtils {
      * @throws Exception 
      */  
     public static void compress(File file, boolean delete) throws IOException {  
-        FileInputStream fis = new FileInputStream(file);  
-        FileOutputStream fos = new FileOutputStream(file.getPath() + EXT);  
-  
-        compress(fis, fos);  
-  
-        fis.close();  
-        fos.flush();  
-        fos.close();  
-  
-        if (delete) {  
-            file.delete();  
-        }  
-    }  
+        try (FileInputStream fis = new FileInputStream(file);
+        FileOutputStream fos = new FileOutputStream(file.getPath() + EXT)) {
+            compress(fis, fos);
+
+            fos.flush();
+        }
+        if (delete) {
+            file.delete();
+        }
+    }
   
     /** 
      * 数据压缩 
@@ -86,8 +77,7 @@ public abstract class GZipUtils {
      * @throws IOException 
      * @throws Exception 
      */  
-    public static void compress(InputStream is, OutputStream os) throws IOException  {  
-  
+    public static void compress(InputStream is, OutputStream os) throws IOException  {
         try(GZIPOutputStream gos = new GZIPOutputStream(os)) {
             int count;
             byte[] data = new byte[BUFFER];

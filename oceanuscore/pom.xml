@@ -5,10 +5,10 @@
 	<parent>
 		<groupId>oceanus</groupId>
 		<artifactId>Oceanus</artifactId>
-		<version>1.0</version>
+		<version>1.1</version>
 	</parent>
 	<artifactId>oceanuscore</artifactId>
-	<version>1.0</version>
+	<version>1.1.0</version>
 	<name>OceanusCore</name>
 	<dependencies>
 

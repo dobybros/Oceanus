@@ -3,9 +3,7 @@ package com.docker.rpc;
 import chat.errors.ChatErrorCodes;
 import chat.errors.CoreException;
 import chat.logs.LoggerEx;
-import chat.utils.DataInputStreamEx;
-import chat.utils.DataOutputStreamEx;
-import chat.utils.GZipUtils;
+import chat.utils.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.Feature;
@@ -22,6 +20,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +30,7 @@ public class MethodRequest extends RPCRequest {
 
     public static final String RPCTYPE = "mthd";
     private static final String TAG = MethodRequest.class.getSimpleName();
-    private byte version = 2;
+    private byte version = 1;
 
     /**
      * generated from classname and method name and parameters
@@ -86,24 +86,20 @@ public class MethodRequest extends RPCRequest {
                         ByteArrayInputStream bais = null;
                         DataInputStreamEx dis = null;
                         try {
-                            bais = new ByteArrayInputStream(bytes);
+                            bais = new ByteArrayInputStream(GZipUtils.decompress(bytes));
                             dis = new DataInputStreamEx(bais);
-                            version = dis.readByte();
-                            switch (version) {
-                                case 1:
-                                    resurrectVersionOne(dis);
-                                    break;
-                                case 2:
-                                    resurrectVersionTwo(dis);
-                                    break;
-                                default:
-                                    throw new CoreException(ChatErrorCodes.ERROR_ILLEGAL_METHOD_REQUEST_VERSION, "Unsupported version for method request");
-                            }
-
-//						boolean hasTrackId = dis.readBoolean();
-//						if(hasTrackId) {
-//                            trackId = dis.readUTF();
-//                        }
+                            version = dis.getDataInputStream().readByte();
+                            resurrectVersionTwo(dis);
+//                            switch (version) {
+//                                case 1:
+//                                    resurrectVersionOne(dis);
+//                                    break;
+//                                case 2:
+//                                    resurrectVersionTwo(dis);
+//                                    break;
+//                                default:
+//                                    throw new CoreException(ChatErrorCodes.ERROR_ILLEGAL_METHOD_REQUEST_VERSION, "Unsupported version for method request");
+//                            }
                         } catch (Throwable e) {
                             e.printStackTrace();
                             if (e instanceof CoreException) {
@@ -111,8 +107,10 @@ public class MethodRequest extends RPCRequest {
                             }
                             throw new CoreException(ChatErrorCodes.ERROR_RPC_DECODE_FAILED, "PB parse data failed, " + e.getMessage() + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
                         } finally {
-                            IOUtils.closeQuietly(bais);
-                            IOUtils.closeQuietly(dis.original());
+                            if(bais != null)
+                                IOUtils.closeQuietly(bais);
+                            if(dis != null && dis.original() != null)
+                                IOUtils.closeQuietly(dis.original());
                         }
                         break;
                     default:
@@ -147,36 +145,36 @@ public class MethodRequest extends RPCRequest {
             throw new CoreException(ChatErrorCodes.ERROR_METHODREQUEST_METHODNOTFOUND, "Method doesn't be found by service_class_method " + RpcCacheManager.getInstance().getMethodByCrc(crc) + ",crc: " + crc);
         }
 
-        argCount = dis.readInt();
+        argCount = dis.getDataInputStream().readInt();
         return methodMapping;
     }
-    private void resurrectVersionOne(DataInputStreamEx dis) throws IOException {
-        MethodMapping methodMapping = resurrectVersionForOneAndTwo(dis);
-        if (argCount > 0) {
-            Integer length = dis.readInt();
-            byte[] argsData = new byte[length];
-            dis.readFully(argsData);
-
-            Type[] parameterTypes = getParameterTypes(methodMapping);
-            if (parameterTypes != null && parameterTypes.length > 0) {
-                try {
-                    if (argsData.length > 0) {
-                        byte[] data = GZipUtils.decompress(argsData);
-                        String json = new String(data, "utf8");
-                        argsTmpStr = json;
-                        List<Object> array = parseArray(json, parameterTypes, ParserConfig.global);
-                        if (array != null)
-                            args = array.toArray();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    LoggerEx.error(TAG, "Parse bytes failed, " + ExceptionUtils.getFullStackTrace(e) + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-                }
-            }
-        }
-
-        trackId = dis.readUTF();
-    }
+//    private void resurrectVersionOne(DataInputStreamEx dis) throws IOException {
+//        MethodMapping methodMapping = resurrectVersionForOneAndTwo(dis);
+//        if (argCount > 0) {
+//            Integer length = dis.readInt();
+//            byte[] argsData = new byte[length];
+//            dis.readFully(argsData);
+//
+//            Type[] parameterTypes = getParameterTypes(methodMapping);
+//            if (parameterTypes != null && parameterTypes.length > 0) {
+//                try {
+//                    if (argsData.length > 0) {
+//                        byte[] data = GZipUtils.decompress(argsData);
+//                        String json = new String(data, "utf8");
+//                        argsTmpStr = json;
+//                        List<Object> array = parseArray(json, parameterTypes, ParserConfig.global);
+//                        if (array != null)
+//                            args = array.toArray();
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                    LoggerEx.error(TAG, "Parse bytes failed, " + ExceptionUtils.getFullStackTrace(e) + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+//                }
+//            }
+//        }
+//
+//        trackId = dis.readUTF();
+//    }
 
     private Type[] getParameterTypes(MethodMapping methodMapping) {
         Type[] parameterTypes = methodMapping.getGenericParameterTypes();
@@ -189,9 +187,7 @@ public class MethodRequest extends RPCRequest {
             } else if (parameterTypes.length < argCount) {
                 LoggerEx.debug(TAG, "Parameter types not equal actual is " + parameterTypes.length + " but expected " + argCount + ". Fill with Object.class,service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
                 Type[] newParameterTypes = new Type[argCount];
-                for (int i = 0; i < parameterTypes.length; i++) {
-                    newParameterTypes[i] = parameterTypes[i];
-                }
+                System.arraycopy(parameterTypes, 0, newParameterTypes, 0, parameterTypes.length);
                 for (int i = parameterTypes.length; i < argCount; i++) {
                     newParameterTypes[i] = Object.class;
                 }
@@ -208,17 +204,49 @@ public class MethodRequest extends RPCRequest {
             if (parameterTypes != null && parameterTypes.length > 0) {
                 args = new Object[argCount];
                 for(int i = 0; i < argCount; i++) {
-                    byte argumentType = dis.readByte();
+                    byte argumentType = dis.getDataInputStream().readByte();
                     switch (argumentType) {
                         case ARGUMENT_TYPE_BYTES:
-                            int length = dis.readInt();
+                            int length = dis.getDataInputStream().readInt();
                             byte[] bytes = new byte[length];
-                            dis.readFully(bytes);
+                            dis.getDataInputStream().readFully(bytes);
                             args[i] = bytes;
                             break;
+                        case ARGUMENT_TYPE_JAVA_BINARY:
+                            int length1 = dis.getDataInputStream().readInt();
+                            byte[] bytes1 = new byte[length1];
+                            dis.getDataInputStream().readFully(bytes1);
+                            Class<?> theClass = null;
+                            if(parameterTypes[i] instanceof Class<?>) {
+                                theClass = (Class<?>) parameterTypes[i];
+                                if(!ReflectionUtil.canBeInitiated(theClass)) {
+                                    theClass = null;
+                                }
+                            } else if (parameterTypes[i] instanceof ParameterizedType) {
+                                Type rawType = ((ParameterizedType) parameterTypes[i]).getRawType();
+                                if (rawType instanceof Class<?>) {
+                                    theClass = (Class<?>) rawType;
+                                    if(!ReflectionUtil.canBeInitiated(theClass)) {
+                                        theClass = null;
+                                    }
+                                }
+                            }
+                            if(theClass != null) {
+                                try {
+                                    BinarySerializable binarySerializable = (BinarySerializable) theClass.getConstructor().newInstance();
+                                    try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes1)) {
+                                        binarySerializable.resurrect(bais);
+                                        args[i] = binarySerializable;
+                                    }
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                    LoggerEx.error(TAG, "Deserialize argument " + parameterTypes[i] + " from method " + methodMapping.getMethod() + " failed, " + e.getMessage());
+                                }
+                            }
+                            break;
                         case ARGUMENT_TYPE_JSON:
-                            String jsonString = dis.readUTF();
-                            if(jsonString != null && parameterTypes[i] != null) {
+                            String jsonString = dis.getDataInputStream().readUTF();
+                            if(parameterTypes[i] != null) {
                                 Object value = parseObject(jsonString, parameterTypes[i], ParserConfig.global);
                                 args[i] = value;
                             }
@@ -245,27 +273,22 @@ public class MethodRequest extends RPCRequest {
                 try {
                     baos = new ByteArrayOutputStream();
                     dis = new DataOutputStreamEx(baos);
-                    switch (version) {
-                        case 1:
-                            persistentVersionOne(dis);
-                            break;
-                        case 2:
-                            persistentVersionTwo(dis);
-                            break;
-                        default:
-                            throw new CoreException(ChatErrorCodes.ERROR_ILLEGAL_METHOD_REQUEST_VERSION, "Unsupported version for method request");
-                    }
 
+                    persistentVersionTwo(dis);
+                    byte[] bytes = GZipUtils.compress(baos.toByteArray());
+//                    switch (version) {
+//                        case 1:
+//                            persistentVersionOne(dis);
+//                            bytes = baos.toByteArray();
+//                            break;
+//                        case 2:
+//                            persistentVersionTwo(dis);
+//                            bytes = GZipUtils.compress(baos.toByteArray());
+//                            break;
+//                        default:
+//                            throw new CoreException(ChatErrorCodes.ERROR_ILLEGAL_METHOD_REQUEST_VERSION, "Unsupported version for method request");
+//                    }
 
-//                if(trackId != null) {
-//                    dis.writeBoolean(true);
-//                    dis.writeUTF(trackId);
-//                } else {
-//                    dis.writeBoolean(false);
-//                }
-
-
-                    byte[] bytes = baos.toByteArray();
                     setData(bytes);
                     setEncode(ENCODE_JAVABINARY);
                     setType(RPCTYPE);
@@ -283,7 +306,7 @@ public class MethodRequest extends RPCRequest {
     }
 
     private void persistentVersionOneAndTwo(DataOutputStreamEx dis) throws IOException {
-        dis.writeByte(version);
+        dis.getDataOutputStream().writeByte(version);
         dis.writeLong(crc);
         dis.writeUTF(service);
         dis.writeUTF(fromServerName);
@@ -314,52 +337,67 @@ public class MethodRequest extends RPCRequest {
             else
                 argCount = 0;
         }
-        dis.writeInt(argCount);
+        dis.getDataOutputStream().writeInt(argCount);
     }
-    private static final byte ARGUMENT_TYPE_BYTES = 1;
-    private static final byte ARGUMENT_TYPE_JSON = 2;
-    private static final byte ARGUMENT_TYPE_NONE = 10;
-    private void persistentVersionTwo(DataOutputStreamEx dis) throws IOException {
-        persistentVersionOneAndTwo(dis);
+    static final byte ARGUMENT_TYPE_BYTES = 1;
+    static final byte ARGUMENT_TYPE_JSON = 2;
+    static final byte ARGUMENT_TYPE_JAVA_BINARY = 3;
+    static final byte ARGUMENT_TYPE_NONE = 10;
+    private void persistentVersionTwo(DataOutputStreamEx dos) throws IOException {
+        persistentVersionOneAndTwo(dos);
         if (argCount > 0 && args != null) {
-            for(Object arg : args) {
+            for(int i = 0; i < argCount; i++) {
+                Object arg = null;
+                if(i < args.length) {
+                    arg = args[i];
+                }
                 if(arg == null) {
-                    dis.writeByte(ARGUMENT_TYPE_NONE);
+                    dos.getDataOutputStream().writeByte(ARGUMENT_TYPE_NONE);
                     continue;
                 }
                 if(arg instanceof byte[]) {
-                    dis.writeByte(ARGUMENT_TYPE_BYTES);
+                    dos.getDataOutputStream().writeByte(ARGUMENT_TYPE_BYTES);
                     byte[] bytes = (byte[]) arg;
-                    dis.writeInt(bytes.length);
-                    dis.write((byte[]) arg);
+                    dos.getDataOutputStream().writeInt(bytes.length);
+                    dos.getDataOutputStream().write(bytes);
+                } if(arg instanceof BinarySerializable) {
+                    dos.getDataOutputStream().writeByte(ARGUMENT_TYPE_JAVA_BINARY);
+                    BinarySerializable binarySerializable = (BinarySerializable) arg;
+                    try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                        binarySerializable.persistent(byteArrayOutputStream);
+
+                        byte[] finalBytes = byteArrayOutputStream.toByteArray();
+                        dos.getDataOutputStream().writeInt(finalBytes.length);
+                        dos.getDataOutputStream().write(finalBytes);
+                    }
                 } else {
-                    dis.writeByte(ARGUMENT_TYPE_JSON);
-                    dis.writeUTF(JSON.toJSONString(arg, SerializerFeature.DisableCircularReferenceDetect));
+                    dos.getDataOutputStream().writeByte(ARGUMENT_TYPE_JSON);
+                    dos.getDataOutputStream().writeUTF(JSON.toJSONString(arg, SerializerFeature.DisableCircularReferenceDetect));
                 }
             }
         }
-        dis.writeUTF(trackId);
+        dos.writeUTF(trackId);
     }
 
-    private void persistentVersionOne(DataOutputStreamEx dis) throws IOException {
-        persistentVersionOneAndTwo(dis);
-        if (argCount > 0 && args != null) {
-            String json = null;
-            if (argsTmpStr == null)
-                json = JSON.toJSONString(args, SerializerFeature.DisableCircularReferenceDetect);
-            else
-                json = argsTmpStr;
-            try {
-                byte[] data = GZipUtils.compress(json.getBytes("utf8"));
-                dis.writeInt(data.length);
-                dis.write(data);
-            } catch (IOException e) {
-                e.printStackTrace();
-                LoggerEx.error(TAG, "Generate " + json + " to bytes failed, " + ExceptionUtils.getFullStackTrace(e) + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
-            }
-        }
-        dis.writeUTF(trackId);
-    }
+//    private void persistentVersionOne(DataOutputStreamEx dis) throws IOException {
+//        persistentVersionOneAndTwo(dis);
+//        if (argCount > 0 && args != null) {
+//            String json = null;
+//            if (argsTmpStr == null)
+//                json = JSON.toJSONString(args, SerializerFeature.DisableCircularReferenceDetect);
+//            else
+//                json = argsTmpStr;
+//            try {
+//                byte[] data = GZipUtils.compress(json.getBytes("utf8"));
+//                dis.writeInt(data.length);
+//                dis.write(data);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                LoggerEx.error(TAG, "Generate " + json + " to bytes failed, " + ExceptionUtils.getFullStackTrace(e) + ",service_class_method: " + RpcCacheManager.getInstance().getMethodByCrc(crc));
+//            }
+//        }
+//        dis.writeUTF(trackId);
+//    }
 
     public Long getCrc() {
         return crc;
@@ -498,14 +536,14 @@ public class MethodRequest extends RPCRequest {
         return list;
     }
 
-    private Object parseObject(String text, Type types, ParserConfig config) {
+    private Object parseObject(String text, Type type, ParserConfig config) {
         if (text == null) {
             return null;
         }
 
         DefaultJSONParser parser = new DefaultJSONParser(text, config);
         parser.lexer.setFeatures(JSON.DEFAULT_PARSER_FEATURE & ~Feature.UseBigDecimal.getMask());
-        Object object = parser.parse();
+        Object object = parser.parseObject(type);
 
         parser.handleResovleTask(object);
 

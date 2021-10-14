@@ -5,22 +5,22 @@
 	<parent>
 		<groupId>oceanus</groupId>
 		<artifactId>Oceanus</artifactId>
-		<version>1.0</version>
+		<version>1.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>oceanuscontainer</artifactId>
-	<version>1.0</version>
+	<version>1.1</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>oceanus</groupId>
 			<artifactId>oceanuscontext</artifactId>
-			<version>1.0</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>oceanus</groupId>
 			<artifactId>oceanuscore</artifactId>
-			<version>1.0</version>
+			<version>1.1.0</version>
 		</dependency>
 	</dependencies>
 
@@ -71,7 +71,7 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<finalName>container-1.0</finalName>
+		<finalName>container-1.1</finalName>
 	</build>
 
 </project>
