@@ -141,8 +141,13 @@ public class MethodResponse extends RPCResponse {
                                     break;
                                 case MethodRequest.ARGUMENT_TYPE_JSON:
                                     String jsonString = dis.getDataInputStream().readUTF();
-                                    if(returnClass != null)
-                                        returnObject = JSON.parseObject(jsonString, returnClass);
+                                    if(returnClass != null) {
+                                        if(returnClass.equals(JSONObject.class)) {
+                                            returnObject = JSON.parse(jsonString);
+                                        } else {
+                                            returnObject = JSON.parseObject(jsonString, returnClass);
+                                        }
+                                    }
                                     break;
                                 case MethodRequest.ARGUMENT_TYPE_NONE:
                                     break;

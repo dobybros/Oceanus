@@ -15,12 +15,10 @@ import com.docker.rpc.remote.stub.RpcCacheManager;
 import com.docker.rpc.remote.stub.ServiceStubManager;
 import com.docker.script.BaseRuntimeContext;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -89,7 +87,7 @@ public class MethodRequest extends RPCRequest {
                             bais = new ByteArrayInputStream(GZipUtils.decompress(bytes));
                             dis = new DataInputStreamEx(bais);
                             version = dis.getDataInputStream().readByte();
-                            resurrectVersionTwo(dis);
+                            resurrectVersionOne(dis);
 //                            switch (version) {
 //                                case 1:
 //                                    resurrectVersionOne(dis);
@@ -120,7 +118,7 @@ public class MethodRequest extends RPCRequest {
         }
     }
 
-    private MethodMapping resurrectVersionForOneAndTwo(DataInputStreamEx dis) throws IOException {
+    private MethodMapping resurrectCommon(DataInputStreamEx dis) throws IOException {
         crc = dis.readLong();
         service = dis.readUTF();
         fromServerName = dis.readUTF();
@@ -197,8 +195,8 @@ public class MethodRequest extends RPCRequest {
         return parameterTypes;
     }
 
-    private void resurrectVersionTwo(DataInputStreamEx dis) throws IOException {
-        MethodMapping methodMapping = resurrectVersionForOneAndTwo(dis);
+    private void resurrectVersionOne(DataInputStreamEx dis) throws IOException {
+        MethodMapping methodMapping = resurrectCommon(dis);
         if (argCount > 0) {
             Type[] parameterTypes = getParameterTypes(methodMapping);
             if (parameterTypes != null && parameterTypes.length > 0) {
@@ -274,7 +272,7 @@ public class MethodRequest extends RPCRequest {
                     baos = new ByteArrayOutputStream();
                     dis = new DataOutputStreamEx(baos);
 
-                    persistentVersionTwo(dis);
+                    persistentVersionOne(dis);
                     byte[] bytes = GZipUtils.compress(baos.toByteArray());
 //                    switch (version) {
 //                        case 1:
@@ -305,7 +303,7 @@ public class MethodRequest extends RPCRequest {
         }
     }
 
-    private void persistentVersionOneAndTwo(DataOutputStreamEx dis) throws IOException {
+    private void persistentCommon(DataOutputStreamEx dis) throws IOException {
         dis.getDataOutputStream().writeByte(version);
         dis.writeLong(crc);
         dis.writeUTF(service);
@@ -343,8 +341,8 @@ public class MethodRequest extends RPCRequest {
     static final byte ARGUMENT_TYPE_JSON = 2;
     static final byte ARGUMENT_TYPE_JAVA_BINARY = 3;
     static final byte ARGUMENT_TYPE_NONE = 10;
-    private void persistentVersionTwo(DataOutputStreamEx dos) throws IOException {
-        persistentVersionOneAndTwo(dos);
+    private void persistentVersionOne(DataOutputStreamEx dos) throws IOException {
+        persistentCommon(dos);
         if (argCount > 0 && args != null) {
             for(int i = 0; i < argCount; i++) {
                 Object arg = null;
