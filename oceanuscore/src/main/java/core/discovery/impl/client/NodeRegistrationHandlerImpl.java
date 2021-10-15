@@ -108,10 +108,10 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
     }
 
     private void handleHolePunching(NodeRegistrationHandler nodeRegistrationHandler, StateMachine<Integer, NodeRegistrationHandler> integerNodeRegistrationHandlerStateMachine) throws IOException {
-        if(networkCommunicator != null) {
-            networkCommunicator.close();
-        }
-        networkCommunicator = NetRuntime.buildNetworkCommunicator().startAtFixedPort(node.getPort());
+//        if(networkCommunicator != null) {
+//            networkCommunicator.close();
+//        }
+//        networkCommunicator = NetRuntime.buildNetworkCommunicator().startAtFixedPort(node.getPort());
         connectivityState.gotoState(CONNECTIVITY_STATE_CONNECTED, "Open connection at opened port " + node.getPort() + " from hole punching");
     }
 
