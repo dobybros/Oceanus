@@ -198,60 +198,47 @@ public class RemoteServersManager implements Runnable {
 
     public void initService(String toService) {
         ServiceNodesMonitor serviceNodesMonitor;
-        if(!serviceServerCRCIdMap.containsKey(toService)) {
-            serviceServerCRCIdMap.putIfAbsent(toService, new ServiceNodesMonitor());
-            serviceNodesMonitor = serviceServerCRCIdMap.get(toService);
+        serviceNodesMonitor = serviceServerCRCIdMap.get(toService);
+        if(serviceNodesMonitor != null && serviceNodesMonitor.state.get() == ServiceNodesMonitor.STATE_INIT_FINISHED) {
+            return;
+        }
+        synchronized (this) {
+            if(!serviceServerCRCIdMap.containsKey(toService)) {
+                serviceServerCRCIdMap.putIfAbsent(toService, new ServiceNodesMonitor());
+                serviceNodesMonitor = serviceServerCRCIdMap.get(toService);
 
-            final ServiceNodesMonitor theMonitor = serviceNodesMonitor;
-            if(theMonitor.state.compareAndSet(ServiceNodesMonitor.STATE_NONE, ServiceNodesMonitor.STATE_INIT)) {
-                LoggerEx.info(TAG, "Current Thread " + Thread.currentThread() + " is getting nodes for service " + toService);
-                CompletableFuture<ServiceNodeResult> future = OnlineServer.getInstance().getNodeRegistrationHandler().getNodesWithServices(Arrays.asList(toService), null, false);
-                future.thenAccept(serviceNodeResult -> {
-                    if(theMonitor.state.get() == ServiceNodesMonitor.STATE_INIT) {
-                        List<Long> nodeIds = new ArrayList<>();
-                        List<Node> nodes = serviceNodeResult.getServiceNodes().get(toService);
-                        if(nodes != null) {
-                            for(Node node : nodes) {
-                                nodeIds.add(node.getServerNameCRC());
-                                if(!nodeMap.containsKey(node.getServerNameCRC())) {
-                                    nodeMap.putIfAbsent(node.getServerNameCRC(), node);
-                                    LoggerEx.info(TAG, "Found node " + node + " for service " + toService + " which node will be shared with other services");
-                                }
-                            }
-                        }
-                        theMonitor.nodeServerCRCIds = nodeIds;
-                        LoggerEx.info(TAG, "Found node server CRC ids " + theMonitor.nodeServerCRCIds + " for service " + toService);
-                        theMonitor.time = System.currentTimeMillis();
-                    } else {
-                        LoggerEx.error(TAG, "Init nodes for service " + toService + " state illegal, expect " + ServiceNodesMonitor.STATE_INIT + " but " + theMonitor.state.get());
-                    }
-                }).exceptionally(throwable -> {
-                    throwable.printStackTrace();
-                    LoggerEx.error(TAG, "Init nodes for service " + toService + " failed, " + throwable.getMessage());
-                    return null;
-                }).whenComplete((aVoid, throwable) -> {
-                    theMonitor.state.compareAndSet(ServiceNodesMonitor.STATE_INIT, ServiceNodesMonitor.STATE_INIT_FINISHED);
-                });
-                try {
-                    future.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                    LoggerEx.error(TAG, "Get nodes for service " + toService + " failed, " + e.getMessage());
-                }
-                synchronized (theMonitor) {
-                    theMonitor.notifyAll();
-                    LoggerEx.info(TAG, "Wake up all the threads that wait for service " + toService + " initialized. current " + Thread.currentThread());
-                }
-            } else {
-                synchronized (theMonitor) {
-                    if(theMonitor.state.get() == ServiceNodesMonitor.STATE_INIT) {
-                        LoggerEx.warn(TAG, "Another thread is getting nodes for service " + toService + ", current thread " + Thread.currentThread() + " will wait...");
+                final ServiceNodesMonitor theMonitor = serviceNodesMonitor;
+
+                if(theMonitor.state.get() < ServiceNodesMonitor.STATE_INIT_FINISHED) {
+                    if(theMonitor.state.compareAndSet(ServiceNodesMonitor.STATE_NONE, ServiceNodesMonitor.STATE_INIT)) {
+                        LoggerEx.info(TAG, "Current Thread " + Thread.currentThread() + " is getting nodes for service " + toService);
+                        CompletableFuture<ServiceNodeResult> future = OnlineServer.getInstance().getNodeRegistrationHandler().getNodesWithServices(Arrays.asList(toService), null, false);
                         try {
-                            theMonitor.wait();
-                        } catch (InterruptedException e) {
+                            ServiceNodeResult serviceNodeResult = future.get();
+                            if(theMonitor.state.get() == ServiceNodesMonitor.STATE_INIT) {
+                                List<Long> nodeIds = new ArrayList<>();
+                                List<Node> nodes = serviceNodeResult.getServiceNodes().get(toService);
+                                if(nodes != null) {
+                                    for(Node node : nodes) {
+                                        nodeIds.add(node.getServerNameCRC());
+                                        if(!nodeMap.containsKey(node.getServerNameCRC())) {
+                                            nodeMap.putIfAbsent(node.getServerNameCRC(), node);
+                                            LoggerEx.info(TAG, "Found node " + node + " for service " + toService + " which node will be shared with other services");
+                                        }
+                                    }
+                                }
+                                theMonitor.nodeServerCRCIds = nodeIds;
+                                LoggerEx.info(TAG, "Found node server CRC ids " + theMonitor.nodeServerCRCIds + " for service " + toService);
+                                theMonitor.time = System.currentTimeMillis();
+                            } else {
+                                LoggerEx.error(TAG, "Init nodes for service " + toService + " state illegal, expect " + ServiceNodesMonitor.STATE_INIT + " but " + theMonitor.state.get());
+                            }
+                        } catch (Throwable e) {
                             e.printStackTrace();
+                            LoggerEx.error(TAG, "Get nodes for service " + toService + " failed, " + e.getMessage());
+                        } finally {
+                            theMonitor.state.compareAndSet(ServiceNodesMonitor.STATE_INIT, ServiceNodesMonitor.STATE_INIT_FINISHED);
                         }
-                        LoggerEx.info(TAG, "Waked up thread " + Thread.currentThread() + " after get nodes done for service " + toService);
                     }
                 }
             }
