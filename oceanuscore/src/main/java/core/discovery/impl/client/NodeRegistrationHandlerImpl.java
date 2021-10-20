@@ -383,23 +383,21 @@ public class NodeRegistrationHandlerImpl extends NodeRegistrationHandler {
         findServiceRequest.setOnlyNodeServerCRC(onlyNodeServerCRC);
 //        findServiceRequest.setVersion(version);
         discoveryHostManager.sendRequestTransport(networkCommunicator, ContentPacket.buildWithContent(findServiceRequest), FindServiceResponse.class, (response, failedResponse, serverIdCRC, address) -> {
-            FindServiceResponse findServiceResponse = response.getContent();
-            boolean completed = false;
-            if(findServiceResponse != null) {
-                ServiceNodeResult result = findServiceResponse.getServiceNodeResult();
-                future.complete(result);
-                completed = true;
-            } else if(failedResponse != null) {
+            if(failedResponse != null) {
                 FailedResponse theFailedResponse = failedResponse.getContent();
                 if(theFailedResponse != null) {
                     future.completeExceptionally(new IOException(theFailedResponse.getMessage() + " code " + theFailedResponse.getCode()));
-                    completed = true;
+                }
+            } else  {
+                FindServiceResponse findServiceResponse = response.getContent();
+                if(findServiceResponse != null) {
+                    ServiceNodeResult result = findServiceResponse.getServiceNodeResult();
+                    future.complete(result);
+                } else {
+                    future.completeExceptionally(new IOException("Unknown error"));
                 }
             }
-            if(!completed) {
-                future.completeExceptionally(new IOException("Unknown error"));
-//                completed = true;
-            }
+
         }, CoreRuntime.CONTENT_PACKET_TIMEOUT);
         return future;
     }
