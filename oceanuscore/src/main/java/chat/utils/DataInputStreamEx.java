@@ -1,10 +1,13 @@
 package chat.utils;
 
+import chat.logs.LoggerEx;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,7 +30,7 @@ public class DataInputStreamEx {
 		return dis;
 	}
 	
-	public boolean hasValue() throws IOException {
+	private boolean hasValue() throws IOException {
 		byte hasValue = dis.readByte();
         return hasValue == HASVALUE;
     }
@@ -132,7 +135,6 @@ public class DataInputStreamEx {
 				baos.write(data, 0, readed);
 				total += readed;
 			}
-//			System.out.println("readed total = " + total);
 		}
 		return new String(baos.toByteArray());
 	}
@@ -172,13 +174,22 @@ public class DataInputStreamEx {
 		if(length != 0) {
 			T[] ts = (T[]) Array.newInstance(clazz, length);
 			for(int i = 0; i < length;i++) {
-				try {
-					ts[i] = clazz.newInstance();
-					ts[i].resurrect(dis);
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+				byte state = dis.readByte();
+				switch (state) {
+					case HASVALUE:
+						try {
+							ts[i] = clazz.getConstructor().newInstance();
+							ts[i].resurrect(dis);
+						} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+							e.printStackTrace();
+							LoggerEx.error("readBinaryObjectArray", "new class " + clazz + " failed, " + e.getMessage());
+						} catch (Throwable t) {
+							t.printStackTrace();
+							LoggerEx.error("readBinaryObjectArray", "resurrect for class " + clazz + " failed, " + t.getMessage());
+						}
+						break;
+					case NOVALUE:
+						break;
 				}
 			}
 			return ts;
@@ -190,15 +201,24 @@ public class DataInputStreamEx {
 		int length = dis.readInt();
 		if(length != 0 && iterator != null) {
 			for(int i = 0; i < length;i++) {
-				try {
-					T t = clazz.newInstance();
-					t.resurrect(dis);
-					if(!iterator.iterate(t))
+				byte state = dis.readByte();
+				switch (state) {
+					case HASVALUE:
+						try {
+							T t = clazz.getConstructor().newInstance();
+							t.resurrect(dis);
+							if(!iterator.iterate(t))
+								break;
+						} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+							e.printStackTrace();
+							LoggerEx.error("readBinaryObjects", "new class " + clazz + " failed, " + e.getMessage());
+						} catch (Throwable t) {
+							t.printStackTrace();
+							LoggerEx.error("readBinaryObjects", "resurrect for class " + clazz + " failed, " + t.getMessage());
+						}
 						break;
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+					case NOVALUE:
+						break;
 				}
 			}
 		}
@@ -207,14 +227,23 @@ public class DataInputStreamEx {
 		int length = dis.readInt();
 		if(length != 0) {
 			for(int i = 0; i < length;i++) {
-				try {
-					T t = clazz.newInstance();
-					t.resurrect(dis);
-					collectionAcuObjects.add(t);
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+				byte state = dis.readByte();
+				switch (state) {
+					case HASVALUE:
+						try {
+							T t = clazz.getConstructor().newInstance();
+							t.resurrect(dis);
+							collectionAcuObjects.add(t);
+						} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+							e.printStackTrace();
+							LoggerEx.error("readCollectionBinaryObject", "new class " + clazz + " failed, " + e.getMessage());
+						} catch (Throwable t) {
+							t.printStackTrace();
+							LoggerEx.error("readCollectionBinaryObject", "resurrect for class " + clazz + " failed, " + t.getMessage());
+						}
+						break;
+					case NOVALUE:
+						break;
 				}
 			}
 		}
@@ -224,15 +253,24 @@ public class DataInputStreamEx {
 		int length = dis.readInt();
 		if(length != 0) {
 			for(int i = 0; i < length;i++) {
-				try {
-					String key = dis.readUTF();
-					T t = clazz.newInstance();
-					t.resurrect(dis);
-					acuObjectMap.put(key, t);
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+				byte state = dis.readByte();
+				switch (state) {
+					case HASVALUE:
+						String key = dis.readUTF();
+						try {
+							T t = clazz.getConstructor().newInstance();
+							t.resurrect(dis);
+							acuObjectMap.put(key, t);
+						} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+							e.printStackTrace();
+							LoggerEx.error("readMapBinaryObject", "new class " + clazz + " failed, " + e.getMessage());
+						} catch (Throwable t) {
+							t.printStackTrace();
+							LoggerEx.error("readMapBinaryObject", "resurrect for class " + clazz + " failed, " + t.getMessage());
+						}
+						break;
+					case NOVALUE:
+						break;
 				}
 			}
 		}
@@ -241,13 +279,15 @@ public class DataInputStreamEx {
 	public <T extends BinarySerializable> T readBinaryObject(Class<T> clazz) throws IOException {
 		if(hasValue()) {
 			try {
-				T object = clazz.newInstance();
+				T object = clazz.getConstructor().newInstance();
 				object.resurrect(dis);
 				return object;
-			} catch (InstantiationException e) {
+			} catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
 				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				LoggerEx.error("readBinaryObject", "new class " + clazz + " failed, " + e.getMessage());
+			} catch (Throwable t) {
+				t.printStackTrace();
+				LoggerEx.error("readBinaryObject", "resurrect for class " + clazz + " failed, " + t.getMessage());
 			}
 		}
 		return null;

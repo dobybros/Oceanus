@@ -1,10 +1,13 @@
 package chat.utils;
 
+import chat.logs.LoggerEx;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -48,7 +51,11 @@ public class DataOutputStreamEx {
 			  collectionStrings.toArray(array);
 			  dos.writeInt(array.length);
 			  for(String str : array) {
-				  dos.writeUTF(str);
+			  	if(str == null) {
+					str = ""; //为了防止读写篡位
+					LoggerEx.error("writeCollectionString",  "Str is null, force it equals empty string, " + Arrays.toString(array));
+				}
+		  		dos.writeUTF(str);
 			  }
 		  }
 	}
@@ -198,34 +205,49 @@ public class DataOutputStreamEx {
 		  dos.writeInt(array.length);
 	  }
 	  for(T t : array) {
-		  t.persistent(dos);
+		  if(t == null) {
+			  dos.writeByte(NOVALUE);
+		  } else {
+			  dos.writeByte(HASVALUE);
+			  t.persistent(dos);
+		  }
 	  }
   }
   
   public <T extends BinarySerializable> void writeCollectionBinaryObject(Collection<T> collectionAcuObjects) throws IOException {
 		if(collectionAcuObjects == null) {
-			  dos.writeInt(NOVALUE);
-			  return;
-		  } else {
-			  dos.writeInt(collectionAcuObjects.size());
-		  }
+			dos.writeInt(NOVALUE);
+			return;
+		} else {
+			dos.writeInt(collectionAcuObjects.size());
+		}
 		for(T t : collectionAcuObjects) {
-			  t.persistent(dos);
-		  }
+			if(t == null) {
+				dos.writeByte(NOVALUE);
+			} else {
+				dos.writeByte(HASVALUE);
+				t.persistent(dos);
+			}
+		}
 	}
   
   public <T extends BinarySerializable> void writeMapBinaryObject(Map<String, T> acuObjectMap) throws IOException {
-	  if(acuObjectMap == null) {
-		  dos.writeInt(NOVALUE);
-		  return;
-	  } else {
-		  dos.writeInt(acuObjectMap.size());
-	  }
-	  for(String key : acuObjectMap.keySet()) {
-		  BinarySerializable t = acuObjectMap.get(key);
-		  dos.writeUTF(key);
-		  t.persistent(dos);
-	  }
+		if(acuObjectMap == null) {
+			dos.writeInt(NOVALUE);
+			return;
+		} else {
+			dos.writeInt(acuObjectMap.size());
+		}
+		for(String key : acuObjectMap.keySet()) {
+			BinarySerializable t = acuObjectMap.get(key);
+			if(t == null) {
+				dos.writeByte(NOVALUE);
+			} else {
+				dos.writeByte(HASVALUE);
+				dos.writeUTF(key);
+				t.persistent(dos);
+			}
+		}
   }
   
   public void writeBinaryObject(BinarySerializable object) throws IOException {
