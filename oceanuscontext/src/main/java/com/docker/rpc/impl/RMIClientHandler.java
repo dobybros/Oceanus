@@ -102,7 +102,7 @@ public class RMIClientHandler extends RPCClientAdapter {
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
-                LoggerEx.error(TAG, "RMI clientStart failed, " + t.getMessage() + " connectCountDown " + connectCountDown);
+                LoggerEx.error(TAG, "RMI clientStart failed, " + t.getMessage() + ". RMI " + serverHost + " port " + rmiPort + " server " + rmiId + " connectCountDown " + connectCountDown);
                 if(--connectCountDown > 0) {
                     if(retryFuture != null) {
                         retryFuture.cancel(true);

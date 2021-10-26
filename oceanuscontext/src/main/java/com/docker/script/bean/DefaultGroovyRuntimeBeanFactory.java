@@ -149,7 +149,8 @@ public class DefaultGroovyRuntimeBeanFactory extends GroovyRuntimeBeanFactory {
                                 Object obj = null;
                                 try {
                                     obj = beanValue.getObject();
-                                    field.set(gObj, gClass.cast(obj));
+                                    if(gClass != null)
+                                        field.set(gObj, gClass.cast(obj));
                                 } catch (CoreException e) {
                                     e.printStackTrace();
                                     LoggerEx.warn(TAG, "Assign value failed, " + field + " error " + e.getMessage());
