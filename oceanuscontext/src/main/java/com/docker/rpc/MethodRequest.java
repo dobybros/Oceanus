@@ -15,6 +15,7 @@ import com.docker.rpc.remote.stub.RpcCacheManager;
 import com.docker.rpc.remote.stub.ServiceStubManager;
 import com.docker.script.BaseRuntimeContext;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -230,16 +231,17 @@ public class MethodRequest extends RPCRequest {
                                 }
                             }
                             if(theClass != null) {
+                                BinarySerializable binarySerializable = null;
                                 try {
-                                    BinarySerializable binarySerializable = (BinarySerializable) theClass.getConstructor().newInstance();
+                                    binarySerializable = (BinarySerializable) theClass.getConstructor().newInstance();
                                     try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes1)) {
                                         binarySerializable.resurrect(bais);
-                                        args[i] = binarySerializable;
                                     }
                                 } catch (Throwable e) {
                                     e.printStackTrace();
-                                    LoggerEx.error(TAG, "Deserialize argument " + parameterTypes[i] + " from method " + methodMapping.getMethod() + " failed, " + e.getMessage());
+                                    LoggerEx.error(TAG, "binarySerializable resurrect failed, " + e.getMessage() + " argument " + parameterTypes[i] + " from method " + methodMapping.getMethod() + " stack " + ExceptionUtils.getFullStackTrace(e) + " binarySerializable " + JSON.toJSONString(binarySerializable));
                                 }
+                                args[i] = binarySerializable;
                             }
                             break;
                         case ARGUMENT_TYPE_JSON:
@@ -367,6 +369,9 @@ public class MethodRequest extends RPCRequest {
                         byte[] finalBytes = byteArrayOutputStream.toByteArray();
                         dos.getDataOutputStream().writeInt(finalBytes.length);
                         dos.getDataOutputStream().write(finalBytes);
+                    } catch(Throwable throwable) {
+                        LoggerEx.error(TAG, "binarySerializable persistent failed, " + throwable.getMessage() + " stack " + ExceptionUtils.getFullStackTrace(throwable));
+                        throw throwable;
                     }
                 } else {
                     dos.getDataOutputStream().writeByte(ARGUMENT_TYPE_JSON);
