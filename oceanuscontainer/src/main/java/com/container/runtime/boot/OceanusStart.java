@@ -53,7 +53,7 @@ public class OceanusStart {
 //            servletHandler.addServletWithMapping(GroovyServletScriptDispatcher.class, "/base/*");
             server.start();
             init();
-            LoggerEx.info(TAG, "Server started on port " + baseConfiguration.getServerPort());
+            LoggerEx.info(TAG, "Server started on port " + baseConfiguration.getServerPort() + " on version " + 1000);
             server.join();
         }catch (Exception e){
             LoggerEx.error(TAG, "Start server failed, errMsg: " + ExceptionUtils.getFullStackTrace(e));
